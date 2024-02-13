@@ -28,7 +28,6 @@ namespace functions {
         std::cout << "\t\tfunctions::sum ended. . ." << std::endl;
         
         return foo + boo;
-        
     }
 }
 
