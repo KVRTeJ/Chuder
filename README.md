@@ -1,6 +1,6 @@
 # Chuder
 
-Hello! This is my new repo for labs.
+Hello! This is my new repo. Here you can find my labs.
 
 My OS is **MacOS version 13.6.3 (22G436)**
 
