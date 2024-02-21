@@ -1,23 +1,13 @@
 #include "multiphase_sorting.hpp"
 
 int main() {
+    std::string str("hello.txt");
     
-    std::string boo("boo.txt"), foo("foo.txt"), merged("merged.txt");
+    naturalMergeSort3Files(str);
     
-    std::ofstream write(boo);
-    std::ifstream read(foo);
-    int current = 0;
-    
-    while(read) {
-        read >> current;
-        if(!(current % 2))
-            write << current << ' ';
-    }
-    
-    write.close();
-    read.close();
-    
-    outputFile(boo);
+    std::cout << "merged" << std::endl;
+
+    assert(isFileContainsSortedArray("supported_file1.txt"));
     
     return -1;
 }

@@ -10,6 +10,110 @@ int fib(const int num) {
     return fib(num - 1) + fib(num - 2);
 }
 
+void createEmptyFile(const std::vector<std::string>& fileNames) {
+    for(auto it = fileNames.begin(); it != fileNames.end(); ++it) {
+        std::ofstream temp(*it);
+        temp.close();
+    }
+}
+
+bool copyFile(const std::string& origin, const std::string& copy) {
+    
+    std::ifstream fileOrigin(origin);
+    std::ofstream fileCopy(copy);
+    if(!fileOrigin.is_open() || !fileCopy.is_open())
+        return false;
+    
+    int current = 0;
+    while(fileOrigin >> current) {
+        fileCopy << current << ' ';
+    }
+    
+    fileOrigin.close();
+    fileCopy.close();
+    return true;
+}
+}
+
+namespace NaturalMergeSort {
+
+bool merge(const std::string& boo, const std::string& foo, const std::string& merged) {
+    std::ifstream fileBoo(boo), fileFoo(foo);
+    std::ofstream fileMerged(merged);
+    
+    if(!fileBoo.is_open() || !fileFoo.is_open() || !fileMerged.is_open())
+        return false;
+    
+    int currentFoo = 0, currentBoo = 0;
+    fileBoo >> currentBoo;
+    fileFoo >> currentFoo;
+    
+    while(fileBoo && fileFoo) {
+        if(currentBoo > currentFoo) {
+            fileMerged << currentFoo << ' ';
+            fileFoo >> currentFoo;
+        }
+        else {
+            fileMerged << currentBoo << ' ';
+            fileBoo >> currentBoo;
+        }
+    }
+    
+    while(fileBoo) {
+        fileMerged << currentBoo << ' ';
+        fileBoo >> currentBoo;
+    }
+    
+    while(fileFoo) {
+        fileMerged << currentFoo << ' ';
+        fileFoo >> currentFoo;
+    }
+    
+    fileBoo.close();
+    fileFoo.close();
+    fileMerged.close();
+    return true;
+}
+
+bool split(const std::string& first, const std::string& second, const std::string& splited) {
+    std::ifstream supportFileOne(splited, std::ios_base::in);
+    std::ofstream supportFileTwo(first, std::ios_base::out);
+    std::ofstream supportFileThree(second, std::ios_base::out);
+    
+    if(!supportFileOne.is_open() || !supportFileTwo.is_open() || !supportFileThree.is_open())
+        return false;
+    
+    int current = 0, next = 0;
+    supportFileOne >> current;
+    while(supportFileOne) {
+        supportFileTwo << current << ' ';
+        supportFileOne >> next;
+        
+        while(supportFileOne && (current <= next)) {
+            current = next;
+            supportFileTwo << current << ' ';
+            supportFileOne >> next;
+        }
+        if(supportFileOne) {
+            current = next;
+            supportFileThree << current << ' ';
+            supportFileOne >> next;
+            while(supportFileOne && (current <= next)) {
+                current = next;
+                supportFileThree << current << ' ';
+                supportFileOne >> next;
+            }
+        }
+        current = next;
+    }
+    
+    supportFileOne.close();
+    supportFileTwo.close();
+    supportFileThree.close();
+    
+    return true;
+}
+
 }
 
 void outputFile(const std::string& fileName) {
@@ -28,6 +132,7 @@ void outputFile(const std::string& fileName) {
 bool isFileContainsSortedArray(const std::string &fileName) {
     std::ifstream origin(fileName, std::ios_base::in);
     int current = 0, next = 0;
+    
     while(origin >> current) {
         origin >> next;
         std::cout << "cur - " << current << " next - " << next << std::endl;
@@ -39,37 +144,18 @@ bool isFileContainsSortedArray(const std::string &fileName) {
     return true;
 }
 
-bool merge(const std::string& boo, const std::string& foo, const std::string& merged) {
-    std::ifstream f_boo(boo), f_foo(foo);
-    std::ofstream f_merged(merged);
+void naturalMergeSort3Files(const std::string& fileName) {
+    std::ifstream origin(fileName);
     
-    if(!f_boo.is_open() || !f_foo.is_open() || !f_merged.is_open())
-        return false;
+    std::vector<std::string> supportFileName = { "support_file1.txt", "support_file2.txt", "support_file3.txt"};
     
-    int currentFoo = 0, currentBoo = 0;
-    f_boo >> currentBoo;
-    f_foo >> currentFoo;
-    
-    while(f_boo && f_foo) {
-        if(currentBoo > currentFoo) {
-            f_merged << currentFoo << ' ';
-            f_foo >> currentFoo;
-        }
-        else {
-            f_merged << currentBoo << ' ';
-            f_boo >> currentBoo;
-        }
-    }
-    
-    while(f_boo) {
-        f_merged << currentBoo << ' ';
-        f_boo >> currentBoo;
-    }
-    
-    while(f_foo) {
-        f_merged << currentFoo << ' ';
-        f_foo >> currentFoo;
-    }
-    
-    return true;
+    std::ifstream isSorted(supportFileName[2]);
+
+    copyFile(fileName, "support_file1.txt");
+    int temp = 0;
+    do {
+        NaturalMergeSort::split(supportFileName[1], supportFileName[2], supportFileName[0]);
+        NaturalMergeSort::merge(supportFileName[1], supportFileName[2], supportFileName[0]);
+    } while(isSorted >> temp);
+
 }

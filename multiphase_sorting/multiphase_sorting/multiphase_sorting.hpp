@@ -12,6 +12,6 @@ void outputFile(const std::string& fileName);
 
 bool isFileContainsSortedArray(const std::string &fileName);
 
-bool merge(const std::string& boo, const std::string& foo, const std::string& merged);
+void naturalMergeSort3Files(const std::string& fileName);
 
 #endif /* multiphase_sorting_hpp */
