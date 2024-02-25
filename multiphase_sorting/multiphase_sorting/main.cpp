@@ -3,10 +3,12 @@
 #include <chrono>
 
 int main() {
+    multiphaseSort("asdasd");
+    return -2;
     std::string str("nums_10k_10.txt");
     
     auto begin = std::chrono::steady_clock::now();
-    naturalMergeSort3Files(str);
+    
     auto end = std::chrono::steady_clock::now();
     
     auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin)/1000;
