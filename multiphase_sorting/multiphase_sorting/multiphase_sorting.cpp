@@ -2,14 +2,6 @@
 
 namespace {
 
-int fib(const int num) {
-    if(num == 0)
-        return 0;
-    if(num == 1)
-        return 1;
-    return fib(num - 1) + fib(num - 2);
-}
-
 void createEmptyFile(const std::vector<std::string>& fileNames) {
     for(auto it = fileNames.begin(); it != fileNames.end(); ++it) {
         std::ofstream temp(*it);
@@ -33,6 +25,7 @@ bool copyFile(const std::string& origin, const std::string& copy) {
     fileCopy.close();
     return true;
 }
+
 }
 
 namespace NaturalMergeSort {
@@ -76,9 +69,9 @@ bool merge(const std::string& boo, const std::string& foo, const std::string& me
 }
 
 bool split(const std::string& first, const std::string& second, const std::string& splited) {
-    std::ifstream supportFileOne(splited, std::ios_base::in);
-    std::ofstream supportFileTwo(first, std::ios_base::out);
-    std::ofstream supportFileThree(second, std::ios_base::out);
+    std::ifstream supportFileOne(splited);
+    std::ofstream supportFileTwo(first);
+    std::ofstream supportFileThree(second);
     
     if(!supportFileOne.is_open() || !supportFileTwo.is_open() || !supportFileThree.is_open())
         return false;
@@ -116,6 +109,20 @@ bool split(const std::string& first, const std::string& second, const std::strin
 
 }
 
+namespace MultiphaseSort {
+
+int fib(const int num) {
+    if(num == 0)
+        return 0;
+    if(num == 1)
+        return 1;
+    return fib(num - 1) + fib(num - 2);
+}
+
+
+
+}
+
 void outputFile(const std::string& fileName) {
     std::ifstream origin(fileName, std::ios_base::in);
     assert(origin.is_open());
@@ -145,17 +152,28 @@ bool isFileContainsSortedArray(const std::string &fileName) {
 }
 
 void naturalMergeSort3Files(const std::string& fileName) {
-    std::ifstream origin(fileName);
+    std::ifstream origin(fileName);//1 открытие
     
-    std::vector<std::string> supportFileName = { "support_file1.txt", "support_file2.txt", "support_file3.txt"};
+    std::vector<std::string> supportFileName = {"support_file1.txt", "support_file2.txt", "support_file3.txt"};
     
-    std::ifstream isSorted(supportFileName[2]);
+    std::ifstream isSorted(supportFileName[2]);//1 открытие
 
-    copyFile(fileName, "support_file1.txt");
+    copyFile(fileName, "support_file1.txt");//2 открытия 2 закрытия
     int temp = 0;
     do {
-        NaturalMergeSort::split(supportFileName[1], supportFileName[2], supportFileName[0]);
-        NaturalMergeSort::merge(supportFileName[1], supportFileName[2], supportFileName[0]);
+        //использовать fstream и clear для сброса вместо открытия и закрытия?
+        NaturalMergeSort::split(supportFileName[1], supportFileName[2], supportFileName[0]);//3 открытия 3 закрытия
+        NaturalMergeSort::merge(supportFileName[1], supportFileName[2], supportFileName[0]);//3 открытия 3 закрытия
     } while(isSorted >> temp);
+    
+    origin.close();
+    isSorted.close();//2 закрытия
+    // итого 20 операций
+}
 
+void multiphaseSort(const std::string& fileName) {
+    std::ifstream origin(fileName);
+    
+    
+    
 }
