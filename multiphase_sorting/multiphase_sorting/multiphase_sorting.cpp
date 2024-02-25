@@ -53,6 +53,33 @@ void multiphaseSort(const std::string& fileName) {
     
     int level = 1;
     //TODO: split
+    {
+        int i = 0;
+        int current = 0;
+        int next = 0;
+        bool hasCurrent = false;
+        while(origin) {
+            if(i > fileCount - 1)
+                i = 0;
+            if(hasCurrent) {
+                current = next;
+                *supportFiles[i] << current << ' ';
+            }
+            else {
+                origin >> current;
+                *supportFiles[i] << current << ' ';
+            }
+            origin >> next;
+            while(origin && current < next) {
+                current = next;
+                origin >> next;
+                *supportFiles[i] << current << ' ';
+            }
+            *supportFiles[i] << '\n';
+            hasCurrent = true;
+            ++i;
+        }
+    }
     
     //TODO: merge
     

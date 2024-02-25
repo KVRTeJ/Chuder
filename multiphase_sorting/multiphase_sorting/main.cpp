@@ -3,7 +3,7 @@
 #include <chrono>
 
 int main() {
-    multiphaseSort("asdasd");
+    multiphaseSort("example.txt");
     return -2;
     std::string str("nums_10k_10.txt");
     
