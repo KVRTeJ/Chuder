@@ -52,15 +52,13 @@ void multiphaseSort(const std::string& fileName) {
     idealPartition[fileCount - 1] = missinSegments[fileCount - 1] = 0;
     
     int level = 1;
-    //TODO: split
     {
         int i = 0;
+        int firstIdealPartition = 0;
         int current = 0;
         int next = 0;
         bool hasCurrent = false;
         while(origin) {
-            if(i > fileCount - 1)
-                i = 0;
             if(hasCurrent) {
                 current = next;
                 *supportFiles[i] << current << ' ';
@@ -75,9 +73,34 @@ void multiphaseSort(const std::string& fileName) {
                 origin >> next;
                 *supportFiles[i] << current << ' ';
             }
-            *supportFiles[i] << '\n';
             hasCurrent = true;
-            ++i;
+            *supportFiles[i] << '\n';
+            --missinSegments[i];
+            
+            if(!origin) {
+                //TODO: close files
+                break;
+            }
+            
+            if(missinSegments[i] < missinSegments[i + 1]) {
+                ++i;
+            }
+            
+            else if(missinSegments[i] == 0) {
+                //TODO: пересчет
+                ++level;
+                firstIdealPartition = idealPartition[0];
+                i = 0;
+                for(int k = 0; k < fileCount - 2; ++k) {
+                    missinSegments[k] = idealPartition[k] - idealPartition[k + 1] + firstIdealPartition;
+                    idealPartition[k] = idealPartition[k + 1] + firstIdealPartition;
+                }
+            }
+            
+            else {
+                i = 0;
+            }
+            
         }
     }
     
