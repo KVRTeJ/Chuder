@@ -1,6 +1,6 @@
-#include "multiphase_sorting.hpp"
-
 #include <chrono>
+
+#include "multiphase_sorting.hpp"
 
 int main() {
     multiphaseSort("example.txt");

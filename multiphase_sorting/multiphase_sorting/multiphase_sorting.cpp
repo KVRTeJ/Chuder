@@ -2,7 +2,10 @@
 
 void outputFile(const std::string& fileName) {
     std::ifstream origin(fileName, std::ios_base::in);
-    assert(origin.is_open());
+    if(!origin.is_open()) {
+        std::cerr << "outputFile: can't open file named: " << fileName << ". . ." << std::endl;
+        return;
+    }
     
     int current = 0;
     while(origin >> current) {
@@ -15,13 +18,20 @@ void outputFile(const std::string& fileName) {
 
 bool isFileContainsSortedArray(const std::string &fileName) {
     std::ifstream origin(fileName, std::ios_base::in);
+    if(!origin.is_open()) {
+        std::cerr << "isFileContainsSortedArray: can't open file named: " << fileName << ". . ." << std::endl;
+        return false;
+    }
+    
     int current = 0, next = 0;
     
     while(origin >> current) {
         origin >> next;
         std::cout << "cur - " << current << " next - " << next << std::endl;
-        if(next > current)
+        if(next > current){
+            origin.close();
             return false;
+        }
     }
     
     origin.close();
@@ -34,22 +44,31 @@ void multiphaseSort(const std::string& fileName) {
     
     std::ifstream origin(fileName);
     
+    if(!origin.is_open()) {
+        std::cerr << "multiphaseSort: can't open file named: " << fileName << ". . ." << std::endl;
+        return;
+    }
+    
     std::string supportFileNames[fileCount];
     for(int i = 0; i < fileCount; ++i) {
-        supportFileNames[i] = "supportFile" + std::to_string(i);
+        supportFileNames[i] = "supportFile" + std::to_string(i) + ".txt";
     }
     
     std::fstream **supportFiles = new std::fstream* [fileCount];
     for(int i = 0; i < fileCount; ++i) {
         supportFiles[i] = new std::fstream(supportFileNames[i], std::ios_base::out);
+        if(!supportFiles[i]->is_open()) {
+            std::cerr << "multiphaseSort: can't open file named: " << supportFileNames[i] << ". . ." << std::endl;
+            return;
+        }
     }
     
     int idealPartition[fileCount];
-    int missinSegments[fileCount];
+    int missingSegments[fileCount];
     for(int i = 0; i < fileCount - 1; ++i) {
-        idealPartition[i] = missinSegments[i] = 1;
+        idealPartition[i] = missingSegments[i] = 1;
     }
-    idealPartition[fileCount - 1] = missinSegments[fileCount - 1] = 0;
+    idealPartition[fileCount - 1] = missingSegments[fileCount - 1] = 0;
     
     int level = 1;
     {
@@ -75,24 +94,25 @@ void multiphaseSort(const std::string& fileName) {
             }
             hasCurrent = true;
             *supportFiles[i] << '\n';
-            --missinSegments[i];
+            --missingSegments[i];
             
             if(!origin) {
-                //TODO: close files
+                for(int i = 0; i < fileCount; ++i) {
+                    supportFiles[i]->close();
+                }
                 break;
             }
             
-            if(missinSegments[i] < missinSegments[i + 1]) {
+            if(missingSegments[i] < missingSegments[i + 1]) {
                 ++i;
             }
             
-            else if(missinSegments[i] == 0) {
-                //TODO: пересчет
+            else if(missingSegments[i] == 0) {
                 ++level;
                 firstIdealPartition = idealPartition[0];
                 i = 0;
-                for(int k = 0; k < fileCount - 2; ++k) {
-                    missinSegments[k] = idealPartition[k] - idealPartition[k + 1] + firstIdealPartition;
+                for(int k = 0; k < fileCount - 1; ++k) {
+                    missingSegments[k] = idealPartition[k + 1] - idealPartition[k] + firstIdealPartition;
                     idealPartition[k] = idealPartition[k + 1] + firstIdealPartition;
                 }
             }
@@ -105,6 +125,33 @@ void multiphaseSort(const std::string& fileName) {
     }
     
     //TODO: merge
+    for(int i = 0; i < fileCount - 1; ++i) {
+        supportFiles[i]->open(supportFileNames[i], std::ios_base::in);
+    }
+    supportFiles[fileCount - 1]->open(supportFileNames[fileCount - 1], std::ios_base::out);
+    
+    bool hasFictitiousSegment = true;
+    while(level > 0) {
+        while(idealPartition[fileCount - 2]) {
+            for(int m = 0; m < fileCount - 1; ++m) {
+                hasFictitiousSegment &= static_cast<bool>(missingSegments[m]);
+            }
+            
+            while(hasFictitiousSegment) {
+                hasFictitiousSegment = false;
+                for(int m = 0; m < fileCount - 1; ++m) {
+                    --missingSegments[m];
+                    hasFictitiousSegment &= static_cast<bool>(missingSegments[m]);
+                }
+                ++missingSegments[fileCount - 1];
+            }
+            for(int i = 0; i < fileCount; ++i) {
+                std::cout << missingSegments[i] << ( i < fileCount - 1 ? ", " : "\n");
+            }
+            std::this_thread::sleep_for(std::chrono::minutes(5));
+            
+        }
+    }
     
     for(int i = 0; i < fileCount; ++i) {
         delete supportFiles[i];
