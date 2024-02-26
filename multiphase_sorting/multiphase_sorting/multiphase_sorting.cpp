@@ -39,7 +39,7 @@ bool isFileContainsSortedArray(const std::string &fileName) {
 }
 
 
-void multiphaseSort(const std::string& fileName) {
+void multiphaseSort(const std::string& fileName) {//TODO: to class or create struct and split for functions
     const int fileCount = 4; //TODO: в аргументы
     
     std::ifstream origin(fileName);
@@ -97,6 +97,7 @@ void multiphaseSort(const std::string& fileName) {
             --missingSegments[i];
             
             if(!origin) {
+                origin.close();
                 for(int i = 0; i < fileCount; ++i) {
                     supportFiles[i]->close();
                 }
@@ -131,8 +132,10 @@ void multiphaseSort(const std::string& fileName) {
     supportFiles[fileCount - 1]->open(supportFileNames[fileCount - 1], std::ios_base::out);
     
     bool hasFictitiousSegment = true;
+    
     while(level > 0) {
-        while(idealPartition[fileCount - 2]) {
+        while(supportFiles[fileCount - 2]) {
+            
             for(int m = 0; m < fileCount - 1; ++m) {
                 hasFictitiousSegment &= static_cast<bool>(missingSegments[m]);
             }
@@ -145,12 +148,18 @@ void multiphaseSort(const std::string& fileName) {
                 }
                 ++missingSegments[fileCount - 1];
             }
-            for(int i = 0; i < fileCount; ++i) {
-                std::cout << missingSegments[i] << ( i < fileCount - 1 ? ", " : "\n");
-            }
-            std::this_thread::sleep_for(std::chrono::minutes(5));
+            
+            //TODO: MERGING
             
         }
+        
+        --level;
+        supportFiles[fileCount - 1]->close();
+        supportFiles[fileCount - 2]->close();
+        supportFiles[fileCount - 1]->open(supportFileNames[fileCount - 1], std::ios_base::in);
+        supportFiles[fileCount - 2]->open(supportFileNames[fileCount - 2], std::ios_base::out);
+        //TODO: SWAP
+        
     }
     
     for(int i = 0; i < fileCount; ++i) {
@@ -159,3 +168,5 @@ void multiphaseSort(const std::string& fileName) {
     delete [] supportFiles;
     
 }
+
+
