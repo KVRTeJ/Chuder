@@ -38,6 +38,19 @@ bool isFileContainsSortedArray(const std::string &fileName) {
     return true;
 }
 
+int findMinElementIndex(int* nums, const int size) { //TODO: to namespace or private member
+    int result = 0;
+    while(nums[result] == INT_MIN)
+        ++result;
+    if(result >= size)
+        return -1;
+    for(int i = result + 1; i < size; ++i) {
+        if(nums[result] > nums[i] && nums[i] != INT_MIN)
+            result = i;
+    }
+    
+    return result;
+}
 
 void multiphaseSort(const std::string& fileName) {//TODO: to class or create struct and split for functions
     const int fileCount = 4; //TODO: в аргументы
@@ -65,6 +78,7 @@ void multiphaseSort(const std::string& fileName) {//TODO: to class or create str
     
     int idealPartition[fileCount];
     int missingSegments[fileCount];
+    int intMinCounter = 0;
     for(int i = 0; i < fileCount - 1; ++i) {
         idealPartition[i] = missingSegments[i] = 1;
     }
@@ -84,6 +98,10 @@ void multiphaseSort(const std::string& fileName) {//TODO: to class or create str
             }
             else {
                 origin >> current;
+                /*
+                 if(current == INT_MIN)
+                    ++intMinCounter;
+                 */
                 *supportFiles[i] << current << ' ';
             }
             origin >> next;
@@ -93,7 +111,7 @@ void multiphaseSort(const std::string& fileName) {//TODO: to class or create str
                 *supportFiles[i] << current << ' ';
             }
             hasCurrent = true;
-            *supportFiles[i] << '\n';
+            *supportFiles[i] << INT_MIN << ' '; //Разделитель отрезков
             --missingSegments[i];
             
             if(!origin) {
@@ -125,7 +143,8 @@ void multiphaseSort(const std::string& fileName) {//TODO: to class or create str
         }
     }
     
-    //TODO: merge
+    //TODO: merge//////////////////////////////////////////////////////////////////
+    
     for(int i = 0; i < fileCount - 1; ++i) {
         supportFiles[i]->open(supportFileNames[i], std::ios_base::in);
     }
@@ -134,7 +153,7 @@ void multiphaseSort(const std::string& fileName) {//TODO: to class or create str
     bool hasFictitiousSegment = true;
     
     while(level > 0) {
-        while(supportFiles[fileCount - 2]) {
+        while(*supportFiles[fileCount - 2]) { //FIXME: итерируется на 1 раз больше. Скорее ввсего из-за INT_MIN
             
             for(int m = 0; m < fileCount - 1; ++m) {
                 hasFictitiousSegment &= static_cast<bool>(missingSegments[m]);
@@ -150,7 +169,34 @@ void multiphaseSort(const std::string& fileName) {//TODO: to class or create str
             }
             
             //TODO: MERGING
+            for(int i = 0; i < fileCount - 1; ++i) {
+                if(missingSegments[i]) {
+                    --missingSegments[i];
+                    idealPartition[i] = INT_MIN;
+                }
+                
+                else {
+                    if(supportFiles[i]) {
+                        *supportFiles[i] >> idealPartition[i];
+                    }
+                }
+            }
             
+            for(int minIndex = findMinElementIndex(idealPartition, fileCount - 1); minIndex != -1;
+                minIndex = findMinElementIndex(idealPartition, fileCount - 1)) {
+                *supportFiles[fileCount - 1] << idealPartition[minIndex] << ' ';
+                
+                std::cout << "min - " << idealPartition[minIndex] << std::endl;
+                std::cout << "ip - ";
+                for(int i = 0; i < fileCount - 1; ++i)
+                    std::cout << idealPartition[i] << ' ';
+                std::cout << std::endl;
+                for(int i = 0; i < fileCount - 1; ++i)
+                    outputFile(supportFileNames[i]);
+                
+                *supportFiles[minIndex] >> idealPartition[minIndex];
+            }
+            std::cout << "next iteration\n" << std::endl;
         }
         
         --level;
@@ -159,7 +205,7 @@ void multiphaseSort(const std::string& fileName) {//TODO: to class or create str
         supportFiles[fileCount - 1]->open(supportFileNames[fileCount - 1], std::ios_base::in);
         supportFiles[fileCount - 2]->open(supportFileNames[fileCount - 2], std::ios_base::out);
         //TODO: SWAP
-        
+        return;//////////////////////////////////////////////////////////////////
     }
     
     for(int i = 0; i < fileCount; ++i) {
