@@ -1,4 +1,5 @@
 #include <chrono>
+#include <assert.h>
 
 #include "multiphase_sorting.hpp"
 
@@ -8,7 +9,15 @@
  */
 
 int main() {
+    MultiphaseSort temp;
+    temp.setFileCount(4);
+    temp.setFileName("example.txt");
+    temp.sort();
+    
+    
+    return -3;
     multiphaseSort("example.txt");
+    
     return -2;
     std::string str("nums_10k_10.txt");
     

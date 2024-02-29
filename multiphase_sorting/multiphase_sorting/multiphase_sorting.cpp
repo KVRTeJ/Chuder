@@ -1,6 +1,56 @@
+#include <assert.h>
+
 #include "multiphase_sorting.hpp"
 
-void outputFile(const std::string& fileName) {
+void MultiphaseSort::setFileCount(const int value) {
+    if(value <= 2) {
+        m_fileCount = 3;
+    }
+    m_fileCount = value;
+    
+    m_supportFiles.resize(m_fileCount);
+}
+
+void MultiphaseSort::setFileName(const std::string& fileName) {
+    m_originFileName = fileName;
+}
+
+void MultiphaseSort::sort() {
+    if(!m_setSupportFileNames(m_generateSupportFileNames())) {
+        std::cerr << "MultiphaseSort::sort: error, file count must be > 2 . . ." << std::endl;
+        return;
+    }
+    
+    m_originFile.open(m_originFileName);
+    if(!m_originFile.is_open()) {
+        std::cerr << "MultiphaseSort::sort(): can't open file named: " << m_originFileName << ". . ." << std::endl;
+        return;
+    }
+   
+    for(int i = 0; i < m_fileCount - 1; ++i) {
+        m_supportFiles[i].supportFile.open(m_supportFiles[i].name, std::ios_base::out);
+        if(!m_supportFiles[i].supportFile.is_open()) {
+            std::cerr << "MultiphaseSort::sort(): can't open file named: " << m_supportFiles[i].name << ". . ." << std::endl;
+            return;
+        }
+        m_supportFiles[i].idealPartition = 1;
+        m_supportFiles[i].missingSegments = 1;
+    }
+    m_supportFiles[m_fileCount - 1].supportFile.open(m_supportFiles[m_fileCount - 1].name, std::ios_base::out);
+    if(!m_supportFiles[m_fileCount - 1].supportFile.is_open()) {
+        std::cerr << "MultiphaseSort::sort(): can't open file named: " << m_supportFiles[m_fileCount - 1].name << ". . ." << std::endl;
+        return;
+    }
+    m_supportFiles[m_fileCount - 1].idealPartition = 0;
+    m_supportFiles[m_fileCount - 1].missingSegments = 0;
+    
+    m_merge(m_split());
+    
+    
+    
+}
+
+void MultiphaseSort::outputFile(const std::string& fileName) const {
     std::ifstream origin(fileName, std::ios_base::in);
     if(!origin.is_open()) {
         std::cerr << "outputFile: can't open file named: " << fileName << ". . ." << std::endl;
@@ -16,7 +66,7 @@ void outputFile(const std::string& fileName) {
     std::cout << std::endl;
 }
 
-bool isFileContainsSortedArray(const std::string &fileName) {
+bool MultiphaseSort::isFileContainsSortedArray(const std::string &fileName) const {
     std::ifstream origin(fileName, std::ios_base::in);
     if(!origin.is_open()) {
         std::cerr << "isFileContainsSortedArray: can't open file named: " << fileName << ". . ." << std::endl;
@@ -38,7 +88,31 @@ bool isFileContainsSortedArray(const std::string &fileName) {
     return true;
 }
 
-int findMinElementIndex(int* nums, const int size) { //TODO: to namespace or private member
+std::vector<std::string> MultiphaseSort::m_generateSupportFileNames() const {
+    std::vector<std::string> fileNames(m_fileCount);
+    
+    for(int i = 0; i < m_fileCount; ++i) {
+       fileNames[i] = "supportFile_" + std::to_string(i) + ".txt";
+    }
+    
+    return fileNames;
+}
+
+bool MultiphaseSort::m_setSupportFileNames(const std::vector<std::string>& fileNames) {
+    if(m_fileCount <= 2)
+        return false;
+    if(fileNames.size() != m_fileCount)
+        return false;
+    
+    for(int i = 0; i < m_fileCount; ++i) {
+        m_supportFiles[i].name = fileNames[i];
+    }
+    
+    return true;
+}
+
+/*
+int MultiphaseSort::findMinElementIndex() { //FIXME: fixme
     int result = 0;
     while(nums[result] == INT_MIN)
         ++result;
@@ -51,6 +125,73 @@ int findMinElementIndex(int* nums, const int size) { //TODO: to namespace or pri
     
     return result;
 }
+*/
+
+int MultiphaseSort::split() { //TODO: intMinCounter
+    //FIXME: fixme
+    int level = 1;
+    {
+        int i = 0;
+        int firstIdealPartition = 0;
+        int current = 0;
+        int next = 0;
+        bool hasCurrent = false;
+        while(m_originFile) {
+            if(hasCurrent) {
+                current = next;
+                m_supportFiles[i].supportFile << current << ' ';
+            }
+            else {
+                m_originFile >> current;
+                /* //FIXME: fixme
+                 if(current == INT_MIN)
+                    ++intMinCounter;
+                 */
+                m_supportFiles[i].supportFile << current << ' ';
+            }
+            origin >> next;
+            while(origin && current < next) {
+                current = next;
+                origin >> next;
+                *supportFiles[i] << current << ' ';
+            }
+            hasCurrent = true;
+            *supportFiles[i] << INT_MIN; //Разделитель отрезков
+            --missingSegments[i];
+            
+            if(!origin) {
+                origin.close();
+                for(int i = 0; i < fileCount; ++i) {
+                    supportFiles[i]->close();
+                }
+                break;
+            }
+            
+            if(missingSegments[i] < missingSegments[i + 1]) {
+                ++i;
+            }
+            
+            else if(missingSegments[i] == 0) {
+                ++level;
+                firstIdealPartition = idealPartition[0];
+                i = 0;
+                for(int k = 0; k < fileCount - 1; ++k) {
+                    missingSegments[k] = idealPartition[k + 1] - idealPartition[k] + firstIdealPartition;
+                    idealPartition[k] = idealPartition[k + 1] + firstIdealPartition;
+                }
+            }
+            
+            else {
+                i = 0;
+            }
+            
+        }
+    }
+    
+}
+
+/*
+
 
 void multiphaseSort(const std::string& fileName) {//TODO: to class or create struct and split for functions
     const int fileCount = 4; //TODO: в аргументы
@@ -98,10 +239,10 @@ void multiphaseSort(const std::string& fileName) {//TODO: to class or create str
             }
             else {
                 origin >> current;
-                /*
+                ///
                  if(current == INT_MIN)
                     ++intMinCounter;
-                 */
+                 ///
                 *supportFiles[i] << current << ' ';
             }
             origin >> next;
@@ -111,7 +252,7 @@ void multiphaseSort(const std::string& fileName) {//TODO: to class or create str
                 *supportFiles[i] << current << ' ';
             }
             hasCurrent = true;
-            *supportFiles[i] << INT_MIN << ' '; //Разделитель отрезков
+            *supportFiles[i] << INT_MIN; //Разделитель отрезков
             --missingSegments[i];
             
             if(!origin) {
@@ -176,29 +317,31 @@ void multiphaseSort(const std::string& fileName) {//TODO: to class or create str
                 }
                 
                 else {
-                    if(supportFiles[i]) {
-                        *supportFiles[i] >> idealPartition[i];
+                    *supportFiles[i] >> idealPartition[i];
+                    if(!*supportFiles[i]) {
+                        
                     }
                 }
             }
             
             for(int minIndex = findMinElementIndex(idealPartition, fileCount - 1); minIndex != -1;
                 minIndex = findMinElementIndex(idealPartition, fileCount - 1)) {
-                *supportFiles[fileCount - 1] << idealPartition[minIndex] << ' ';
-                
+                *supportFiles[fileCount - 1] << ' ' << idealPartition[minIndex] << ' ';
+                ////
                 std::cout << "min - " << idealPartition[minIndex] << std::endl;
                 std::cout << "ip - ";
                 for(int i = 0; i < fileCount - 1; ++i)
                     std::cout << idealPartition[i] << ' ';
                 std::cout << std::endl;
-                for(int i = 0; i < fileCount - 1; ++i)
+                for(int i = 0; i < fileCount; ++i)
                     outputFile(supportFileNames[i]);
-                
+                ////
                 *supportFiles[minIndex] >> idealPartition[minIndex];
             }
-            std::cout << "next iteration\n" << std::endl;
+            *supportFiles[fileCount - 1] << INT_MIN << ' ';
+            std::cout << "end iteration\n" << std::endl;
         }
-        
+        assert(false);
         --level;
         supportFiles[fileCount - 1]->close();
         supportFiles[fileCount - 2]->close();
@@ -214,5 +357,7 @@ void multiphaseSort(const std::string& fileName) {//TODO: to class or create str
     delete [] supportFiles;
     
 }
+ 
+ */
 
 

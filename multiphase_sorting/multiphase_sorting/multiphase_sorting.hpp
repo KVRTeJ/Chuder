@@ -3,21 +3,45 @@
 
 #include <iostream>
 #include <fstream>
-#include <thread>
-#include <chrono>
-#include <assert.h>
+
+class MultiphaseSort {
+private:
+    struct File;
+public:
+    MultiphaseSort() = default;
+    
+    int getFileCount() const {return m_fileCount;};
+    void setFileCount(const int value);
+    std::string getFileName() const {return m_originFileName;};
+    void setFileName(const std::string& fileName);
+    
+    void sort();
+    void outputFile(const std::string& fileName) const;
+    bool isFileContainsSortedArray(const std::string &fileName) const;
+    
+private:
+    std::vector<std::string> m_generateSupportFileNames() const;
+    bool m_setSupportFileNames(const std::vector<std::string>& fileNames);
+    int findMinElementIndex();
+    int m_split(); //TODO: void -> int //return level && intMinCounter //TODO: intMinCounter
+    void m_merge(int level); //TODO: в разбиении считаем уровень и передаем в слияние
+    
+private:
+    std::string m_originFileName = "";
+    std::ifstream m_originFile;
+    int m_fileCount = 0;
+    std::vector<File> m_supportFiles; //std::move для r-value
+};
 
 
-void outputFile(const std::string& fileName);
 
-bool isFileContainsSortedArray(const std::string &fileName);
+struct MultiphaseSort::File {
+    std::string name = "";
+    std::fstream supportFile;
+    int idealPartition = 0;
+    int missingSegments = 0;
+};
 
-void naturalMergeSort3Files(const std::string& fileName);
 
-void multiphaseSort(const std::string& fileName);
-//для разделителя 
-//1) использовать int_max или int_min, при разбиении считать количесво int_max и в конце записать их в конец файла
-//2) использовать перенос строки .peek() на проверку /n или любого другого символа как разделителя
-//для обмена можно использоввать swap() и без 
 
 #endif /* multiphase_sorting_hpp */
