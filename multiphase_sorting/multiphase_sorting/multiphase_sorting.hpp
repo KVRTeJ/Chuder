@@ -7,6 +7,7 @@
 class MultiphaseSort {
 private:
     struct File;
+    struct Data;
 public:
     MultiphaseSort() = default;
     
@@ -23,8 +24,9 @@ private:
     std::vector<std::string> m_generateSupportFileNames() const;
     bool m_setSupportFileNames(const std::vector<std::string>& fileNames);
     int findMinElementIndex();
-    int m_split(); //TODO: void -> int //return level && intMinCounter //TODO: intMinCounter
-    void m_merge(int level); //TODO: в разбиении считаем уровень и передаем в слияние
+    Data m_split(); //TODO: void -> int //return level && intMinCounter //TODO: intMinCounter
+    bool m_peekSegmentsFromFiles();
+    void m_merge(Data data); //TODO: в разбиении считаем уровень и передаем в слияние
     
 private:
     std::string m_originFileName = "";
@@ -40,6 +42,11 @@ struct MultiphaseSort::File {
     std::fstream supportFile;
     int idealPartition = 0;
     int missingSegments = 0;
+};
+
+struct MultiphaseSort::Data {
+    int level = 0;
+    int intMinCounter = 0;
 };
 
 

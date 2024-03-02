@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <algorithm>
 
 #include "multiphase_sorting.hpp"
 
@@ -46,7 +47,9 @@ void MultiphaseSort::sort() {
     
     m_merge(m_split());
     
-    
+    for(int i = 0; i < m_fileCount; ++i) {
+        m_supportFiles[i].supportFile.close();
+    }
     
 }
 
@@ -111,25 +114,31 @@ bool MultiphaseSort::m_setSupportFileNames(const std::vector<std::string>& fileN
     return true;
 }
 
-/*
+
 int MultiphaseSort::findMinElementIndex() { //FIXME: fixme
     int result = 0;
-    while(nums[result] == INT_MIN)
+    while(m_supportFiles[result].idealPartition == INT_MIN)
         ++result;
-    if(result >= size)
+    if(result >= m_fileCount - 1)
         return -1;
-    for(int i = result + 1; i < size; ++i) {
-        if(nums[result] > nums[i] && nums[i] != INT_MIN)
+    for(int i = result + 1; i < m_fileCount - 1; ++i) {
+        if(m_supportFiles[result].idealPartition > m_supportFiles[i].idealPartition && m_supportFiles[i].idealPartition != INT_MIN)
             result = i;
     }
     
     return result;
 }
-*/
 
-int MultiphaseSort::split() { //TODO: intMinCounter
+
+MultiphaseSort::Data MultiphaseSort::m_split() { //TODO: intMinCounter
     //FIXME: fixme
-    int level = 1;
+     Data data;
+     data.level = 1;
+    data.intMinCounter = 0;
+    /*
+    есть вариант без создания структуры:
+    присваивать полям idealPartition первых двух файлов и потом считывать в m_merge, но мне кажется это уже слишком
+    */
     {
         int i = 0;
         int firstIdealPartition = 0;
@@ -149,35 +158,35 @@ int MultiphaseSort::split() { //TODO: intMinCounter
                  */
                 m_supportFiles[i].supportFile << current << ' ';
             }
-            origin >> next;
-            while(origin && current < next) {
+            m_originFile >> next;
+            while(m_originFile && current < next) {
                 current = next;
-                origin >> next;
-                *supportFiles[i] << current << ' ';
+                m_originFile >> next;
+                m_supportFiles[i].supportFile << current << ' ';
             }
             hasCurrent = true;
-            *supportFiles[i] << INT_MIN; //Разделитель отрезков
-            --missingSegments[i];
+            m_supportFiles[i].supportFile << INT_MIN << ' '; //Разделитель отрезков
+            --m_supportFiles[i].missingSegments;
             
-            if(!origin) {
-                origin.close();
-                for(int i = 0; i < fileCount; ++i) {
-                    supportFiles[i]->close();
+            if(!m_originFile) {
+                m_originFile.close();
+                for(int i = 0; i < m_fileCount; ++i) {
+                    m_supportFiles[i].supportFile.close();
                 }
                 break;
             }
             
-            if(missingSegments[i] < missingSegments[i + 1]) {
+            if(m_supportFiles[i].missingSegments < m_supportFiles[i + 1].missingSegments) {
                 ++i;
             }
             
-            else if(missingSegments[i] == 0) {
-                ++level;
-                firstIdealPartition = idealPartition[0];
+            else if(m_supportFiles[i].missingSegments == 0) {
+                ++data.level;
+                firstIdealPartition = m_supportFiles[0].idealPartition;
                 i = 0;
-                for(int k = 0; k < fileCount - 1; ++k) {
-                    missingSegments[k] = idealPartition[k + 1] - idealPartition[k] + firstIdealPartition;
-                    idealPartition[k] = idealPartition[k + 1] + firstIdealPartition;
+                for(int k = 0; k < m_fileCount - 1; ++k) {
+                    m_supportFiles[k].missingSegments = m_supportFiles[k + 1].idealPartition - m_supportFiles[k].idealPartition + firstIdealPartition;
+                    m_supportFiles[k].idealPartition = m_supportFiles[k + 1].idealPartition + firstIdealPartition;
                 }
             }
             
@@ -188,176 +197,84 @@ int MultiphaseSort::split() { //TODO: intMinCounter
         }
     }
     
+    return data;
 }
 
-/*
-
-
-void multiphaseSort(const std::string& fileName) {//TODO: to class or create struct and split for functions
-    const int fileCount = 4; //TODO: в аргументы
-    
-    std::ifstream origin(fileName);
-    
-    if(!origin.is_open()) {
-        std::cerr << "multiphaseSort: can't open file named: " << fileName << ". . ." << std::endl;
-        return;
-    }
-    
-    std::string supportFileNames[fileCount];
-    for(int i = 0; i < fileCount; ++i) {
-        supportFileNames[i] = "supportFile" + std::to_string(i) + ".txt";
-    }
-    
-    std::fstream **supportFiles = new std::fstream* [fileCount];
-    for(int i = 0; i < fileCount; ++i) {
-        supportFiles[i] = new std::fstream(supportFileNames[i], std::ios_base::out);
-        if(!supportFiles[i]->is_open()) {
-            std::cerr << "multiphaseSort: can't open file named: " << supportFileNames[i] << ". . ." << std::endl;
-            return;
+bool MultiphaseSort::m_peekSegmentsFromFiles() { //TODO: fixme fixme
+    for(int i = 0; i < m_fileCount - 1; ++i) {
+        if(m_supportFiles[i].missingSegments) {
+            if(i == (m_fileCount - 2)) {
+                m_supportFiles[i].supportFile.seekg(0, std::ios_base::beg);
+            }
+            --m_supportFiles[i].missingSegments;
+            m_supportFiles[i].idealPartition = INT_MIN;
+        }
+        
+        else {
+            if(i == (m_fileCount - 2))
+                continue;
+            m_supportFiles[i].supportFile >> m_supportFiles[i].idealPartition;
+            if(!m_supportFiles[i].supportFile) {
+                return false;
+            }
         }
     }
-    
-    int idealPartition[fileCount];
-    int missingSegments[fileCount];
-    int intMinCounter = 0;
-    for(int i = 0; i < fileCount - 1; ++i) {
-        idealPartition[i] = missingSegments[i] = 1;
+    return true;
+}
+
+void MultiphaseSort::m_merge(Data data) {
+    for(int i = 0; i < m_fileCount - 1; ++i) {
+        m_supportFiles[i].idealPartition = INT_MIN;
+        m_supportFiles[i].supportFile.close();
+        m_supportFiles[i].supportFile.open(m_supportFiles[i].name, std::ios_base::in);
     }
-    idealPartition[fileCount - 1] = missingSegments[fileCount - 1] = 0;
-    
-    int level = 1;
-    {
-        int i = 0;
-        int firstIdealPartition = 0;
-        int current = 0;
-        int next = 0;
-        bool hasCurrent = false;
-        while(origin) {
-            if(hasCurrent) {
-                current = next;
-                *supportFiles[i] << current << ' ';
-            }
-            else {
-                origin >> current;
-                ///
-                 if(current == INT_MIN)
-                    ++intMinCounter;
-                 ///
-                *supportFiles[i] << current << ' ';
-            }
-            origin >> next;
-            while(origin && current < next) {
-                current = next;
-                origin >> next;
-                *supportFiles[i] << current << ' ';
-            }
-            hasCurrent = true;
-            *supportFiles[i] << INT_MIN; //Разделитель отрезков
-            --missingSegments[i];
-            
-            if(!origin) {
-                origin.close();
-                for(int i = 0; i < fileCount; ++i) {
-                    supportFiles[i]->close();
-                }
-                break;
-            }
-            
-            if(missingSegments[i] < missingSegments[i + 1]) {
-                ++i;
-            }
-            
-            else if(missingSegments[i] == 0) {
-                ++level;
-                firstIdealPartition = idealPartition[0];
-                i = 0;
-                for(int k = 0; k < fileCount - 1; ++k) {
-                    missingSegments[k] = idealPartition[k + 1] - idealPartition[k] + firstIdealPartition;
-                    idealPartition[k] = idealPartition[k + 1] + firstIdealPartition;
-                }
-            }
-            
-            else {
-                i = 0;
-            }
-            
-        }
-    }
-    
-    //TODO: merge//////////////////////////////////////////////////////////////////
-    
-    for(int i = 0; i < fileCount - 1; ++i) {
-        supportFiles[i]->open(supportFileNames[i], std::ios_base::in);
-    }
-    supportFiles[fileCount - 1]->open(supportFileNames[fileCount - 1], std::ios_base::out);
+    m_supportFiles[m_fileCount - 1].idealPartition = INT_MIN;
+    m_supportFiles[m_fileCount - 1].supportFile.close();
+    m_supportFiles[m_fileCount - 1].supportFile.open(m_supportFiles[m_fileCount - 1].name, std::ios_base::out);
     
     bool hasFictitiousSegment = true;
-    
-    while(level > 0) {
-        while(*supportFiles[fileCount - 2]) { //FIXME: итерируется на 1 раз больше. Скорее ввсего из-за INT_MIN
+    while(data.level != 0) {
+        while(m_supportFiles[m_fileCount - 2].supportFile >> m_supportFiles[m_fileCount - 2].idealPartition) {
             
-            for(int m = 0; m < fileCount - 1; ++m) {
-                hasFictitiousSegment &= static_cast<bool>(missingSegments[m]);
+            for(int m = 0; m < m_fileCount - 1; ++m) {
+                hasFictitiousSegment &= static_cast<bool>(m_supportFiles[m].missingSegments);
             }
             
             while(hasFictitiousSegment) {
                 hasFictitiousSegment = false;
-                for(int m = 0; m < fileCount - 1; ++m) {
-                    --missingSegments[m];
-                    hasFictitiousSegment &= static_cast<bool>(missingSegments[m]);
+                for(int m = 0; m < m_fileCount - 1; ++m) {
+                    --m_supportFiles[m].missingSegments;
+                    hasFictitiousSegment &= static_cast<bool>(m_supportFiles[m].missingSegments);
                 }
-                ++missingSegments[fileCount - 1];
+                ++m_supportFiles[m_fileCount - 1].missingSegments;
             }
             
-            //TODO: MERGING
-            for(int i = 0; i < fileCount - 1; ++i) {
-                if(missingSegments[i]) {
-                    --missingSegments[i];
-                    idealPartition[i] = INT_MIN;
-                }
-                
-                else {
-                    *supportFiles[i] >> idealPartition[i];
-                    if(!*supportFiles[i]) {
-                        
-                    }
-                }
-            }
+            if(!m_peekSegmentsFromFiles())
+                break;
             
-            for(int minIndex = findMinElementIndex(idealPartition, fileCount - 1); minIndex != -1;
-                minIndex = findMinElementIndex(idealPartition, fileCount - 1)) {
-                *supportFiles[fileCount - 1] << ' ' << idealPartition[minIndex] << ' ';
-                ////
-                std::cout << "min - " << idealPartition[minIndex] << std::endl;
-                std::cout << "ip - ";
-                for(int i = 0; i < fileCount - 1; ++i)
-                    std::cout << idealPartition[i] << ' ';
-                std::cout << std::endl;
-                for(int i = 0; i < fileCount; ++i)
-                    outputFile(supportFileNames[i]);
-                ////
-                *supportFiles[minIndex] >> idealPartition[minIndex];
+            for(int minIndex = findMinElementIndex(); minIndex != -1;
+                minIndex = findMinElementIndex()) {
+                m_supportFiles[m_fileCount - 1].supportFile << m_supportFiles[minIndex].idealPartition << ' ';
+                m_supportFiles[minIndex].supportFile >> m_supportFiles[minIndex].idealPartition;
             }
-            *supportFiles[fileCount - 1] << INT_MIN << ' ';
-            std::cout << "end iteration\n" << std::endl;
+            m_supportFiles[m_fileCount - 1].supportFile << INT_MIN;
+            
+            std::cout << "end iteration" << std::endl;
         }
-        assert(false);
-        --level;
-        supportFiles[fileCount - 1]->close();
-        supportFiles[fileCount - 2]->close();
-        supportFiles[fileCount - 1]->open(supportFileNames[fileCount - 1], std::ios_base::in);
-        supportFiles[fileCount - 2]->open(supportFileNames[fileCount - 2], std::ios_base::out);
-        //TODO: SWAP
-        return;//////////////////////////////////////////////////////////////////
+        --data.level;
+        m_supportFiles[m_fileCount - 1].supportFile.close();
+        m_supportFiles[m_fileCount - 1].supportFile.open(m_supportFiles[m_fileCount - 1].name, std::ios_base::in);
+        
+        m_supportFiles[m_fileCount - 2].supportFile.close();
+        m_supportFiles[m_fileCount - 2].supportFile.open(m_supportFiles[m_fileCount - 2].name, std::ios_base::out);
+        
+        std::swap(m_supportFiles[0], m_supportFiles[m_fileCount - 1]);
+        for(int i = m_fileCount - 1; i > 1; --i) {
+            std::swap(m_supportFiles[i], m_supportFiles[i - 1]);
+        }
     }
     
-    for(int i = 0; i < fileCount; ++i) {
-        delete supportFiles[i];
-    }
-    delete [] supportFiles;
+    
+    //TODO: добавть INT_MIN - > .seekg(0, std::ios_base::beg), для перемещения указаателя в начало
     
 }
- 
- */
-
-
