@@ -201,20 +201,15 @@ MultiphaseSort::Data MultiphaseSort::m_split() { //TODO: intMinCounter
 }
 
 bool MultiphaseSort::m_peekSegmentsFromFiles() { //TODO: fixme fixme
-    for(int i = 0; i < m_fileCount - 1; ++i) {
+    for(int i = m_fileCount - 2; i >= 0; --i) {
         if(m_supportFiles[i].missingSegments) {
-            if(i == (m_fileCount - 2)) {
-                m_supportFiles[i].supportFile.seekg(0, std::ios_base::beg);
-            }
             --m_supportFiles[i].missingSegments;
             m_supportFiles[i].idealPartition = INT_MIN;
         }
         
         else {
-            if(i == (m_fileCount - 2))
-                continue;
             m_supportFiles[i].supportFile >> m_supportFiles[i].idealPartition;
-            if(!m_supportFiles[i].supportFile) {
+            if(!m_supportFiles[i].supportFile) { //FIXME: на 2 итерации 
                 return false;
             }
         }
@@ -234,7 +229,7 @@ void MultiphaseSort::m_merge(Data data) {
     
     bool hasFictitiousSegment = true;
     while(data.level != 0) {
-        while(m_supportFiles[m_fileCount - 2].supportFile >> m_supportFiles[m_fileCount - 2].idealPartition) {
+        while(m_supportFiles[m_fileCount - 2].supportFile) {
             
             for(int m = 0; m < m_fileCount - 1; ++m) {
                 hasFictitiousSegment &= static_cast<bool>(m_supportFiles[m].missingSegments);
@@ -250,7 +245,7 @@ void MultiphaseSort::m_merge(Data data) {
             }
             
             if(!m_peekSegmentsFromFiles())
-                break;
+                break; //FIXME: преждевременно выходит
             
             for(int minIndex = findMinElementIndex(); minIndex != -1;
                 minIndex = findMinElementIndex()) {
