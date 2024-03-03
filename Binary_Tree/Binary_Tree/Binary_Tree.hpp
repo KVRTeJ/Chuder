@@ -15,7 +15,7 @@ public:
     void clear();
     void clearFrom(const Node*);
     
-    bool isEmpty() const {return m_root != nullptr;};
+    bool isEmpty() const {return m_root == nullptr;};
     Node* copy(const Node* other);
     int getHeight() const;
     
