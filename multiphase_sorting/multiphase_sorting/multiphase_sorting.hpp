@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 class MultiphaseSort {
 private:
@@ -24,15 +25,15 @@ private:
     std::vector<std::string> m_generateSupportFileNames() const;
     bool m_setSupportFileNames(const std::vector<std::string>& fileNames);
     int findMinElementIndex();
-    Data m_split(); //TODO: void -> int //return level && intMinCounter //TODO: intMinCounter
+    Data m_split(Data& data);
     bool m_peekSegmentsFromFiles();
-    void m_merge(Data data); //TODO: в разбиении считаем уровень и передаем в слияние
+    void m_merge(Data& data);
     
 private:
     std::string m_originFileName = "";
     std::ifstream m_originFile;
     int m_fileCount = 0;
-    std::vector<File> m_supportFiles; //std::move для r-value
+    std::vector<File> m_supportFiles;
 };
 
 

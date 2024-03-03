@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <algorithm>
+#include <cstdio>
 
 #include "multiphase_sorting.hpp"
 
@@ -45,11 +46,18 @@ void MultiphaseSort::sort() {
     m_supportFiles[m_fileCount - 1].idealPartition = 0;
     m_supportFiles[m_fileCount - 1].missingSegments = 0;
     
-    m_merge(m_split());
+    Data data;
+    data.level = 1;
+    data.intMinCounter = 0;
     
-    for(int i = 0; i < m_fileCount; ++i) {
+    m_split(data);
+    m_merge(data);
+    
+    for(int i = 0; i < m_fileCount - 1; ++i) {
         m_supportFiles[i].supportFile.close();
+        remove(m_supportFiles[i].name.data());
     }
+    m_supportFiles[m_fileCount - 1].supportFile.close();
     
 }
 
@@ -115,7 +123,7 @@ bool MultiphaseSort::m_setSupportFileNames(const std::vector<std::string>& fileN
 }
 
 
-int MultiphaseSort::findMinElementIndex() { //FIXME: fixme
+int MultiphaseSort::findMinElementIndex() {
     int result = 0;
     while(m_supportFiles[result].idealPartition == INT_MIN)
         ++result;
@@ -129,17 +137,22 @@ int MultiphaseSort::findMinElementIndex() { //FIXME: fixme
     return result;
 }
 
-
-MultiphaseSort::Data MultiphaseSort::m_split() { //TODO: intMinCounter
-    //FIXME: fixme
-     Data data;
-     data.level = 1;
-    data.intMinCounter = 0;
+MultiphaseSort::Data MultiphaseSort::m_split(Data& data) {
     /*
     есть вариант без создания структуры:
     присваивать полям idealPartition первых двух файлов и потом считывать в m_merge, но мне кажется это уже слишком
     */
     {
+        auto processingIntMin {
+            [this](Data& data, int& buffer){
+                if(buffer == INT_MIN) {
+                    ++data.intMinCounter;
+                    if(m_originFile)
+                        m_originFile >> buffer;
+                }
+            }
+        };
+        
         int i = 0;
         int firstIdealPartition = 0;
         int current = 0;
@@ -152,20 +165,19 @@ MultiphaseSort::Data MultiphaseSort::m_split() { //TODO: intMinCounter
             }
             else {
                 m_originFile >> current;
-                /* //FIXME: fixme
-                 if(current == INT_MIN)
-                    ++intMinCounter;
-                 */
+                processingIntMin(data, current);
                 m_supportFiles[i].supportFile << current << ' ';
             }
             m_originFile >> next;
+            processingIntMin(data, next);
             while(m_originFile && current < next) {
                 current = next;
                 m_originFile >> next;
+                processingIntMin(data, next);
                 m_supportFiles[i].supportFile << current << ' ';
             }
             hasCurrent = true;
-            m_supportFiles[i].supportFile << INT_MIN << ' '; //Разделитель отрезков
+            m_supportFiles[i].supportFile << INT_MIN << ' ';
             --m_supportFiles[i].missingSegments;
             
             if(!m_originFile) {
@@ -200,7 +212,7 @@ MultiphaseSort::Data MultiphaseSort::m_split() { //TODO: intMinCounter
     return data;
 }
 
-bool MultiphaseSort::m_peekSegmentsFromFiles() { //TODO: fixme fixme
+bool MultiphaseSort::m_peekSegmentsFromFiles() {
     for(int i = m_fileCount - 2; i >= 0; --i) {
         if(m_supportFiles[i].missingSegments) {
             --m_supportFiles[i].missingSegments;
@@ -209,7 +221,7 @@ bool MultiphaseSort::m_peekSegmentsFromFiles() { //TODO: fixme fixme
         
         else {
             m_supportFiles[i].supportFile >> m_supportFiles[i].idealPartition;
-            if(!m_supportFiles[i].supportFile) { //FIXME: на 2 итерации 
+            if(!m_supportFiles[i].supportFile) {
                 return false;
             }
         }
@@ -217,7 +229,7 @@ bool MultiphaseSort::m_peekSegmentsFromFiles() { //TODO: fixme fixme
     return true;
 }
 
-void MultiphaseSort::m_merge(Data data) {
+void MultiphaseSort::m_merge(Data& data) {
     for(int i = 0; i < m_fileCount - 1; ++i) {
         m_supportFiles[i].idealPartition = INT_MIN;
         m_supportFiles[i].supportFile.close();
@@ -245,7 +257,7 @@ void MultiphaseSort::m_merge(Data data) {
             }
             
             if(!m_peekSegmentsFromFiles())
-                break; //FIXME: преждевременно выходит
+                break;
             
             for(int minIndex = findMinElementIndex(); minIndex != -1;
                 minIndex = findMinElementIndex()) {
@@ -269,7 +281,14 @@ void MultiphaseSort::m_merge(Data data) {
         }
     }
     
+    while(data.intMinCounter != 0) {
+        m_supportFiles[m_fileCount - 1].supportFile << INT_MIN << ' ';
+        --data.intMinCounter;
+    }
     
-    //TODO: добавть INT_MIN - > .seekg(0, std::ios_base::beg), для перемещения указаателя в начало
+    while(m_supportFiles[0].supportFile >> m_supportFiles[0].idealPartition) {
+        if(m_supportFiles[0].idealPartition != INT_MIN)
+            m_supportFiles[m_fileCount - 1].supportFile << m_supportFiles[0].idealPartition << ' ';
+    }
     
 }
