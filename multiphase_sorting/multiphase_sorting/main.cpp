@@ -11,8 +11,9 @@
 int main() {
     MultiphaseSort temp;
     temp.setFileCount(4);
-    temp.setFileName("example.txt");
+    temp.setFileName("nums_100k_10.txt");
     temp.sort();
+    assert(temp.isFileContainsSortedArray("result.txt"));
     
     
     return 0;

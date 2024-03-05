@@ -23,6 +23,7 @@ public:
     
 private:
     std::vector<std::string> m_generateSupportFileNames() const;
+    void m_allocateFileType();
     bool m_setSupportFileNames(const std::vector<std::string>& fileNames);
     int findMinElementIndex();
     Data m_split(Data& data);
@@ -40,7 +41,7 @@ private:
 
 struct MultiphaseSort::File {
     std::string name = "";
-    std::fstream supportFile;
+    std::fstream *supportFile;
     int idealPartition = 0;
     int missingSegments = 0;
 };

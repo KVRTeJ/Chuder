@@ -18,6 +18,8 @@ void MultiphaseSort::setFileName(const std::string& fileName) {
 }
 
 void MultiphaseSort::sort() {
+    m_allocateFileType();
+    
     if(!m_setSupportFileNames(m_generateSupportFileNames())) {
         std::cerr << "MultiphaseSort::sort: error, file count must be > 2 . . ." << std::endl;
         return;
@@ -30,16 +32,16 @@ void MultiphaseSort::sort() {
     }
    
     for(int i = 0; i < m_fileCount - 1; ++i) {
-        m_supportFiles[i].supportFile.open(m_supportFiles[i].name, std::ios_base::out);
-        if(!m_supportFiles[i].supportFile.is_open()) {
+        m_supportFiles[i].supportFile->open(m_supportFiles[i].name, std::ios_base::out);
+        if(!m_supportFiles[i].supportFile->is_open()) {
             std::cerr << "MultiphaseSort::sort(): can't open file named: " << m_supportFiles[i].name << ". . ." << std::endl;
             return;
         }
         m_supportFiles[i].idealPartition = 1;
         m_supportFiles[i].missingSegments = 1;
     }
-    m_supportFiles[m_fileCount - 1].supportFile.open(m_supportFiles[m_fileCount - 1].name, std::ios_base::out);
-    if(!m_supportFiles[m_fileCount - 1].supportFile.is_open()) {
+    m_supportFiles[m_fileCount - 1].supportFile->open(m_supportFiles[m_fileCount - 1].name, std::ios_base::out);
+    if(!m_supportFiles[m_fileCount - 1].supportFile->is_open()) {
         std::cerr << "MultiphaseSort::sort(): can't open file named: " << m_supportFiles[m_fileCount - 1].name << ". . ." << std::endl;
         return;
     }
@@ -54,10 +56,11 @@ void MultiphaseSort::sort() {
     m_merge(data);
     
     for(int i = 0; i < m_fileCount - 1; ++i) {
-        m_supportFiles[i].supportFile.close();
+        m_supportFiles[i].supportFile->close();
         remove(m_supportFiles[i].name.data());
     }
-    m_supportFiles[m_fileCount - 1].supportFile.close();
+    m_supportFiles[m_fileCount - 1].supportFile->close();
+    std::rename(m_supportFiles[m_fileCount - 1].name.data(), "result.txt");
     
 }
 
@@ -88,8 +91,7 @@ bool MultiphaseSort::isFileContainsSortedArray(const std::string &fileName) cons
     
     while(origin >> current) {
         origin >> next;
-        std::cout << "cur - " << current << " next - " << next << std::endl;
-        if(next > current){
+        if(next < current){
             origin.close();
             return false;
         }
@@ -107,6 +109,11 @@ std::vector<std::string> MultiphaseSort::m_generateSupportFileNames() const {
     }
     
     return fileNames;
+}
+
+void MultiphaseSort::m_allocateFileType() {
+    for(auto it = m_supportFiles.begin(); it != m_supportFiles.end(); ++it)
+        it->supportFile = new std::fstream;
 }
 
 bool MultiphaseSort::m_setSupportFileNames(const std::vector<std::string>& fileNames) {
@@ -161,12 +168,12 @@ MultiphaseSort::Data MultiphaseSort::m_split(Data& data) {
         while(m_originFile) {
             if(hasCurrent) {
                 current = next;
-                m_supportFiles[i].supportFile << current << ' ';
+                *(m_supportFiles[i].supportFile) << current << ' ';
             }
             else {
                 m_originFile >> current;
                 processingIntMin(data, current);
-                m_supportFiles[i].supportFile << current << ' ';
+                *(m_supportFiles[i].supportFile) << current << ' ';
             }
             m_originFile >> next;
             processingIntMin(data, next);
@@ -174,16 +181,16 @@ MultiphaseSort::Data MultiphaseSort::m_split(Data& data) {
                 current = next;
                 m_originFile >> next;
                 processingIntMin(data, next);
-                m_supportFiles[i].supportFile << current << ' ';
+                *(m_supportFiles[i].supportFile) << current << ' ';
             }
             hasCurrent = true;
-            m_supportFiles[i].supportFile << INT_MIN << ' ';
+            *(m_supportFiles[i].supportFile) << INT_MIN << ' ';
             --m_supportFiles[i].missingSegments;
             
             if(!m_originFile) {
                 m_originFile.close();
                 for(int i = 0; i < m_fileCount; ++i) {
-                    m_supportFiles[i].supportFile.close();
+                    m_supportFiles[i].supportFile->close();
                 }
                 break;
             }
@@ -220,8 +227,8 @@ bool MultiphaseSort::m_peekSegmentsFromFiles() {
         }
         
         else {
-            m_supportFiles[i].supportFile >> m_supportFiles[i].idealPartition;
-            if(!m_supportFiles[i].supportFile) {
+            *(m_supportFiles[i].supportFile) >> m_supportFiles[i].idealPartition;
+            if(!(*m_supportFiles[i].supportFile)) {
                 return false;
             }
         }
@@ -232,16 +239,16 @@ bool MultiphaseSort::m_peekSegmentsFromFiles() {
 void MultiphaseSort::m_merge(Data& data) {
     for(int i = 0; i < m_fileCount - 1; ++i) {
         m_supportFiles[i].idealPartition = INT_MIN;
-        m_supportFiles[i].supportFile.close();
-        m_supportFiles[i].supportFile.open(m_supportFiles[i].name, std::ios_base::in);
+        m_supportFiles[i].supportFile->close();
+        m_supportFiles[i].supportFile->open(m_supportFiles[i].name, std::ios_base::in);
     }
     m_supportFiles[m_fileCount - 1].idealPartition = INT_MIN;
-    m_supportFiles[m_fileCount - 1].supportFile.close();
-    m_supportFiles[m_fileCount - 1].supportFile.open(m_supportFiles[m_fileCount - 1].name, std::ios_base::out);
+    m_supportFiles[m_fileCount - 1].supportFile->close();
+    m_supportFiles[m_fileCount - 1].supportFile->open(m_supportFiles[m_fileCount - 1].name, std::ios_base::out);
     
     bool hasFictitiousSegment = true;
     while(data.level != 0) {
-        while(m_supportFiles[m_fileCount - 2].supportFile) {
+        while((*m_supportFiles[m_fileCount - 2].supportFile)) {
             
             for(int m = 0; m < m_fileCount - 1; ++m) {
                 hasFictitiousSegment &= static_cast<bool>(m_supportFiles[m].missingSegments);
@@ -261,19 +268,17 @@ void MultiphaseSort::m_merge(Data& data) {
             
             for(int minIndex = findMinElementIndex(); minIndex != -1;
                 minIndex = findMinElementIndex()) {
-                m_supportFiles[m_fileCount - 1].supportFile << m_supportFiles[minIndex].idealPartition << ' ';
-                m_supportFiles[minIndex].supportFile >> m_supportFiles[minIndex].idealPartition;
+                *(m_supportFiles[m_fileCount - 1].supportFile) << m_supportFiles[minIndex].idealPartition << ' ';
+                *(m_supportFiles[minIndex].supportFile) >> m_supportFiles[minIndex].idealPartition;
             }
-            m_supportFiles[m_fileCount - 1].supportFile << INT_MIN;
-            
-            std::cout << "end iteration" << std::endl;
+            *(m_supportFiles[m_fileCount - 1].supportFile) << INT_MIN << ' ';
         }
         --data.level;
-        m_supportFiles[m_fileCount - 1].supportFile.close();
-        m_supportFiles[m_fileCount - 1].supportFile.open(m_supportFiles[m_fileCount - 1].name, std::ios_base::in);
+        m_supportFiles[m_fileCount - 1].supportFile->close();
+        m_supportFiles[m_fileCount - 1].supportFile->open(m_supportFiles[m_fileCount - 1].name, std::ios_base::in);
         
-        m_supportFiles[m_fileCount - 2].supportFile.close();
-        m_supportFiles[m_fileCount - 2].supportFile.open(m_supportFiles[m_fileCount - 2].name, std::ios_base::out);
+        m_supportFiles[m_fileCount - 2].supportFile->close();
+        m_supportFiles[m_fileCount - 2].supportFile->open(m_supportFiles[m_fileCount - 2].name, std::ios_base::out);
         
         std::swap(m_supportFiles[0], m_supportFiles[m_fileCount - 1]);
         for(int i = m_fileCount - 1; i > 1; --i) {
@@ -282,13 +287,13 @@ void MultiphaseSort::m_merge(Data& data) {
     }
     
     while(data.intMinCounter != 0) {
-        m_supportFiles[m_fileCount - 1].supportFile << INT_MIN << ' ';
+        *(m_supportFiles[m_fileCount - 1].supportFile) << INT_MIN << ' ';
         --data.intMinCounter;
     }
     
-    while(m_supportFiles[0].supportFile >> m_supportFiles[0].idealPartition) {
+    while(*(m_supportFiles[0].supportFile) >> m_supportFiles[0].idealPartition) {
         if(m_supportFiles[0].idealPartition != INT_MIN)
-            m_supportFiles[m_fileCount - 1].supportFile << m_supportFiles[0].idealPartition << ' ';
+            *(m_supportFiles[m_fileCount - 1].supportFile) << m_supportFiles[0].idealPartition << ' ';
     }
     
 }
