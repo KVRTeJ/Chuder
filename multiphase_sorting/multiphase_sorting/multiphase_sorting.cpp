@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <algorithm>
 #include <cstdio>
 
@@ -6,6 +5,7 @@
 
 void MultiphaseSort::setFileCount(const int value) {
     if(value <= 2) {
+        std::cerr << "MultiphaseSort::setFileCount: file count must be > 2. File count = 3. . . " << std::endl;
         m_fileCount = 3;
     }
     m_fileCount = value;
@@ -62,6 +62,7 @@ void MultiphaseSort::sort() {
     m_supportFiles[m_fileCount - 1].supportFile->close();
     std::rename(m_supportFiles[m_fileCount - 1].name.data(), "result.txt");
     
+    m_deAllocateFileType();
 }
 
 void MultiphaseSort::outputFile(const std::string& fileName) const {
@@ -116,6 +117,12 @@ void MultiphaseSort::m_allocateFileType() {
         it->supportFile = new std::fstream;
 }
 
+void MultiphaseSort::m_deAllocateFileType() {
+    for(auto it = m_supportFiles.begin(); it != m_supportFiles.end(); ++it) {
+        delete it->supportFile;
+    }
+}
+
 bool MultiphaseSort::m_setSupportFileNames(const std::vector<std::string>& fileNames) {
     if(m_fileCount <= 2)
         return false;
@@ -145,10 +152,6 @@ int MultiphaseSort::findMinElementIndex() {
 }
 
 MultiphaseSort::Data MultiphaseSort::m_split(Data& data) {
-    /*
-    есть вариант без создания структуры:
-    присваивать полям idealPartition первых двух файлов и потом считывать в m_merge, но мне кажется это уже слишком
-    */
     {
         auto processingIntMin {
             [this](Data& data, int& buffer){

@@ -11,6 +11,7 @@ private:
     struct Data;
 public:
     MultiphaseSort() = default;
+    ~MultiphaseSort() = default;
     
     int getFileCount() const {return m_fileCount;};
     void setFileCount(const int value);
@@ -24,6 +25,7 @@ public:
 private:
     std::vector<std::string> m_generateSupportFileNames() const;
     void m_allocateFileType();
+    void m_deAllocateFileType();
     bool m_setSupportFileNames(const std::vector<std::string>& fileNames);
     int findMinElementIndex();
     Data m_split(Data& data);
@@ -50,7 +52,5 @@ struct MultiphaseSort::Data {
     int level = 0;
     int intMinCounter = 0;
 };
-
-
 
 #endif /* multiphase_sorting_hpp */
