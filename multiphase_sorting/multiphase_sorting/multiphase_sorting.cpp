@@ -65,7 +65,7 @@ void MultiphaseSort::sort() {
     m_deAllocateFileType();
 }
 
-void MultiphaseSort::outputFile(const std::string& fileName) const {
+void MultiphaseSort::outputFile(const std::string& fileName) {
     std::ifstream origin(fileName, std::ios_base::in);
     if(!origin.is_open()) {
         std::cerr << "outputFile: can't open file named: " << fileName << ". . ." << std::endl;
@@ -81,7 +81,7 @@ void MultiphaseSort::outputFile(const std::string& fileName) const {
     std::cout << std::endl;
 }
 
-bool MultiphaseSort::isFileContainsSortedArray(const std::string &fileName) const {
+bool MultiphaseSort::isFileContainsSortedArray(const std::string &fileName) {
     std::ifstream origin(fileName, std::ios_base::in);
     if(!origin.is_open()) {
         std::cerr << "isFileContainsSortedArray: can't open file named: " << fileName << ". . ." << std::endl;
@@ -120,6 +120,7 @@ void MultiphaseSort::m_allocateFileType() {
 void MultiphaseSort::m_deAllocateFileType() {
     for(auto it = m_supportFiles.begin(); it != m_supportFiles.end(); ++it) {
         delete it->supportFile;
+        it->supportFile = nullptr;
     }
 }
 

@@ -19,8 +19,8 @@ public:
     void setFileName(const std::string& fileName);
     
     void sort();
-    void outputFile(const std::string& fileName) const;
-    bool isFileContainsSortedArray(const std::string &fileName) const;
+    static void outputFile(const std::string& fileName);
+    static bool isFileContainsSortedArray(const std::string &fileName);
     
 private:
     std::vector<std::string> m_generateSupportFileNames() const;
@@ -43,7 +43,7 @@ private:
 
 struct MultiphaseSort::File {
     std::string name = "";
-    std::fstream *supportFile;
+    std::fstream *supportFile = nullptr;
     int idealPartition = 0;
     int missingSegments = 0;
 };
