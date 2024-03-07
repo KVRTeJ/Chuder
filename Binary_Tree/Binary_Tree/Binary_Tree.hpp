@@ -25,7 +25,7 @@ public:
     bool isEmpty() const {return m_root == nullptr;};//TODO: todo
     bool isBalance() const;//TODO: todo
     
-    void add(Node* root, const int value);//TODO: todo
+    void add(const int value);//TODO: todo
     void remove(const int value);//TODO: todo
     BinaryTree copy(const Node* other);//TODO: todo
     Node* find(const int key) const;//TODO: todo
@@ -35,6 +35,8 @@ public:
     void printSheets() const;//TODO: todo
     
     BinaryTree& operator = (const BinaryTree& other);//TODO: todo
+private:
+    void add(Node* root, const int value);//TODO: todo
     
 private:
     Node* m_root = nullptr;
@@ -46,7 +48,7 @@ class BinaryTree::Node {
 public:
     Node(const int key = 0, Node* left = nullptr, Node* right = nullptr);//TODO: todo
     int getKey() const {return m_key;}
-    void setKey(const int key);//TODO: todo
+    void setKey(const int key) {m_key = key;};
     Node* left() const {return m_left;};
     Node* right() const {return m_right;};
     
@@ -59,6 +61,5 @@ private:
     Node* m_left = nullptr;
     Node* m_right = nullptr;
 };
-
 
 #endif /* Binary_Tree_hpp */
