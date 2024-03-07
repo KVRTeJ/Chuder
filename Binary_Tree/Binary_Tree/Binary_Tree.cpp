@@ -1,6 +1,6 @@
 #include "Binary_Tree.hpp"
 
-BinaryTree::BinaryTree(const int key) {
+BinaryTree::BinaryTree() {
     std::cout << "Hello! I'm Binary Tree!" << std::endl;
 }
 
