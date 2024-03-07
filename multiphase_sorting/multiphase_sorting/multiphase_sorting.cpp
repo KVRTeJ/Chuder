@@ -7,8 +7,9 @@ void MultiphaseSort::setFileCount(const int value) {
     if(value <= 2) {
         std::cerr << "MultiphaseSort::setFileCount: file count must be > 2. File count = 3. . . " << std::endl;
         m_fileCount = 3;
+    } else {
+        m_fileCount = value;
     }
-    m_fileCount = value;
     
     m_supportFiles.resize(m_fileCount);
 }
