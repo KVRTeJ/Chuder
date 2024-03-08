@@ -4,7 +4,6 @@
 
 int main() {
     BinaryTree foo;
-    //foo.add(foo.getRoot(), 1);
     
     return 0;
 }

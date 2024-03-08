@@ -36,7 +36,7 @@ public:
     
     BinaryTree& operator = (const BinaryTree& other);//TODO: todo
 private:
-    void add(Node* root, const int value);//TODO: todo
+    Node* add(Node* root, const int value);//TODO: todo
     
 private:
     Node* m_root = nullptr;
@@ -46,7 +46,9 @@ private:
 class BinaryTree::Node {
     friend BinaryTree;
 public:
-    Node(const int key = 0, Node* left = nullptr, Node* right = nullptr);//TODO: todo
+    Node(const int key = 0, Node* left = nullptr, Node* right = nullptr)
+    : m_key(key), m_left(left), m_right(right)
+    {}
     int getKey() const {return m_key;}
     void setKey(const int key) {m_key = key;};
     Node* left() const {return m_left;};
