@@ -8,12 +8,10 @@ class BinaryTree {
 public:
     class Node;
 public:
-    BinaryTree(const int value = 0, const int count = 0) {
-        
-        for(int i = 0; i < value; ++i) {
-            this->add(value);
+    BinaryTree(const int key = 0, const int count = 0) {
+        for(int i = 0; i < key; ++i) {
+            this->add(key);
         }
-        
     }
     BinaryTree(const BinaryTree& other);//TODO: todo
     ~BinaryTree() = default;//TODO: todo
@@ -28,18 +26,19 @@ public:
     void clear();//TODO: todo
     void clearFrom(const Node*);//TODO: todo
     
-    bool isEmpty() const {return m_root == nullptr;}
-    bool isBalance() const;//TODO: todo
+    bool empty() const {return m_root == nullptr;}
+    bool balance() const;//TODO: todo
+    bool contains(const int key) const {return find(key) != nullptr;}
     
-    void add(const int value);
-    void remove(const int value);//TODO: todo
+    void add(const int key);
+    bool remove(const int key);//TODO: todo
     BinaryTree copy(const Node* other);//TODO: todo
     /// NLR - processing
     Node* find(Node* start, const int key) const;
     /// BFS - priccessing
     Node* find(const int key) const;
     
-    /// BFS - priccessing
+    /// BFS - proccessing
     std::vector<int> toVector() const;
     std::vector<int> toVectorNlr() const;
     

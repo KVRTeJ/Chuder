@@ -15,6 +15,15 @@ int main() {
     for(auto it = vFoo.begin(); it != vFoo.end(); ++it) {
         std::cout << *it << (it + 1 == vFoo.end() ? "":", ");
     }
-    std::cout << '}';
+    std::cout << '}' << std::endl;
+    BinaryTree::Node* temp = foo.find(3);
+    foo.remove(4);
+    foo.printHorizontal(foo.root());
+    vFoo = foo.toVector();
+    std::cout << '{';
+    for(auto it = vFoo.begin(); it != vFoo.end(); ++it) {
+        std::cout << *it << (it + 1 == vFoo.end() ? "":", ");
+    }
+    std::cout << '}' << std::endl;
     return 0;
 }
