@@ -34,16 +34,21 @@ public:
     void add(const int value);
     void remove(const int value);//TODO: todo
     BinaryTree copy(const Node* other);//TODO: todo
-    Node* find(const int key) const;//TODO: todo
+    /// NLR - processing
+    Node* find(Node* start, const int key) const;
+    /// BFS - priccessing
+    Node* find(const int key) const;
     
+    /// BFS - priccessing
     std::vector<int> toVector() const;
+    std::vector<int> toVectorNlr() const;
     
     void printLeafs(Node* root) const;
     void printHorizontal(Node *root, int marginLeft = 2, int levelSpacing = 4) const;
     
     BinaryTree& operator = (const BinaryTree& other);//TODO: todo
 private:
-    void toVector(Node* root, std::vector<int>& nums) const;
+    void toVectorNlr(Node* root, std::vector<int>& nums) const;
     
     Node* add(Node* root, const int value);
     
@@ -59,7 +64,7 @@ public:
     : m_key(key), m_left(left), m_right(right)
     {}
     
-    int key() const {return m_key;}
+    int key() const {return (this ? m_key : 0);}
     Node* left() const {return m_left;}
     Node* right() const {return m_right;}
     

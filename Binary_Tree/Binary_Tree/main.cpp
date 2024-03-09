@@ -8,7 +8,8 @@ int main() {
         foo.add(i);
     }
     foo.printHorizontal(foo.root());
-    foo.printLeafs(foo.root());
+    //foo.printLeafs(foo.root());
+    std::cout << foo.find(1)->key() << std::endl;
     auto vFoo = foo.toVector();
     std::cout << '{';
     for(auto it = vFoo.begin(); it != vFoo.end(); ++it) {
