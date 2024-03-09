@@ -8,35 +8,44 @@ class BinaryTree {
 public:
     class Node;
 public:
-    BinaryTree();//TODO: todo
+    BinaryTree(const int value = 0, const int count = 0) {
+        
+        for(int i = 0; i < value; ++i) {
+            this->add(value);
+        }
+        
+    }
     BinaryTree(const BinaryTree& other);//TODO: todo
-    ~BinaryTree();//TODO: todo
+    ~BinaryTree() = default;//TODO: todo
     
     int height() const;//TODO: todo
     int nodeCount() const;//TODO: todo
     int max() const;//TODO: todo
     int min() const;//TODO: todo
     int level(const int key) const;//TODO: todo
-    Node* root() const {return m_root;};
+    Node* root() const {return m_root;}
     
     void clear();//TODO: todo
     void clearFrom(const Node*);//TODO: todo
     
-    bool isEmpty() const {return m_root == nullptr;};//TODO: todo
+    bool isEmpty() const {return m_root == nullptr;}
     bool isBalance() const;//TODO: todo
     
-    void add(const int value);//TODO: todo
+    void add(const int value);
     void remove(const int value);//TODO: todo
     BinaryTree copy(const Node* other);//TODO: todo
     Node* find(const int key) const;//TODO: todo
     
-    std::vector<int> toVector() const;//TODO: todo
+    std::vector<int> toVector() const;
     
-    void printSheets() const;//TODO: todo
+    void printLeafs(Node* root) const;
+    void printHorizontal(Node *root, int marginLeft = 2, int levelSpacing = 4) const;
     
     BinaryTree& operator = (const BinaryTree& other);//TODO: todo
 private:
-    Node* add(Node* root, const int value);//TODO: todo
+    void toVector(Node* root, std::vector<int>& nums) const;
+    
+    Node* add(Node* root, const int value);
     
 private:
     Node* m_root = nullptr;
@@ -44,15 +53,17 @@ private:
 };
 
 class BinaryTree::Node {
-    friend BinaryTree;
+    friend class BinaryTree;
 public:
     Node(const int key = 0, Node* left = nullptr, Node* right = nullptr)
     : m_key(key), m_left(left), m_right(right)
     {}
-    int getKey() const {return m_key;}
-    void setKey(const int key) {m_key = key;};
-    Node* left() const {return m_left;};
-    Node* right() const {return m_right;};
+    
+    int key() const {return m_key;}
+    Node* left() const {return m_left;}
+    Node* right() const {return m_right;}
+    
+    void setKey(const int key) {m_key = key;}
     
 private:
     void setLeft(Node* other) {m_left = other;}
