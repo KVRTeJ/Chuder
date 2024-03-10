@@ -8,8 +8,8 @@ class BinaryTree {
 public:
     class Node;
 public:
-    BinaryTree();
-    BinaryTree(const BinaryTree& other);
+    BinaryTree() = default;
+    BinaryTree(const BinaryTree& other); //FIXME: copy()
     ~BinaryTree() {clear();}
     
     int height() const;//TODO: todo
@@ -27,8 +27,9 @@ public:
     bool contains(const int key) const {return find(key) != nullptr;}
     
     void add(const int key);
-    bool remove(const int key);
-    BinaryTree copy(const Node* other);//TODO: todo
+    BinaryTree copy(Node* other) const;
+    bool remove(const int key) {return remove(find(key));}
+    bool remove(Node* node);
     /// NLR - processing
     Node* find(Node* start, const int key) const;
     /// BFS - priccessing
@@ -42,7 +43,7 @@ public:
     void printLeafs(Node* root) const;
     void printHorizontal(Node *root, int marginLeft = 2, int levelSpacing = 4) const;
     
-    BinaryTree& operator = (const BinaryTree& other);
+    BinaryTree& operator = (const BinaryTree& other); //FIXME: copy()
 private:
     void toVectorNlr(Node* root, std::vector<int>& nums) const;
     void getLeafs(Node* root, std::vector<Node* >& leafs) const;

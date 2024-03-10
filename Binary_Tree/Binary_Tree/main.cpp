@@ -16,24 +16,16 @@ int main() {
     }
     std::cout << '}' << std::endl;
     
-    //foo.remove(9);
-    
-    BinaryTree foo1;
-    foo1.printHorizontal(foo1.root());
-    foo1 = foo;
-    foo.clear();
-    foo1.printHorizontal(foo1.root());
-    
-    return -1;
-    vFoo = foo.toVector();
+    foo.remove(9);
+    BinaryTree foo1 = foo;
+    foo.printHorizontal(foo1.root());
+    //foo.printLeafs(foo.root());
+    auto vFoo1 = foo1.toVector();
     std::cout << '{';
-    for(auto it = vFoo.begin(); it != vFoo.end(); ++it) {
-        std::cout << *it << (it + 1 == vFoo.end() ? "":", ");
+    for(auto it = vFoo1.begin(); it != vFoo1.end(); ++it) {
+        std::cout << *it << (it + 1 == vFoo1.end() ? "":", ");
     }
     std::cout << '}' << std::endl;
     
-    
-    std::cout << "leafs - ";
-    foo.printLeafs(foo.root());
     return 0;
 }

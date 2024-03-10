@@ -15,38 +15,7 @@ struct Data {
 }
 
 BinaryTree::BinaryTree(const BinaryTree& other) {
-    if(!other.m_root) {
-        m_root = nullptr;
-        return;
-    }
-        
-    m_root = new Node(other.m_root->key());
-    
-    std::list<Node*> unprocessedNodes;
-    std::list<Node*> unprocessedNodesThis;
-    unprocessedNodes.push_back(other.m_root);
-    unprocessedNodesThis.push_back(m_root);
-    Node* current = nullptr;
-    Node* currentThis = nullptr;
-    while(!unprocessedNodes.empty()) {
-        current = unprocessedNodes.front();
-        unprocessedNodes.pop_front();
-        
-        currentThis = unprocessedNodesThis.front();
-        unprocessedNodesThis.pop_front();
-
-        if(current->left()) {
-            currentThis->setLeft(new Node(current->left()->key()));
-            unprocessedNodes.push_back(current->left());
-            unprocessedNodesThis.push_back(currentThis->left());
-        }
-        if(current->right()) {
-            currentThis->setRight(new Node(current->right()->key()));
-            unprocessedNodes.push_back(current->right());
-            unprocessedNodesThis.push_back(currentThis->right());
-        }
-    }
-
+    m_root = copy(other.m_root).m_root;
 }
 
 void BinaryTree::clear() {
@@ -64,11 +33,12 @@ void BinaryTree::clearFrom(Node* root) {
     std::vector<Node* > leafs = getLeafs(root);
     while(leafs[0] != root) {
         for(auto it = leafs.begin(); it != leafs.end(); ++it) {
-            remove((*it)->key());
+            remove(*it);
         }
         leafs = getLeafs(root);
     }
 }
+
 
 void BinaryTree::add(const int key) {
     
@@ -80,10 +50,10 @@ void BinaryTree::add(const int key) {
     
 }
 
-bool BinaryTree::remove(const int key) {
+bool BinaryTree::remove(Node* node) {
     Data data = {};
     
-    data.target = find(key);
+    data.target = node;
     if(!data.target) {
         return false;
     }
@@ -134,6 +104,42 @@ bool BinaryTree::remove(const int key) {
     }
     
     return true;
+}
+
+BinaryTree BinaryTree::copy(Node* other) const {
+    if(!other) {
+        return {};
+    }
+        
+    BinaryTree newTree;
+    newTree.m_root = new Node(other->key());
+    
+    std::list<Node*> unprocessedNodes;
+    std::list<Node*> unprocessedNodesThis;
+    unprocessedNodes.push_back(other);
+    unprocessedNodesThis.push_back(newTree.m_root);
+    Node* current = nullptr;
+    Node* currentThis = nullptr;
+    while(!unprocessedNodes.empty()) {
+        current = unprocessedNodes.front();
+        unprocessedNodes.pop_front();
+        
+        currentThis = unprocessedNodesThis.front();
+        unprocessedNodesThis.pop_front();
+
+        if(current->left()) {
+            currentThis->setLeft(new Node(current->left()->key()));
+            unprocessedNodes.push_back(current->left());
+            unprocessedNodesThis.push_back(currentThis->left());
+        }
+        if(current->right()) {
+            currentThis->setRight(new Node(current->right()->key()));
+            unprocessedNodes.push_back(current->right());
+            unprocessedNodesThis.push_back(currentThis->right());
+        }
+    }
+    
+    return newTree;
 }
 
 BinaryTree::Node* BinaryTree::find(Node* root, const int key) const {
@@ -242,47 +248,18 @@ void BinaryTree::printHorizontal(Node *root, int marginLeft, int levelSpacing) c
     printHorizontal(root->left(), marginLeft + levelSpacing, levelSpacing);
 }
 
+
 BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
     
     if(m_root != other.m_root) {
         clear();
         
-        if(!other.m_root) {
-            m_root = nullptr;
-            return *this;
-        }
-            
-        m_root = new Node(other.m_root->key());
-        
-        std::list<Node*> unprocessedNodes;
-        std::list<Node*> unprocessedNodesThis;
-        unprocessedNodes.push_back(other.m_root);
-        unprocessedNodesThis.push_back(m_root);
-        Node* current = nullptr;
-        Node* currentThis = nullptr;
-        while(!unprocessedNodes.empty()) {
-            current = unprocessedNodes.front();
-            unprocessedNodes.pop_front();
-            
-            currentThis = unprocessedNodesThis.front();
-            unprocessedNodesThis.pop_front();
-
-            if(current->left()) {
-                currentThis->setLeft(new Node(current->left()->key()));
-                unprocessedNodes.push_back(current->left());
-                unprocessedNodesThis.push_back(currentThis->left());
-            }
-            if(current->right()) {
-                currentThis->setRight(new Node(current->right()->key()));
-                unprocessedNodes.push_back(current->right());
-                unprocessedNodesThis.push_back(currentThis->right());
-            }
-        }
-        
+        m_root = copy(other.m_root).m_root;
     }
     
         return *this;
 }
+
 
 /* private */
 
