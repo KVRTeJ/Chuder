@@ -16,8 +16,7 @@ int main() {
         std::cout << *it << (it + 1 == vFoo.end() ? "":", ");
     }
     std::cout << '}' << std::endl;
-    BinaryTree::Node* temp = foo.find(3);
-    foo.remove(4);
+    foo.remove(9);
     foo.printHorizontal(foo.root());
     vFoo = foo.toVector();
     std::cout << '{';

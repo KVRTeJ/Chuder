@@ -5,40 +5,12 @@
 #include "Binary_Tree.hpp"
 
 namespace {
-struct Data {
-    BinaryTree::Node* targetNode = nullptr;
-    BinaryTree::Node* nodeParent = nullptr;
-};
 
-void findNodeAndParent(Data& data, const int key) {
-    std::stack<BinaryTree::Node*> unprocessedNodes;
-    unprocessedNodes.push(data.nodeParent);
-    
-    while(!unprocessedNodes.empty()) {
-        data.nodeParent = unprocessedNodes.top();
-        unprocessedNodes.pop();
-        
-        if(data.nodeParent->key() == key) {
-            break;
-        }
-        
-        if(data.nodeParent->left()) {
-            if(data.nodeParent->left()->key() == key) {
-                data.targetNode = data.nodeParent->left();
-                break;
-            }
-            unprocessedNodes.push(data.nodeParent->left());
-        }
-        if(data.nodeParent->right()) {
-            if(data.nodeParent->right()->key() == key) {
-                data.targetNode = data.nodeParent->right();
-                break;
-            }
-            unprocessedNodes.push(data.nodeParent->right());
-        }
-    }
-    
-}
+struct Data {
+    BinaryTree::Node* target = nullptr;
+    BinaryTree::Node* nodeParent = nullptr;
+    BinaryTree::Node* replacementNode = nullptr;
+};
 
 }
 
@@ -54,62 +26,50 @@ void BinaryTree::add(const int key) {
 
 bool BinaryTree::remove(const int key) {
     Data data = {};
-    data.nodeParent = m_root;
     
-    findNodeAndParent(data, key);
-    
-    //Узла со значением key нет
-    if(data.targetNode->key() != key) {
+    data.target = find(key);
+    if(!data.target) {
         return false;
     }
     
-    //Первая итерация не дошла до конца, искомый узел - корень
-    Node* replacementNode = nullptr;
-    if(!data.targetNode) {
+    data.nodeParent = findParent(m_root, data.target);
+    
+    auto deleteChild {
+        [this](Data& data) {
+            if(data.nodeParent->left() == data.target) {
+                data.nodeParent->setLeft(nullptr);
+                delete data.target;
+                if(data.replacementNode)
+                    data.nodeParent->setLeft(data.replacementNode);
+            } else {
+                data.nodeParent->setRight(nullptr);
+                delete data.target;
+                if(data.replacementNode)
+                    data.nodeParent->setRight(data.replacementNode);
+            }
+        }
+    };
+    
+    //Родитель и есть ребенок - это корень
+    if(data.nodeParent == data.target) {
         //TODO: удаление корня
     } else {
         //Нет потомков - лист
-        if(data.targetNode->left() == nullptr && data.targetNode->right() == nullptr) {
-            if(data.nodeParent->left() == data.targetNode) {
-                data.nodeParent->setLeft(nullptr);
-                delete data.targetNode;
-            } else {
-                data.nodeParent->setRight(nullptr);
-                delete data.targetNode;
-            }
-        } else if(!data.targetNode->left()) {
-            replacementNode = data.targetNode->right();
-            //TODO: убрать копипасту
-            //////////////
-            if(data.nodeParent->left() == data.targetNode) {
-                data.nodeParent->setLeft(nullptr);
-                delete data.targetNode;
-                data.nodeParent->setLeft(replacementNode);
-            } else {
-                data.nodeParent->setRight(nullptr);
-                delete data.targetNode;
-                data.nodeParent->setRight(replacementNode);
-            }
-            //////////////
-
-        } else if(!data.targetNode->right()) {
-            replacementNode = data.targetNode->left();
-            
-            //////////////
-            if(data.nodeParent->left() == data.targetNode) {
-                data.nodeParent->setLeft(nullptr);
-                delete data.targetNode;
-                data.nodeParent->setLeft(replacementNode);
-            } else {
-                data.nodeParent->setRight(nullptr);
-                delete data.targetNode;
-                data.nodeParent->setRight(replacementNode);
-            }
-            //////////////
-            
+        if(data.target->left() == nullptr && data.target->right() == nullptr) {
+            deleteChild(data);
+        } else if(!data.target->left()) {
+            data.replacementNode = data.target->right();
+            deleteChild(data);
+        } else if(!data.target->right()) {
+            data.replacementNode = data.target->left();
+            deleteChild(data);
         } else {
-            Data replacementNode = {};
-            
+            //TODO: оба потомка
+            //FIXME: fix findParent
+            data.replacementNode = findParent(data.target, nullptr);
+            data.replacementNode->setLeft(data.target->left());
+            data.replacementNode->setRight(data.target->right());
+            deleteChild(data);
         }
     }
     
@@ -239,5 +199,37 @@ BinaryTree::Node* BinaryTree::add(Node* root, const int value) {
     }
 
     return root;
+}
+
+BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
+    if(!root) {
+        return nullptr;
+    }
+    
+    std::stack<BinaryTree::Node*> unprocessedNodes;
+    unprocessedNodes.push(root);
+    Node* parent = nullptr;
+    while(!unprocessedNodes.empty()) {
+        parent = unprocessedNodes.top();
+        unprocessedNodes.pop();
+        
+        if(parent == child) {
+            return parent;
+        }
+        
+        if(parent->left() == child) {
+            return parent;
+        } else if (parent->left()) {
+            unprocessedNodes.push(parent->left());
+        }
+        
+        if(parent->right() == child) {
+            return parent;
+        } else if(parent->right()) {
+            unprocessedNodes.push(parent->right());
+        }
+    }
+    
+    return nullptr;
 }
 

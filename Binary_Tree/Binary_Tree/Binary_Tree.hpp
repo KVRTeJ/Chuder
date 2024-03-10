@@ -51,6 +51,8 @@ private:
     
     Node* add(Node* root, const int value);
     
+    Node* findParent(Node* root, Node* child);
+    
 private:
     Node* m_root = nullptr;
     
