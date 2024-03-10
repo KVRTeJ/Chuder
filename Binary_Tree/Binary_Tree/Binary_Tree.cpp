@@ -14,6 +14,62 @@ struct Data {
 
 }
 
+BinaryTree::BinaryTree(const BinaryTree& other) {
+    if(!other.m_root) {
+        m_root = nullptr;
+        return;
+    }
+        
+    m_root = new Node(other.m_root->key());
+    
+    std::list<Node*> unprocessedNodes;
+    std::list<Node*> unprocessedNodesThis;
+    unprocessedNodes.push_back(other.m_root);
+    unprocessedNodesThis.push_back(m_root);
+    Node* current = nullptr;
+    Node* currentThis = nullptr;
+    while(!unprocessedNodes.empty()) {
+        current = unprocessedNodes.front();
+        unprocessedNodes.pop_front();
+        
+        currentThis = unprocessedNodesThis.front();
+        unprocessedNodesThis.pop_front();
+
+        if(current->left()) {
+            currentThis->setLeft(new Node(current->left()->key()));
+            unprocessedNodes.push_back(current->left());
+            unprocessedNodesThis.push_back(currentThis->left());
+        }
+        if(current->right()) {
+            currentThis->setRight(new Node(current->right()->key()));
+            unprocessedNodes.push_back(current->right());
+            unprocessedNodesThis.push_back(currentThis->right());
+        }
+    }
+
+}
+
+void BinaryTree::clear() {
+    clearFrom(m_root);
+    
+    delete m_root;
+    m_root = nullptr;
+}
+
+void BinaryTree::clearFrom(Node* root) {
+    if(!root) {
+        return;
+    }
+    
+    std::vector<Node* > leafs = getLeafs(root);
+    while(leafs[0] != root) {
+        for(auto it = leafs.begin(); it != leafs.end(); ++it) {
+            remove((*it)->key());
+        }
+        leafs = getLeafs(root);
+    }
+}
+
 void BinaryTree::add(const int key) {
     
     if(m_root) {
@@ -50,32 +106,34 @@ bool BinaryTree::remove(const int key) {
         }
     };
     
-    //Родитель и есть ребенок - это корень
     if(data.nodeParent == data.target) {
-        //TODO: удаление корня
+        clear();
     } else {
-        //Нет потомков - лист
         if(data.target->left() == nullptr && data.target->right() == nullptr) {
             deleteChild(data);
+            
         } else if(!data.target->left()) {
             data.replacementNode = data.target->right();
             deleteChild(data);
         } else if(!data.target->right()) {
             data.replacementNode = data.target->left();
             deleteChild(data);
+            
         } else {
-            //TODO: оба потомка
-            //FIXME: fix findParent
             data.replacementNode = findParent(data.target, nullptr);
+            Node* leafParent = findParent(data.target, data.replacementNode);
+            if(leafParent->left() == data.replacementNode) {
+                leafParent->setLeft(nullptr);
+            } else {
+                leafParent->setRight(nullptr);
+            }
             data.replacementNode->setLeft(data.target->left());
             data.replacementNode->setRight(data.target->right());
             deleteChild(data);
         }
     }
     
-    
-    
-    return false;
+    return true;
 }
 
 BinaryTree::Node* BinaryTree::find(Node* root, const int key) const {
@@ -151,17 +209,26 @@ std::vector<int> BinaryTree::toVectorNlr() const {
     return result;
 }
 
-void BinaryTree::printLeafs(Node* root) const {
-    
+std::vector<BinaryTree::Node* > BinaryTree::getLeafs(Node* root) const {
     if(!root) {
-        return;
-    } else if(!root->left() && !root->right()) {
-        std::cout << root->key() << std::endl;
-    } else {
-        printLeafs(root->left());
-        printLeafs(root->right());
+        return {};
     }
     
+    std::vector<Node* > leafs;
+    
+    getLeafs(root, leafs);
+    
+    return leafs;
+}
+
+void BinaryTree::printLeafs(Node* root) const {
+    std::vector<Node* > leafs = getLeafs(root);
+    
+    std::cout << '{';
+    for(auto it = leafs.begin(); it != leafs.end(); ++it) {
+        std::cout << (*it)->key() << ((it + 1) == leafs.end() ? "":", ");
+    }
+    std::cout << '}' << std::endl;
 }
 
 void BinaryTree::printHorizontal(Node *root, int marginLeft, int levelSpacing) const {
@@ -175,6 +242,48 @@ void BinaryTree::printHorizontal(Node *root, int marginLeft, int levelSpacing) c
     printHorizontal(root->left(), marginLeft + levelSpacing, levelSpacing);
 }
 
+BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
+    
+    if(m_root != other.m_root) {
+        clear();
+        
+        if(!other.m_root) {
+            m_root = nullptr;
+            return *this;
+        }
+            
+        m_root = new Node(other.m_root->key());
+        
+        std::list<Node*> unprocessedNodes;
+        std::list<Node*> unprocessedNodesThis;
+        unprocessedNodes.push_back(other.m_root);
+        unprocessedNodesThis.push_back(m_root);
+        Node* current = nullptr;
+        Node* currentThis = nullptr;
+        while(!unprocessedNodes.empty()) {
+            current = unprocessedNodes.front();
+            unprocessedNodes.pop_front();
+            
+            currentThis = unprocessedNodesThis.front();
+            unprocessedNodesThis.pop_front();
+
+            if(current->left()) {
+                currentThis->setLeft(new Node(current->left()->key()));
+                unprocessedNodes.push_back(current->left());
+                unprocessedNodesThis.push_back(currentThis->left());
+            }
+            if(current->right()) {
+                currentThis->setRight(new Node(current->right()->key()));
+                unprocessedNodes.push_back(current->right());
+                unprocessedNodesThis.push_back(currentThis->right());
+            }
+        }
+        
+    }
+    
+        return *this;
+}
+
 /* private */
 
 void BinaryTree::toVectorNlr(Node* root, std::vector<int>& nums) const {
@@ -186,6 +295,17 @@ void BinaryTree::toVectorNlr(Node* root, std::vector<int>& nums) const {
     nums.push_back(root->key());
     toVectorNlr(root->left(), nums);
     toVectorNlr(root->right(), nums);
+}
+
+void BinaryTree::getLeafs(Node* root, std::vector<Node* >& leafs) const {
+    if(!root) {
+        return;
+    } else if(!root->left() && !root->right()) {
+        leafs.push_back(root);
+    } else {
+        getLeafs(root->left(), leafs);
+        getLeafs(root->right(), leafs);
+    }
 }
 
 BinaryTree::Node* BinaryTree::add(Node* root, const int value) {
@@ -218,7 +338,8 @@ BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
         }
         
         if(parent->left() == child) {
-            return parent;
+            if(child)
+                return parent;
         } else if (parent->left()) {
             unprocessedNodes.push(parent->left());
         }

@@ -8,13 +8,9 @@ class BinaryTree {
 public:
     class Node;
 public:
-    BinaryTree(const int key = 0, const int count = 0) {
-        for(int i = 0; i < key; ++i) {
-            this->add(key);
-        }
-    }
-    BinaryTree(const BinaryTree& other);//TODO: todo
-    ~BinaryTree() = default;//TODO: todo
+    BinaryTree();
+    BinaryTree(const BinaryTree& other);
+    ~BinaryTree() {clear();}
     
     int height() const;//TODO: todo
     int nodeCount() const;//TODO: todo
@@ -23,15 +19,15 @@ public:
     int level(const int key) const;//TODO: todo
     Node* root() const {return m_root;}
     
-    void clear();//TODO: todo
-    void clearFrom(const Node*);//TODO: todo
+    void clear();
+    void clearFrom(Node* root);
     
     bool empty() const {return m_root == nullptr;}
     bool balance() const;//TODO: todo
     bool contains(const int key) const {return find(key) != nullptr;}
     
     void add(const int key);
-    bool remove(const int key);//TODO: todo
+    bool remove(const int key);
     BinaryTree copy(const Node* other);//TODO: todo
     /// NLR - processing
     Node* find(Node* start, const int key) const;
@@ -41,16 +37,17 @@ public:
     /// BFS - proccessing
     std::vector<int> toVector() const;
     std::vector<int> toVectorNlr() const;
+    std::vector<Node* > getLeafs(Node* root) const;
     
     void printLeafs(Node* root) const;
     void printHorizontal(Node *root, int marginLeft = 2, int levelSpacing = 4) const;
     
-    BinaryTree& operator = (const BinaryTree& other);//TODO: todo
+    BinaryTree& operator = (const BinaryTree& other);
 private:
     void toVectorNlr(Node* root, std::vector<int>& nums) const;
-    
+    void getLeafs(Node* root, std::vector<Node* >& leafs) const;
     Node* add(Node* root, const int value);
-    
+    ///if child == nullptr -> return leaf
     Node* findParent(Node* root, Node* child);
     
 private:

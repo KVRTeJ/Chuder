@@ -9,20 +9,31 @@ int main() {
     }
     foo.printHorizontal(foo.root());
     //foo.printLeafs(foo.root());
-    std::cout << foo.find(1)->key() << std::endl;
     auto vFoo = foo.toVector();
     std::cout << '{';
     for(auto it = vFoo.begin(); it != vFoo.end(); ++it) {
         std::cout << *it << (it + 1 == vFoo.end() ? "":", ");
     }
     std::cout << '}' << std::endl;
-    foo.remove(9);
-    foo.printHorizontal(foo.root());
+    
+    //foo.remove(9);
+    
+    BinaryTree foo1;
+    foo1.printHorizontal(foo1.root());
+    foo1 = foo;
+    foo.clear();
+    foo1.printHorizontal(foo1.root());
+    
+    return -1;
     vFoo = foo.toVector();
     std::cout << '{';
     for(auto it = vFoo.begin(); it != vFoo.end(); ++it) {
         std::cout << *it << (it + 1 == vFoo.end() ? "":", ");
     }
     std::cout << '}' << std::endl;
+    
+    
+    std::cout << "leafs - ";
+    foo.printLeafs(foo.root());
     return 0;
 }
