@@ -6,12 +6,11 @@
 
 namespace {
 struct Data {
-    BinaryTree::Node* replacementNode = nullptr;
     BinaryTree::Node* targetNode = nullptr;
     BinaryTree::Node* nodeParent = nullptr;
 };
 
-void findNodeAndFillData(Data& data, const int key) {
+void findNodeAndParent(Data& data, const int key) {
     std::stack<BinaryTree::Node*> unprocessedNodes;
     unprocessedNodes.push(data.nodeParent);
     
@@ -53,10 +52,11 @@ void BinaryTree::add(const int key) {
     
 }
 
-bool BinaryTree::remove(const int key) { //FIXME: key = 5
+bool BinaryTree::remove(const int key) {
     Data data = {};
     data.nodeParent = m_root;
-    findNodeAndFillData(data, key);
+    
+    findNodeAndParent(data, key);
     
     //Узла со значением key нет
     if(data.targetNode->key() != key) {
@@ -64,6 +64,7 @@ bool BinaryTree::remove(const int key) { //FIXME: key = 5
     }
     
     //Первая итерация не дошла до конца, искомый узел - корень
+    Node* replacementNode = nullptr;
     if(!data.targetNode) {
         //TODO: удаление корня
     } else {
@@ -77,37 +78,38 @@ bool BinaryTree::remove(const int key) { //FIXME: key = 5
                 delete data.targetNode;
             }
         } else if(!data.targetNode->left()) {
-            data.replacementNode = data.targetNode->right();
+            replacementNode = data.targetNode->right();
             //TODO: убрать копипасту
             //////////////
             if(data.nodeParent->left() == data.targetNode) {
                 data.nodeParent->setLeft(nullptr);
                 delete data.targetNode;
-                data.nodeParent->setLeft(data.replacementNode);
+                data.nodeParent->setLeft(replacementNode);
             } else {
                 data.nodeParent->setRight(nullptr);
                 delete data.targetNode;
-                data.nodeParent->setRight(data.replacementNode);
+                data.nodeParent->setRight(replacementNode);
             }
             //////////////
 
         } else if(!data.targetNode->right()) {
-            data.replacementNode = data.targetNode->left();
+            replacementNode = data.targetNode->left();
             
             //////////////
             if(data.nodeParent->left() == data.targetNode) {
                 data.nodeParent->setLeft(nullptr);
                 delete data.targetNode;
-                data.nodeParent->setLeft(data.replacementNode);
+                data.nodeParent->setLeft(replacementNode);
             } else {
                 data.nodeParent->setRight(nullptr);
                 delete data.targetNode;
-                data.nodeParent->setRight(data.replacementNode);
+                data.nodeParent->setRight(replacementNode);
             }
             //////////////
             
         } else {
-            //TODO: есть оба потомка
+            Data replacementNode = {};
+            
         }
     }
     
