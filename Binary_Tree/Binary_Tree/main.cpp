@@ -1,11 +1,17 @@
 #include <iostream>
+#include <assert.h>
 
 #include "Binary_Tree.hpp"
 
 int main() {
     BinaryTree foo;
-    for(int i = 1; i < 10; ++i) {
-        foo.add(i);
+    {
+        int newNum = int();
+        for(int i = 1; i < 100; ++i) {
+            newNum = rand() % 100;
+            if(!foo.contains(newNum))
+                foo.add(newNum);
+        }
     }
     foo.printHorizontal(foo.root());
     //foo.printLeafs(foo.root());
@@ -16,16 +22,29 @@ int main() {
     }
     std::cout << '}' << std::endl;
     
-    foo.remove(9);
-    BinaryTree foo1 = foo;
-    foo.printHorizontal(foo1.root());
-    //foo.printLeafs(foo.root());
-    auto vFoo1 = foo1.toVector();
-    std::cout << '{';
-    for(auto it = vFoo1.begin(); it != vFoo1.end(); ++it) {
-        std::cout << *it << (it + 1 == vFoo1.end() ? "":", ");
+    auto boo(foo);
+    
+    while(!foo.empty()) {
+        std::cout << "max - " << foo.max() << std::endl;
+        std::cout << "min - " << foo.min() << std::endl;
+        std::cout << "height - " << foo.height() << std::endl;
+        std::cout << "node count - " << foo.nodeCount(foo.root()) << std::endl;
+        BinaryTree::Node* num = foo.find(1);
+        std::cout << "level of " << num << " is - " << foo.level(foo.root(), num) << std::endl;
+        std::cout << "removed - " << foo.find(foo.max())->key() << std::endl;
+        std::cout << std::endl;
+        
+        auto max = foo.max();
+        auto temp = foo.find(max);
+        foo.remove(temp);
+        assert(!foo.find(temp->key()));
     }
-    std::cout << '}' << std::endl;
+    
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
     
     return 0;
 }

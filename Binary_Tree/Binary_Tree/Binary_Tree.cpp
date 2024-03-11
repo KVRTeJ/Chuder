@@ -1,21 +1,23 @@
 #include <list>
 #include <stack>
 #include <random>
+#include <algorithm>
 
 #include "Binary_Tree.hpp"
 
 namespace {
-
-struct Data {
-    BinaryTree::Node* target = nullptr;
-    BinaryTree::Node* nodeParent = nullptr;
-    BinaryTree::Node* replacementNode = nullptr;
-};
-
+    
+    struct Data {
+        BinaryTree::Node* target = nullptr;
+        BinaryTree::Node* nodeParent = nullptr;
+        BinaryTree::Node* replacementNode = nullptr;
+    };
+    
 }
 
 BinaryTree::BinaryTree(const BinaryTree& other) {
-    m_root = copy(other.m_root).m_root;
+    auto temp = copy(other.m_root);
+    std::swap(m_root, temp.m_root);
 }
 
 void BinaryTree::clear() {
@@ -23,6 +25,109 @@ void BinaryTree::clear() {
     
     delete m_root;
     m_root = nullptr;
+}
+
+int BinaryTree::nodeCount(Node* root) const {
+    if(!root) {
+        return {};
+    }
+    
+    int result = 0;
+    
+    std::stack<Node* > unprocessedNodes;
+    unprocessedNodes.push(root);
+    
+    Node* current = nullptr;
+    while(!unprocessedNodes.empty()) {
+        current = unprocessedNodes.top();
+        unprocessedNodes.pop();
+        
+        result++;
+        
+        if(current->left()) {
+            unprocessedNodes.push(current->left());
+        }
+        if(current->right()) {
+            unprocessedNodes.push(current->right());
+        }
+        
+    }
+    
+    return result;
+}
+
+int BinaryTree::max() const {
+    if(!m_root) {
+        return {};
+    }
+    
+    int buffer = m_root->key();
+    compareBinaryTreeGreater(m_root, buffer);
+    
+    return buffer;
+}
+
+int BinaryTree::min() const {
+    if(!m_root) {
+        return {};
+    }
+    
+    int buffer = m_root->key();
+    compareBinaryTreeLess(m_root, buffer);
+    
+    return buffer;
+}
+
+int BinaryTree::height() const {
+    return height(m_root);
+}
+
+int BinaryTree::height(Node* root, int currentHeight, int maxHeight) const {
+    if(!root) {
+        return maxHeight;
+    }
+    
+    ++currentHeight;
+    
+    if(currentHeight > maxHeight) {
+        maxHeight = currentHeight;
+    }
+    
+    int leftSubTree = height(root->left(), currentHeight, maxHeight);
+    int rightSubTree = height(root->right(), currentHeight, maxHeight);
+    
+    return std::max(leftSubTree, rightSubTree);
+};
+
+int BinaryTree::level(const int key) const {
+    
+    Node* target = find(key);
+    if(!target) {
+        return -1;
+    }
+    
+    return level(m_root, target);
+    
+}
+
+int BinaryTree::level(Node* root, Node* target, int currentLevel) const {
+    if(!root) {
+        return -1;
+    }
+    
+    ++currentLevel;
+    
+    if(root == target) {
+        return currentLevel;
+    }
+    
+    int leftSubTree = level(root->left(), target, currentLevel);
+    if(leftSubTree == -1) {
+        int rightSubTree = level(root->right(), target, currentLevel);
+        return rightSubTree;
+    }
+    
+    return leftSubTree;
 }
 
 void BinaryTree::clearFrom(Node* root) {
@@ -39,6 +144,23 @@ void BinaryTree::clearFrom(Node* root) {
     }
 }
 
+bool BinaryTree::balance() const {
+    return balance(m_root);
+}
+
+bool BinaryTree::balance(Node* root) const {
+    if(!root) {
+        return true;
+    }
+    
+    int leftSubTreeHeight = height(root->left());
+    int rightSubTreeHeight = height(root->right());
+    
+    int heightDifference = leftSubTreeHeight - rightSubTreeHeight;
+    bool isBalance = !heightDifference || heightDifference == 1 || heightDifference == -1;
+    
+    return isBalance && balance(root->left()) && balance(root->right());
+}
 
 void BinaryTree::add(const int key) {
     
@@ -106,17 +228,17 @@ bool BinaryTree::remove(Node* node) {
     return true;
 }
 
-BinaryTree BinaryTree::copy(Node* other) const {
-    if(!other) {
+BinaryTree BinaryTree::copy(Node* root) const {
+    if(!root) {
         return {};
     }
         
     BinaryTree newTree;
-    newTree.m_root = new Node(other->key());
+    newTree.m_root = new Node(root->key());
     
     std::list<Node*> unprocessedNodes;
     std::list<Node*> unprocessedNodesThis;
-    unprocessedNodes.push_back(other);
+    unprocessedNodes.push_back(root);
     unprocessedNodesThis.push_back(newTree.m_root);
     Node* current = nullptr;
     Node* currentThis = nullptr;
@@ -184,10 +306,6 @@ BinaryTree::Node* BinaryTree::find(const int key) const {
 }
 
 std::vector<int> BinaryTree::toVector() const {
-    if(!m_root) {
-        return {};
-    }
-    
     std::vector<int> result;
     
     std::list<Node*> unprocessedNodes(1, m_root);
@@ -195,10 +313,13 @@ std::vector<int> BinaryTree::toVector() const {
     while(!unprocessedNodes.empty()) {
         current = unprocessedNodes.front();
         unprocessedNodes.pop_front();
+        
         result.push_back(current->key());
+        
         if(current->left()) {
             unprocessedNodes.push_back(current->left());
         }
+        
         if(current->right()) {
             unprocessedNodes.push_back(current->right());
         }
@@ -254,7 +375,8 @@ BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
     if(m_root != other.m_root) {
         clear();
         
-        m_root = copy(other.m_root).m_root;
+        auto temp = copy(other.m_root);
+        std::swap(m_root, temp.m_root);
     }
     
         return *this;
@@ -331,3 +453,28 @@ BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
     return nullptr;
 }
 
+void BinaryTree::compareBinaryTreeGreater(Node* root, int& buffer) const {
+    if(!root) {
+        return;
+    }
+    
+    if(root->key() > buffer) {
+        buffer = root->key();
+    }
+    
+    compareBinaryTreeGreater(root->left(), buffer);
+    compareBinaryTreeGreater(root->right(), buffer);
+}
+
+void BinaryTree::compareBinaryTreeLess(Node* root, int& buffer) const {
+    if(!root) {
+        return;
+    }
+    
+    if(root->key() < buffer) {
+        buffer = root->key();
+    }
+    
+    compareBinaryTreeLess(root->left(), buffer);
+    compareBinaryTreeLess(root->right(), buffer);
+}
