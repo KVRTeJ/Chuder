@@ -1,4 +1,3 @@
-#include <list>
 #include <stack>
 #include <random>
 #include <algorithm>
@@ -128,6 +127,47 @@ int BinaryTree::level(Node* root, Node* target, int currentLevel) const {
     }
     
     return leftSubTree;
+}
+
+std::list<BinaryTree::Node*> BinaryTree::levelNodes(const int level) const {
+    if(level < 1) {
+        return {};
+    }
+    
+    std::list<Node*> parents(1, m_root);
+    std::list<Node*> childs = {};
+    
+    Node* currentNode = nullptr;
+    for(int i = 1; i < level; ++i) {
+        while(!parents.empty()) {
+            currentNode = parents.front();
+            parents.pop_front();
+            
+            if(currentNode->left()) {
+                childs.push_back(currentNode->left());
+            }
+            if(currentNode->right()) {
+                childs.push_back(currentNode->right());
+            }
+        }
+        
+        parents = childs;
+        childs.clear();
+    }
+    
+    return parents;
+}
+
+int BinaryTree::maxLevel() const {
+    if(!m_root) {
+        return 0;
+    }
+    
+    int result = 1;
+    
+    for(auto l = levelNodes(result); !l.empty(); ++result, l = levelNodes(result));
+    
+    return result - 1;
 }
 
 void BinaryTree::clearFrom(Node* root) {
@@ -264,19 +304,6 @@ BinaryTree BinaryTree::copy(Node* root) const {
     return newTree;
 }
 
-BinaryTree::Node* BinaryTree::find(Node* root, const int key) const {
-    if(!root || root->key() == key) {
-        return root;
-    }
-    
-    Node* subTreeFindResult = find(root->left(), key);
-    if(!subTreeFindResult) {
-        subTreeFindResult = find(root->right(), key);
-    }
-    
-    return subTreeFindResult;
-}
-
 BinaryTree::Node* BinaryTree::find(const int key) const {
     if(!m_root) {
         return m_root;
@@ -299,6 +326,53 @@ BinaryTree::Node* BinaryTree::find(const int key) const {
         }
         if(result->right()) {
             unprocessedNodes.push(result->right());
+        }
+    }
+    
+    return nullptr;
+}
+
+
+BinaryTree::Node* BinaryTree::find(Node* root, Node* target) const {
+    if(!root || root == target) {
+        return root;
+    }
+    
+    Node* subTreeFindResult = find(root->left(), target);
+    if(!subTreeFindResult) {
+        subTreeFindResult = find(root->right(), target);
+    }
+    
+    return subTreeFindResult;
+}
+
+BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
+    if(!root) {
+        return nullptr;
+    }
+    
+    std::stack<BinaryTree::Node*> unprocessedNodes;
+    unprocessedNodes.push(root);
+    Node* parent = nullptr;
+    while(!unprocessedNodes.empty()) {
+        parent = unprocessedNodes.top();
+        unprocessedNodes.pop();
+        
+        if(parent == child) {
+            return parent;
+        }
+        
+        if(parent->left() == child) {
+            if(child)
+                return parent;
+        } else if (parent->left()) {
+            unprocessedNodes.push(parent->left());
+        }
+        
+        if(parent->right() == child) {
+            return parent;
+        } else if(parent->right()) {
+            unprocessedNodes.push(parent->right());
         }
     }
     
@@ -420,39 +494,6 @@ BinaryTree::Node* BinaryTree::add(Node* root, const int value) {
     return root;
 }
 
-BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
-    if(!root) {
-        return nullptr;
-    }
-    
-    std::stack<BinaryTree::Node*> unprocessedNodes;
-    unprocessedNodes.push(root);
-    Node* parent = nullptr;
-    while(!unprocessedNodes.empty()) {
-        parent = unprocessedNodes.top();
-        unprocessedNodes.pop();
-        
-        if(parent == child) {
-            return parent;
-        }
-        
-        if(parent->left() == child) {
-            if(child)
-                return parent;
-        } else if (parent->left()) {
-            unprocessedNodes.push(parent->left());
-        }
-        
-        if(parent->right() == child) {
-            return parent;
-        } else if(parent->right()) {
-            unprocessedNodes.push(parent->right());
-        }
-    }
-    
-    return nullptr;
-}
-
 void BinaryTree::compareBinaryTreeGreater(Node* root, int& buffer) const {
     if(!root) {
         return;
@@ -477,4 +518,65 @@ void BinaryTree::compareBinaryTreeLess(Node* root, int& buffer) const {
     
     compareBinaryTreeLess(root->left(), buffer);
     compareBinaryTreeLess(root->right(), buffer);
+}
+
+/* Iterator */
+
+template<typename IterType, typename TreeType>
+BinaryTree::TemplateIterator<IterType, TreeType>& BinaryTree::TemplateIterator<IterType, TreeType>::operator ++ () {
+    
+    if(m_iter == m_levelNodes.end() - 1) {
+        ++m_level;
+        m_levelNodes = m_tree.levelNodes(m_level);
+        if(m_levelNodes.empty()) {
+            m_iter = m_levelNodes.begin();
+        } else {
+            m_iter = nullptr;
+        }
+    } else {
+        ++m_iter;
+    }
+    
+    return *this;
+}
+
+/*
+TemplateIterator operator ++ (int);//TODO: todo
+*/
+
+template<typename IterType, typename TreeType>
+BinaryTree::TemplateIterator<IterType, TreeType>& BinaryTree::TemplateIterator<IterType, TreeType>::operator -- () {
+    if(m_level < 0) {
+        return *this;
+    }
+    
+    if(m_iter == m_levelNodes.begin()) {
+        --m_level;
+        m_levelNodes = m_tree->levelNodes(m_level);
+        if(m_levelNodes.empty()) {
+            m_iter = m_levelNodes.begin();
+        } else {
+            m_iter = nullptr;
+        }
+    } else {
+        --m_iter;
+    }
+    
+    return *this;
+}
+
+/*
+TemplateIterator operator -- (int);//TODO: todo
+*/
+
+template<typename IterType, typename TreeType>
+void BinaryTree::TemplateIterator<IterType, TreeType>::update(const int newLevel) {
+    
+    m_levelNodes = m_tree->levelNodes(m_level);
+    for(m_iter = m_levelNodes.begin(); m_iter != m_levelNodes.end(); ++m_iter) {
+        if(*m_iter == m_node) {
+            break;
+        }
+    }
+    
 }

@@ -1,5 +1,4 @@
 #include <iostream>
-#include <assert.h>
 
 #include "Binary_Tree.hpp"
 
@@ -7,14 +6,23 @@ int main() {
     BinaryTree foo;
     {
         int newNum = int();
-        for(int i = 1; i < 100; ++i) {
-            newNum = rand() % 100;
-            if(!foo.contains(newNum))
-                foo.add(newNum);
+        for(int i = 1; i < 10000; ++i) {
+            foo.add(i);
         }
     }
     foo.printHorizontal(foo.root());
     //foo.printLeafs(foo.root());
+    auto nodes = foo.levelNodes(5);
+    std::cout << '{';
+    for(auto it = nodes.begin(); it != nodes.end();) {
+        std::cout << (*it)->key() << (++it == nodes.end() ? "" : ", ");
+    }
+    std::cout << '}' << std::endl;
+    foo.printLeafs(foo.root());
+    std::cout << "leaf - " << foo.findParent(foo.root(), nullptr)->key() << std::endl;
+    std::cout << foo.level(foo.root(), foo.findParent(foo.root(), nullptr)) << std::endl;
+    std::cout << foo.maxLevel() << std::endl;
+    return -1;
     auto vFoo = foo.toVector();
     std::cout << '{';
     for(auto it = vFoo.begin(); it != vFoo.end(); ++it) {

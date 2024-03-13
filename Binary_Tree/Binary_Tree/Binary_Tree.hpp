@@ -3,10 +3,17 @@
 
 #include <iostream>
 #include <vector>
+#include <list>
+#include <assert.h>
 
 class BinaryTree {
 public:
     class Node;
+    
+    template <typename IterType, typename TreeType>
+    class TemplateIterator;
+    using Iterator = TemplateIterator<Node, BinaryTree>;
+    using ConstIterator = TemplateIterator<const Node, const BinaryTree>;
     
 public:
     BinaryTree() = default;
@@ -21,7 +28,13 @@ public:
     ///returns -1 if not found
     int level(const int key) const;
     int level(Node* root, Node* target, int currentLevel = 0) const;
+    ///returns std::list<Node*>
+    std::list<Node*> levelNodes(const int level) const;
+    int maxLevel() const;
     Node* root() const {return m_root;}
+    
+    Iterator begin() {return Iterator(this, m_root);}
+    Iterator end() {return Iterator(this, nullptr);}
     
     void clear();
     void clearFrom(Node* root);
@@ -35,10 +48,12 @@ public:
     BinaryTree copy(Node* root) const;
     bool remove(const int key) {return remove(find(key));}
     bool remove(Node* target);
-    /// NLR - processing
-    Node* find(Node* start, const int key) const;
     /// BFS - proccessing
     Node* find(const int key) const;
+    /// NLR - processing
+    Node* find(Node* start, Node* target) const;
+    ///if child == nullptr -> return leaf
+    Node* findParent(Node* root, Node* child);
     
     /// BFS - proccessing
     std::vector<int> toVector() const;
@@ -56,9 +71,6 @@ private:
     void getLeafs(Node* root, std::vector<Node* >& leafs) const;
     
     Node* add(Node* root, const int value);
-    
-    ///if child == nullptr -> return leaf
-    Node* findParent(Node* root, Node* child);
     
     void compareBinaryTreeGreater(Node* root, int& buffer) const;
     void compareBinaryTreeLess(Node* root, int& buffer) const;
@@ -89,6 +101,48 @@ private:
     int m_key = 0;
     Node* m_left = nullptr;
     Node* m_right = nullptr;
+};
+
+template <typename IterType, typename TreeType>
+class BinaryTree::TemplateIterator {
+    friend class BinaryTree;
+public:
+    TemplateIterator(TreeType* tree, IterType* node) {
+        assert(static_cast<bool>(tree));
+        m_tree = tree;
+        m_node = node;
+        
+        if(!node) {
+            m_level = tree->maxLevel() + 1;
+        } else {
+            m_level = tree->level(tree->root(), m_node);
+            update(m_level);
+        }
+    }
+    
+    ~TemplateIterator() = default;
+    
+    bool isValid() const {return m_node != nullptr;}
+    
+    IterType& operator * () {return *m_iter;}
+    
+    TemplateIterator& operator ++ ();//TODO: todo
+    TemplateIterator operator ++ (int);//TODO: todo
+    
+    TemplateIterator& operator -- ();//TODO: todo
+    TemplateIterator operator -- (int);//TODO: todo
+    
+    auto operator <=> (const TemplateIterator other) {return m_node->key() <=> other.m_node->key();}
+    
+private:
+    void update(const int newLevel);
+    
+private:
+    TreeType* m_tree = {};
+    IterType* m_node = nullptr;
+    std::list<IterType* > m_levelNodes = {};
+    std::list<IterType* >::iterator m_iter = {};
+    int m_level = 0;
 };
 
 #endif /* Binary_Tree_hpp */
