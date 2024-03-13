@@ -522,16 +522,18 @@ void BinaryTree::compareBinaryTreeLess(Node* root, int& buffer) const {
 
 /* Iterator */
 
-template<typename IterType, typename TreeType>
-BinaryTree::TemplateIterator<IterType, TreeType>& BinaryTree::TemplateIterator<IterType, TreeType>::operator ++ () {
+BinaryTree::TemplateIterator& BinaryTree::TemplateIterator::operator ++ () {
+    if(m_level > m_tree->maxLevel()) {
+        return *this;
+    }
     
-    if(m_iter == m_levelNodes.end() - 1) {
+    if(m_iter == --m_levelNodes.end()) {
         ++m_level;
-        m_levelNodes = m_tree.levelNodes(m_level);
-        if(m_levelNodes.empty()) {
+        m_levelNodes = m_tree->levelNodes(m_level);
+        if(!m_levelNodes.empty()) {
             m_iter = m_levelNodes.begin();
         } else {
-            m_iter = nullptr;
+            m_iter = m_levelNodes.end();
         }
     } else {
         ++m_iter;
@@ -544,8 +546,7 @@ BinaryTree::TemplateIterator<IterType, TreeType>& BinaryTree::TemplateIterator<I
 TemplateIterator operator ++ (int);//TODO: todo
 */
 
-template<typename IterType, typename TreeType>
-BinaryTree::TemplateIterator<IterType, TreeType>& BinaryTree::TemplateIterator<IterType, TreeType>::operator -- () {
+BinaryTree::TemplateIterator& BinaryTree::TemplateIterator::operator -- () {
     if(m_level < 0) {
         return *this;
     }
@@ -553,10 +554,10 @@ BinaryTree::TemplateIterator<IterType, TreeType>& BinaryTree::TemplateIterator<I
     if(m_iter == m_levelNodes.begin()) {
         --m_level;
         m_levelNodes = m_tree->levelNodes(m_level);
-        if(m_levelNodes.empty()) {
-            m_iter = m_levelNodes.begin();
+        if(!m_levelNodes.empty()) {
+            m_iter = --m_levelNodes.end();
         } else {
-            m_iter = nullptr;
+            m_iter = m_levelNodes.begin();
         }
     } else {
         --m_iter;
@@ -569,11 +570,12 @@ BinaryTree::TemplateIterator<IterType, TreeType>& BinaryTree::TemplateIterator<I
 TemplateIterator operator -- (int);//TODO: todo
 */
 
-template<typename IterType, typename TreeType>
-void BinaryTree::TemplateIterator<IterType, TreeType>::update(const int newLevel) {
+void BinaryTree::TemplateIterator::update(const int newLevel) {
     
     m_levelNodes = m_tree->levelNodes(m_level);
-    for(m_iter = m_levelNodes.begin(); m_iter != m_levelNodes.end(); ++m_iter) {
+    m_iter = m_levelNodes.begin();
+    
+    for(; m_iter != m_levelNodes.end(); ++m_iter) {
         if(*m_iter == m_node) {
             break;
         }

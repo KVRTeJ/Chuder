@@ -10,10 +10,7 @@ class BinaryTree {
 public:
     class Node;
     
-    template <typename IterType, typename TreeType>
     class TemplateIterator;
-    using Iterator = TemplateIterator<Node, BinaryTree>;
-    using ConstIterator = TemplateIterator<const Node, const BinaryTree>;
     
 public:
     BinaryTree() = default;
@@ -33,8 +30,8 @@ public:
     int maxLevel() const;
     Node* root() const {return m_root;}
     
-    Iterator begin() {return Iterator(this, m_root);}
-    Iterator end() {return Iterator(this, nullptr);}
+    //TemplateIterator begin() {return TemplateIterator(this, m_root);}
+    //TemplateIterator end() {return TemplateIterator(this, nullptr);}
     
     void clear();
     void clearFrom(Node* root);
@@ -103,11 +100,10 @@ private:
     Node* m_right = nullptr;
 };
 
-template <typename IterType, typename TreeType>
 class BinaryTree::TemplateIterator {
     friend class BinaryTree;
 public:
-    TemplateIterator(TreeType* tree, IterType* node) {
+    TemplateIterator(BinaryTree* tree, Node* node) {
         assert(static_cast<bool>(tree));
         m_tree = tree;
         m_node = node;
@@ -124,24 +120,24 @@ public:
     
     bool isValid() const {return m_node != nullptr;}
     
-    IterType& operator * () {return *m_iter;}
+    Node* operator * () {return *m_iter;}
     
-    TemplateIterator& operator ++ ();//TODO: todo
+    TemplateIterator& operator ++ ();
     TemplateIterator operator ++ (int);//TODO: todo
     
-    TemplateIterator& operator -- ();//TODO: todo
+    TemplateIterator& operator -- ();
     TemplateIterator operator -- (int);//TODO: todo
     
-    auto operator <=> (const TemplateIterator other) {return m_node->key() <=> other.m_node->key();}
+    auto operator <=> (const TemplateIterator other) {return m_node <=> other.m_node;}
     
 private:
     void update(const int newLevel);
     
 private:
-    TreeType* m_tree = {};
-    IterType* m_node = nullptr;
-    std::list<IterType* > m_levelNodes = {};
-    std::list<IterType* >::iterator m_iter = {};
+    BinaryTree* m_tree = {};
+    Node* m_node = nullptr;
+    std::list<Node* > m_levelNodes = {};
+    std::list<Node* >::iterator m_iter = {};
     int m_level = 0;
 };
 

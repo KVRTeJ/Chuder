@@ -6,7 +6,7 @@ int main() {
     BinaryTree foo;
     {
         int newNum = int();
-        for(int i = 1; i < 10000; ++i) {
+        for(int i = 1; i < 10; ++i) {
             foo.add(i);
         }
     }
@@ -22,6 +22,11 @@ int main() {
     std::cout << "leaf - " << foo.findParent(foo.root(), nullptr)->key() << std::endl;
     std::cout << foo.level(foo.root(), foo.findParent(foo.root(), nullptr)) << std::endl;
     std::cout << foo.maxLevel() << std::endl;
+    
+    BinaryTree::TemplateIterator it(&foo, foo.find(9));
+    BinaryTree::TemplateIterator it1(&foo, foo.find(9));
+    assert(it == it1);
+    std::cout << "it - " << (*it)->key() << std::endl;
     return -1;
     auto vFoo = foo.toVector();
     std::cout << '{';
