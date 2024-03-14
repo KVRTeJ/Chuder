@@ -30,7 +30,6 @@ int main() {
     std::cout << std::endl;
     
     auto it = foo.begin();
-    ++it;
     std::cout << "iter - key = " << (*it)->key() << std::endl;
     return -1;
     

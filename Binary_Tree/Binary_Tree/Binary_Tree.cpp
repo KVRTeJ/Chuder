@@ -61,7 +61,7 @@ int BinaryTree::max() const {
     }
     
     int buffer = m_root->key();
-    compareBinaryTreeGreater(m_root, buffer);
+    max(m_root, buffer);
     
     return buffer;
 }
@@ -72,7 +72,7 @@ int BinaryTree::min() const {
     }
     
     int buffer = m_root->key();
-    compareBinaryTreeLess(m_root, buffer);
+    min(m_root, buffer);
     
     return buffer;
 }
@@ -129,6 +129,10 @@ int BinaryTree::level(Node* root, Node* target, int currentLevel) const {
     return leftSubTree;
 }
 
+int BinaryTree::level(const Node* root, const Node* target, int currentLevel) const {
+    return level(const_cast<Node* >(root), const_cast<Node* >(target), currentLevel);
+}
+
 std::list<BinaryTree::Node*> BinaryTree::levelNodes(const int level) const {
     if(level < 1) {
         return {};
@@ -170,16 +174,12 @@ int BinaryTree::maxLevel() const {
     return result - 1;
 }
 
-BinaryTree::TemplateIterator BinaryTree::begin() {return TemplateIterator(this, m_root);}
-BinaryTree::TemplateIterator BinaryTree::end() {return TemplateIterator(this, nullptr);}
-
-/*
 BinaryTree::Iterator BinaryTree::begin() {return Iterator(this, m_root);}
 BinaryTree::Iterator BinaryTree::end() {return Iterator(this, nullptr);}
 
 BinaryTree::ConstIterator BinaryTree::begin() const {return ConstIterator(this, m_root);}
 BinaryTree::ConstIterator BinaryTree::end() const {return ConstIterator(this, nullptr);}
-*/
+
 
 void BinaryTree::clearFrom(Node* root) {
     if(!root) {
@@ -505,7 +505,7 @@ BinaryTree::Node* BinaryTree::add(Node* root, const int value) {
     return root;
 }
 
-void BinaryTree::compareBinaryTreeGreater(Node* root, int& buffer) const {
+void BinaryTree::max(Node* root, int& buffer) const {
     if(!root) {
         return;
     }
@@ -514,11 +514,11 @@ void BinaryTree::compareBinaryTreeGreater(Node* root, int& buffer) const {
         buffer = root->key();
     }
     
-    compareBinaryTreeGreater(root->left(), buffer);
-    compareBinaryTreeGreater(root->right(), buffer);
+    max(root->left(), buffer);
+    max(root->right(), buffer);
 }
 
-void BinaryTree::compareBinaryTreeLess(Node* root, int& buffer) const {
+void BinaryTree::min(Node* root, int& buffer) const {
     if(!root) {
         return;
     }
@@ -527,82 +527,6 @@ void BinaryTree::compareBinaryTreeLess(Node* root, int& buffer) const {
         buffer = root->key();
     }
     
-    compareBinaryTreeLess(root->left(), buffer);
-    compareBinaryTreeLess(root->right(), buffer);
-}
-
-/* Iterator */
-
-//template <typename NodeType, typename TreeType>
-BinaryTree::TemplateIterator& BinaryTree::TemplateIterator::operator ++ () {
-    if(m_level > m_tree->maxLevel()) {
-        return *this;
-    }
-    
-    if(m_iter == --m_levelNodes.end()) {
-        ++m_level;
-        m_levelNodes = m_tree->levelNodes(m_level);
-        if(!m_levelNodes.empty()) {
-            m_iter = m_levelNodes.begin();
-        } else {
-            m_iter = m_levelNodes.end();
-        }
-    } else {
-        ++m_iter;
-    }
-    
-    return *this;
-}
-
-//template <typename NodeType, typename TreeType>
-BinaryTree::TemplateIterator BinaryTree::TemplateIterator::operator ++ (int) {
-    auto buffer = *this;
-    
-    this->operator++();
-    
-    return buffer;
-}
-
-//template <typename NodeType, typename TreeType>
-BinaryTree::TemplateIterator& BinaryTree::TemplateIterator::operator -- () {
-    if(m_level < 0) {
-        return *this;
-    }
-    
-    if(m_iter == m_levelNodes.begin()) {
-        --m_level;
-        m_levelNodes = m_tree->levelNodes(m_level);
-        if(!m_levelNodes.empty()) {
-            m_iter = --m_levelNodes.end();
-        } else {
-            m_iter = m_levelNodes.begin();
-        }
-    } else {
-        --m_iter;
-    }
-    
-    return *this;
-}
-
-//template <typename NodeType, typename TreeType>
-BinaryTree::TemplateIterator BinaryTree::TemplateIterator::operator -- (int) {
-    auto buffer = *this;
-    
-    this->operator--();
-    
-    return buffer;
-}
-
-//template <typename NodeType, typename TreeType>
-void BinaryTree::TemplateIterator::update(const int newLevel, Node* node) {
-    
-    m_levelNodes = m_tree->levelNodes(m_level);
-    m_iter = m_levelNodes.begin();
-    
-    for(; m_iter != m_levelNodes.end(); ++m_iter) {
-        if(*m_iter == node) {
-            break;
-        }
-    }
-    
+    min(root->left(), buffer);
+    min(root->right(), buffer);
 }

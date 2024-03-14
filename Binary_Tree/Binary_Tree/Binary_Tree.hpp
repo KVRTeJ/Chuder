@@ -10,10 +10,10 @@ class BinaryTree {
 public:
     class Node;
     
-    //template <typename Node, typename BinaryTree>
+    template <typename NodeType, typename TreeType>
     class TemplateIterator;
-    //using Iterator = TemplateIterator<Node, BinaryTree>;
-    //using ConstIterator = TemplateIterator<const Node, const BinaryTree>;
+    using Iterator = TemplateIterator<Node, BinaryTree>;
+    using ConstIterator = TemplateIterator<const Node, const BinaryTree>;
     
 public:
     BinaryTree() = default;
@@ -28,19 +28,18 @@ public:
     ///returns -1 if not found
     int level(const int key) const;
     int level(Node* root, Node* target, int currentLevel = 0) const;
+    int level(const Node* root, const Node* target, int currentLevel = 0) const;
     ///returns std::list<Node*>
     std::list<Node*> levelNodes(const int level) const;
     int maxLevel() const;
-    Node* root() const {return m_root;}
+    Node* root() {return m_root;}
+    const Node* root() const {return m_root;}
     
-    TemplateIterator begin();
-    TemplateIterator end();
+    Iterator begin();
+    Iterator end();
     
-    //Iterator begin();
-    //Iterator end();
-    
-    //ConstIterator begin() const;
-    //ConstIterator end() const;
+    ConstIterator begin() const;
+    ConstIterator end() const;
 
     void clear();
     void clearFrom(Node* root);
@@ -78,8 +77,8 @@ private:
     
     Node* add(Node* root, const int value);
     
-    void compareBinaryTreeGreater(Node* root, int& buffer) const;
-    void compareBinaryTreeLess(Node* root, int& buffer) const;
+    void max(Node* root, int& buffer) const;
+    void min(Node* root, int& buffer) const;
     
 private:
     Node* m_root = nullptr;
@@ -93,7 +92,7 @@ public:
     : m_key(key), m_left(left), m_right(right)
     {}
     
-    int key() const {return (this ? m_key : 0);}
+    int key() const {return m_key;}
     Node* left() const {return m_left;}
     Node* right() const {return m_right;}
     
@@ -109,11 +108,11 @@ private:
     Node* m_right = nullptr;
 };
 
-//template <typename Node, typename BinaryTree>
+template <typename NodeType, typename TreeType>
 class BinaryTree::TemplateIterator {
     friend class BinaryTree;
 public:
-    TemplateIterator(BinaryTree* tree, Node* node) {
+    TemplateIterator(TreeType* tree, NodeType* node) {
         assert(static_cast<bool>(tree));
         m_tree = tree;
         
@@ -122,29 +121,99 @@ public:
         } else {
             m_level = tree->level(tree->root(), node);
         }
+        
         update(m_level, node);
     }
     
     ~TemplateIterator() = default;
     
-    Node* operator * () {return *m_iter;}
+    bool isValid() const {
+        for(auto it = m_levelNodes.begin(); it != m_levelNodes.end(); ++it) {
+            if(it == m_iter)
+                return true;
+        }
+        
+        return false;
+    }
     
-    TemplateIterator& operator ++ ();
-    TemplateIterator operator ++ (int);
+    NodeType* operator * () {return (isValid() ? *m_iter : nullptr);}
     
-    TemplateIterator& operator -- ();
-    TemplateIterator operator -- (int);
+    TemplateIterator& operator ++ () {
+        if(m_level > m_tree->maxLevel()) {
+            return *this;
+        }
+        
+        if(m_iter == --m_levelNodes.end()) {
+            ++m_level;
+            m_levelNodes = m_tree->levelNodes(m_level);
+            if(!m_levelNodes.empty()) {
+                m_iter = m_levelNodes.begin();
+            } else {
+                m_iter = m_levelNodes.end();
+            }
+        } else {
+            ++m_iter;
+        }
+        
+        return *this;
+    }
+    
+    TemplateIterator operator ++ (int) {
+        auto buffer = *this;
+        
+        this->operator++();
+        
+        return buffer;
+    }
+    
+    TemplateIterator& operator -- () {
+        if(m_level < 0) {
+            return *this;
+        }
+        
+        if(m_iter == m_levelNodes.begin()) {
+            --m_level;
+            m_levelNodes = m_tree->levelNodes(m_level);
+            if(!m_levelNodes.empty()) {
+                m_iter = --m_levelNodes.end();
+            } else {
+                m_iter = m_levelNodes.begin();
+            }
+        } else {
+            --m_iter;
+        }
+        
+        return *this;
+    }
+    
+    TemplateIterator operator -- (int)  {
+        auto buffer = *this;
+        
+        this->operator--();
+        
+        return buffer;
+    }
     
     bool operator == (const TemplateIterator& other) const {return *m_iter == (*other.m_iter);}
     bool operator != (const TemplateIterator& other) const {return !(this->operator==(other));}
     
 private:
-    void update(const int newLevel, Node* node);
+    void update(const int newLevel, NodeType* node) {
+        m_levelNodes = m_tree->levelNodes(m_level);
+        m_iter = m_levelNodes.begin();
+        
+        for(; m_iter != m_levelNodes.end(); ++m_iter) {
+            if(*m_iter == node) {
+                break;
+            }
+        }
+        
+    }
     
 private:
-    BinaryTree* m_tree = {};
-    std::list<Node* > m_levelNodes = {};
-    std::list<Node* >::iterator m_iter = {};
+    TreeType* m_tree = {};
+    std::list<NodeType* > m_levelNodes = {};
+    std::list<NodeType* >::iterator m_iter = {};
     int m_level = 0;
 };
 
