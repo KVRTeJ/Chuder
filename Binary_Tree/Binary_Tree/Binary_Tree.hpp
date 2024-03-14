@@ -136,7 +136,12 @@ public:
         return false;
     }
     
-    NodeType* operator * () {return (isValid() ? *m_iter : nullptr);}
+    NodeType* operator * () {
+        if(!isValid() || m_iter == m_levelNodes.end())
+            return {};
+        
+        return *m_iter;
+    }
     
     TemplateIterator& operator ++ () {
         if(m_level > m_tree->maxLevel()) {
