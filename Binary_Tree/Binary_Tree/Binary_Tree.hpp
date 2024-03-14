@@ -10,7 +10,10 @@ class BinaryTree {
 public:
     class Node;
     
+    //template <typename Node, typename BinaryTree>
     class TemplateIterator;
+    //using Iterator = TemplateIterator<Node, BinaryTree>;
+    //using ConstIterator = TemplateIterator<const Node, const BinaryTree>;
     
 public:
     BinaryTree() = default;
@@ -30,9 +33,15 @@ public:
     int maxLevel() const;
     Node* root() const {return m_root;}
     
-    //TemplateIterator begin() {return TemplateIterator(this, m_root);}
-    //TemplateIterator end() {return TemplateIterator(this, nullptr);}
+    TemplateIterator begin();
+    TemplateIterator end();
     
+    //Iterator begin();
+    //Iterator end();
+    
+    //ConstIterator begin() const;
+    //ConstIterator end() const;
+
     void clear();
     void clearFrom(Node* root);
     
@@ -100,42 +109,40 @@ private:
     Node* m_right = nullptr;
 };
 
+//template <typename Node, typename BinaryTree>
 class BinaryTree::TemplateIterator {
     friend class BinaryTree;
 public:
     TemplateIterator(BinaryTree* tree, Node* node) {
         assert(static_cast<bool>(tree));
         m_tree = tree;
-        m_node = node;
         
         if(!node) {
             m_level = tree->maxLevel() + 1;
         } else {
-            m_level = tree->level(tree->root(), m_node);
-            update(m_level);
+            m_level = tree->level(tree->root(), node);
         }
+        update(m_level, node);
     }
     
     ~TemplateIterator() = default;
     
-    bool isValid() const {return m_node != nullptr;}
-    
     Node* operator * () {return *m_iter;}
     
     TemplateIterator& operator ++ ();
-    TemplateIterator operator ++ (int);//TODO: todo
+    TemplateIterator operator ++ (int);
     
     TemplateIterator& operator -- ();
-    TemplateIterator operator -- (int);//TODO: todo
+    TemplateIterator operator -- (int);
     
-    auto operator <=> (const TemplateIterator other) {return m_node <=> other.m_node;}
+    bool operator == (const TemplateIterator& other) const {return *m_iter == (*other.m_iter);}
+    bool operator != (const TemplateIterator& other) const {return !(this->operator==(other));}
     
 private:
-    void update(const int newLevel);
+    void update(const int newLevel, Node* node);
     
 private:
     BinaryTree* m_tree = {};
-    Node* m_node = nullptr;
     std::list<Node* > m_levelNodes = {};
     std::list<Node* >::iterator m_iter = {};
     int m_level = 0;

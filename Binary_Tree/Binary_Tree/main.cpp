@@ -23,11 +23,21 @@ int main() {
     std::cout << foo.level(foo.root(), foo.findParent(foo.root(), nullptr)) << std::endl;
     std::cout << foo.maxLevel() << std::endl;
     
-    BinaryTree::TemplateIterator it(&foo, foo.find(9));
-    BinaryTree::TemplateIterator it1(&foo, foo.find(9));
-    assert(it == it1);
-    std::cout << "it - " << (*it)->key() << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    
+    auto it = foo.begin();
+    ++it;
+    std::cout << "iter - key = " << (*it)->key() << std::endl;
     return -1;
+    
+    
+    
+    
+    
     auto vFoo = foo.toVector();
     std::cout << '{';
     for(auto it = vFoo.begin(); it != vFoo.end(); ++it) {
@@ -52,12 +62,6 @@ int main() {
         foo.remove(temp);
         assert(!foo.find(temp->key()));
     }
-    
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
     
     return 0;
 }
