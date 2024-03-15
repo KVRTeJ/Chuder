@@ -69,6 +69,7 @@ public:
     
     void printLeafs(Node* root) const;
     void printHorizontal(Node *root, int marginLeft = 2, int levelSpacing = 4) const;
+    void printLevels() const;
     
     BinaryTree& operator = (const BinaryTree& other);
     
@@ -167,6 +168,8 @@ public:
         
         return false;
     }
+    
+    int getLevel() const {return m_level;}
     
     NodeType* operator * () {
         if(!isValid() || m_iter == m_levelNodes.end()) {

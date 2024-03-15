@@ -425,6 +425,20 @@ void BinaryTree::printHorizontal(Node *root, int marginLeft, int levelSpacing) c
     printHorizontal(root->left(), marginLeft + levelSpacing, levelSpacing);
 }
 
+void BinaryTree::printLevels() const {
+    
+    int current = {};
+    for(auto it = begin(); it != end();) {
+        if(current != it.getLevel()) {
+            std::cout << '\n';
+            current = it.getLevel();
+            std::cout << "Level " << current << '|' << ' ';
+        }
+        std::cout << (*it)->key() << (++it == end() ? "" : ", ");
+    }
+    
+    std::cout << std::endl;
+}
 
 BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
     
