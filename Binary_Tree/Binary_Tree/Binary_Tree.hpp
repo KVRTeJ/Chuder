@@ -5,6 +5,7 @@
 #include <vector>
 #include <list>
 #include <assert.h>
+#include <functional>
 
 class BinaryTree {
 public:
@@ -29,11 +30,12 @@ public:
     int level(const int key) const;
     int level(Node* root, Node* target, int currentLevel = 0) const;
     int level(const Node* root, const Node* target, int currentLevel = 0) const;
-    ///returns std::list<Node*>
-    std::list<Node*> levelNodes(const int level) const;
     int maxLevel() const;
     Node* root() {return m_root;}
     const Node* root() const {return m_root;}
+    
+    template<typename NodeType>
+    std::list<NodeType*> levelNodes(NodeType* root, const int level) const;
     
     Iterator begin();
     Iterator end();
@@ -108,6 +110,36 @@ private:
     Node* m_right = nullptr;
 };
 
+template<typename NodeType>
+std::list<NodeType*> BinaryTree::levelNodes(NodeType* root, const int level) const {
+    if(level < 1) {
+        return {};
+    }
+    
+    std::list<NodeType* > parents(1, root);
+    std::list<NodeType* > childs = {};
+    
+    NodeType* currentNode = nullptr;
+    for(int i = 1; i < level; ++i) {
+        while(!parents.empty()) {
+            currentNode = parents.front();
+            parents.pop_front();
+            
+            if(currentNode->left()) {
+                childs.push_back(currentNode->left());
+            }
+            if(currentNode->right()) {
+                childs.push_back(currentNode->right());
+            }
+        }
+        
+        parents = childs;
+        childs.clear();
+    }
+    
+    return parents;
+}
+
 template <typename NodeType, typename TreeType>
 class BinaryTree::TemplateIterator {
     friend class BinaryTree;
@@ -137,8 +169,11 @@ public:
     }
     
     NodeType* operator * () {
-        if(!isValid() || m_iter == m_levelNodes.end())
-            return {};
+        if(!isValid() || m_iter == m_levelNodes.end()) {
+            Node empty = Node();
+            Node* result = &empty;
+            return result;
+        }
         
         return *m_iter;
     }
@@ -150,7 +185,7 @@ public:
         
         if(m_iter == --m_levelNodes.end()) {
             ++m_level;
-            m_levelNodes = m_tree->levelNodes(m_level);
+            m_levelNodes = m_tree->levelNodes(m_tree->root(), m_level);
             if(!m_levelNodes.empty()) {
                 m_iter = m_levelNodes.begin();
             } else {
@@ -178,7 +213,7 @@ public:
         
         if(m_iter == m_levelNodes.begin()) {
             --m_level;
-            m_levelNodes = m_tree->levelNodes(m_level);
+            m_levelNodes = m_tree->levelNodes(m_tree->root(), m_level);
             if(!m_levelNodes.empty()) {
                 m_iter = --m_levelNodes.end();
             } else {
@@ -204,7 +239,7 @@ public:
     
 private:
     void update(const int newLevel, NodeType* node) {
-        m_levelNodes = m_tree->levelNodes(m_level);
+        m_levelNodes = m_tree->levelNodes(m_tree->root(), m_level);
         m_iter = m_levelNodes.begin();
         
         for(; m_iter != m_levelNodes.end(); ++m_iter) {

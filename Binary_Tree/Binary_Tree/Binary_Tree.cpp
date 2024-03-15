@@ -133,35 +133,6 @@ int BinaryTree::level(const Node* root, const Node* target, int currentLevel) co
     return level(const_cast<Node* >(root), const_cast<Node* >(target), currentLevel);
 }
 
-std::list<BinaryTree::Node*> BinaryTree::levelNodes(const int level) const {
-    if(level < 1) {
-        return {};
-    }
-    
-    std::list<Node*> parents(1, m_root);
-    std::list<Node*> childs = {};
-    
-    Node* currentNode = nullptr;
-    for(int i = 1; i < level; ++i) {
-        while(!parents.empty()) {
-            currentNode = parents.front();
-            parents.pop_front();
-            
-            if(currentNode->left()) {
-                childs.push_back(currentNode->left());
-            }
-            if(currentNode->right()) {
-                childs.push_back(currentNode->right());
-            }
-        }
-        
-        parents = childs;
-        childs.clear();
-    }
-    
-    return parents;
-}
-
 int BinaryTree::maxLevel() const {
     if(!m_root) {
         return 0;
@@ -169,7 +140,7 @@ int BinaryTree::maxLevel() const {
     
     int result = 1;
     
-    for(auto l = levelNodes(result); !l.empty(); ++result, l = levelNodes(result));
+    for(auto l = levelNodes(m_root, result); !l.empty(); ++result, l = levelNodes(m_root, result));
     
     return result - 1;
 }

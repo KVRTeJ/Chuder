@@ -12,7 +12,7 @@ int main() {
     }
     foo.printHorizontal(foo.root());
     //foo.printLeafs(foo.root());
-    auto nodes = foo.levelNodes(5);
+    auto nodes = foo.levelNodes(foo.root(), 5);
     std::cout << '{';
     for(auto it = nodes.begin(); it != nodes.end();) {
         std::cout << (*it)->key() << (++it == nodes.end() ? "" : ", ");
@@ -29,8 +29,10 @@ int main() {
     std::cout << std::endl;
     std::cout << std::endl;
     
-    auto it = foo.begin();
-    std::cout << "iter - key = " << (*it)->key() << std::endl;
+    for(auto it = foo.begin(); it != foo.end(); ++it) {
+        std::cout << "iter - key = " << (*it)->key() << std::endl;
+    }
+    
     return -1;
     
     
