@@ -19,16 +19,16 @@ public:
 public:
     BinaryTree() = default;
     BinaryTree(const BinaryTree& other);
-    ~BinaryTree() {clear();}
+    virtual ~BinaryTree() {clear();}
     
     int height() const;
     int height(Node* root, int currentHeight = 0, int maxHeight = 0) const;
     int nodeCount(Node* root) const;
-    int max() const;
-    int min() const;
+    virtual int max() const;
+    virtual int min() const;
     ///returns -1 if not found
-    int level(const int key) const;
-    int level(Node* root, Node* target, int currentLevel = 0) const;
+    virtual int level(const int key) const;
+    virtual int level(Node* root, Node* target, int currentLevel = 0) const;
     int level(const Node* root, const Node* target, int currentLevel = 0) const;
     int maxLevel() const;
     Node* root() {return m_root;}
@@ -51,19 +51,19 @@ public:
     bool balance(Node* root) const;
     bool contains(const int key) const {return find(key) != nullptr;}
     
-    void add(const int key);
+    virtual void add(const int key);
     BinaryTree copy(Node* root) const;
-    bool remove(const int key) {return remove(find(key));}
-    bool remove(Node* target);
+    virtual bool remove(const int key) {return remove(find(key));}
+    virtual bool remove(Node* target);
     /// BFS - proccessing
-    Node* find(const int key) const;
+    virtual Node* find(const int key) const;
     /// NLR - processing
-    Node* find(Node* start, Node* target) const;
+    virtual Node* find(Node* start, Node* target) const;
     ///if child == nullptr -> return leaf
     Node* findParent(Node* root, Node* child);
     
     /// BFS - proccessing
-    std::vector<int> toVector() const;
+    virtual std::vector<int> toVector() const;
     std::vector<int> toVectorNlr() const;
     std::vector<Node* > getLeafs(Node* root) const;
     
