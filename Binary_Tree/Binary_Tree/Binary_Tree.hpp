@@ -45,10 +45,11 @@ public:
 
     void clear();
     void clearFrom(Node* root);
+    void clearFromInclusiveRoot(Node* root);
     
     bool empty() const {return m_root == nullptr;}
-    bool balance() const;
-    bool balance(Node* root) const;
+    bool balanced() const;
+    bool balanced(Node* root) const;
     bool contains(const int key) const {return find(key) != nullptr;}
     
     virtual void add(const int key);

@@ -20,10 +20,7 @@ BinaryTree::BinaryTree(const BinaryTree& other) {
 }
 
 void BinaryTree::clear() {
-    clearFrom(m_root);
-    
-    delete m_root;
-    m_root = nullptr;
+    clearFromInclusiveRoot(m_root);
 }
 
 int BinaryTree::nodeCount(Node* root) const {
@@ -151,26 +148,30 @@ BinaryTree::Iterator BinaryTree::end() {return Iterator(this, nullptr);}
 BinaryTree::ConstIterator BinaryTree::begin() const {return ConstIterator(this, m_root);}
 BinaryTree::ConstIterator BinaryTree::end() const {return ConstIterator(this, nullptr);}
 
-
 void BinaryTree::clearFrom(Node* root) {
     if(!root) {
         return;
     }
     
-    std::vector<Node* > leafs = getLeafs(root);
-    while(leafs[0] != root) {
-        for(auto it = leafs.begin(); it != leafs.end(); ++it) {
-            remove(*it);
-        }
-        leafs = getLeafs(root);
+    clearFromInclusiveRoot(root->left());
+    clearFromInclusiveRoot(root->right());
+}
+
+void BinaryTree::clearFromInclusiveRoot(Node* root) {
+    if(!root) {
+        return;
     }
+    
+    clearFrom(root->left());
+    clearFrom(root->right());
+    delete root;
 }
 
-bool BinaryTree::balance() const {
-    return balance(m_root);
+bool BinaryTree::balanced() const {
+    return balanced(m_root);
 }
 
-bool BinaryTree::balance(Node* root) const {
+bool BinaryTree::balanced(Node* root) const {
     if(!root) {
         return true;
     }
@@ -181,7 +182,7 @@ bool BinaryTree::balance(Node* root) const {
     int heightDifference = leftSubTreeHeight - rightSubTreeHeight;
     bool isBalance = !heightDifference || heightDifference == 1 || heightDifference == -1;
     
-    return isBalance && balance(root->left()) && balance(root->right());
+    return isBalance && balanced(root->left()) && balanced(root->right());
 }
 
 void BinaryTree::add(const int key) {
@@ -204,7 +205,7 @@ bool BinaryTree::remove(Node* node) {
     
     data.nodeParent = findParent(m_root, data.target);
     
-    auto deleteChild {
+    auto finishRemove {
         [this](Data& data) {
             if(data.nodeParent->left() == data.target) {
                 data.nodeParent->setLeft(nullptr);
@@ -224,14 +225,14 @@ bool BinaryTree::remove(Node* node) {
         clear();
     } else {
         if(data.target->left() == nullptr && data.target->right() == nullptr) {
-            deleteChild(data);
+            finishRemove(data);
             
         } else if(!data.target->left()) {
             data.replacementNode = data.target->right();
-            deleteChild(data);
+            finishRemove(data);
         } else if(!data.target->right()) {
             data.replacementNode = data.target->left();
-            deleteChild(data);
+            finishRemove(data);
             
         } else {
             data.replacementNode = findParent(data.target, nullptr);
@@ -243,7 +244,7 @@ bool BinaryTree::remove(Node* node) {
             }
             data.replacementNode->setLeft(data.target->left());
             data.replacementNode->setRight(data.target->right());
-            deleteChild(data);
+            finishRemove(data);
         }
     }
     
