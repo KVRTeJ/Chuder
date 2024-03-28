@@ -11,7 +11,7 @@ public:
     int max() const override;
     int min() const override;
     
-    int level(const int key) const override {return -1;} //TODO: implement me
+    int level(const int key) const override;
     
     void add(const int key) override;
     bool remove(const int key) override {return false;} //TODO: implement me

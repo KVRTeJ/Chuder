@@ -16,6 +16,23 @@ int SearchTree::min() const {
     return result->key();
 }
 
+int SearchTree::level(const int key) const {
+    if(!root()) {
+        return {};
+    }
+    
+    int result = 1;
+    for(const Node* n = root(); n && n->key() != key; ++result) {
+        if(n->key() > key) {
+            n = n->left();
+        } else {
+            n = n->right();
+        }
+    }
+    
+    return result;
+}
+
 void SearchTree::add(const int key) {
     
     if(!root()) {
