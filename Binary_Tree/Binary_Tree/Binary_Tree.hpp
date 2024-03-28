@@ -28,7 +28,7 @@ public:
     virtual int min() const;
     ///returns -1 if not found
     virtual int level(const int key) const;
-    virtual int level(Node* root, Node* target, int currentLevel = 0) const;
+    int level(Node* root, Node* target, int currentLevel = 0) const;
     int level(const Node* root, const Node* target, int currentLevel = 0) const;
     int maxLevel() const;
     void setRoot(Node* node) {m_root = node;}
