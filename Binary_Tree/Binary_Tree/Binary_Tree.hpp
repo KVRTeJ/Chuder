@@ -31,6 +31,7 @@ public:
     virtual int level(Node* root, Node* target, int currentLevel = 0) const;
     int level(const Node* root, const Node* target, int currentLevel = 0) const;
     int maxLevel() const;
+    void setRoot(Node* node) {m_root = node;}
     Node* root() {return m_root;}
     const Node* root() const {return m_root;}
     
@@ -59,7 +60,7 @@ public:
     /// BFS - proccessing
     virtual Node* find(const int key) const;
     /// NLR - processing
-    virtual Node* find(Node* start, Node* target) const;
+    Node* find(Node* start, Node* target) const;
     ///if child == nullptr -> return leaf
     Node* findParent(Node* root, Node* child);
     
@@ -79,7 +80,7 @@ private:
     
     void getLeafs(Node* root, std::vector<Node* >& leafs) const;
     
-    Node* add(Node* root, const int value);
+    virtual Node* add(Node* root, const int value);
     
     void max(Node* root, int& buffer) const;
     void min(Node* root, int& buffer) const;
@@ -100,11 +101,10 @@ public:
     Node* left() const {return m_left;}
     Node* right() const {return m_right;}
     
-    void setKey(const int key) {m_key = key;}
-    
-private:
     void setLeft(Node* other) {m_left = other;}
     void setRight(Node* other) {m_right = other;}
+    
+    void setKey(const int key) {m_key = key;}
     
 private:
     int m_key = 0;
