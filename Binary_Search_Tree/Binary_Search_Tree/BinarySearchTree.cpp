@@ -33,15 +33,6 @@ int SearchTree::level(const int key) const {
     return result;
 }
 
-void SearchTree::add(const int key) {
-    
-    if(!root()) {
-        setRoot(new Node(key));
-    } else {
-        add(root(), key);
-    }
-}
-
 BinaryTree::Node* SearchTree::find(const int key) const {
     Node* current = const_cast<Node*>(root());
     
@@ -54,6 +45,12 @@ BinaryTree::Node* SearchTree::find(const int key) const {
     }
     
     return current;
+}
+
+std::vector<int> SearchTree::toVector() const {
+    std::vector<int> result = toVectorNlr();;
+    
+    return result;
 }
 
 /* private */
