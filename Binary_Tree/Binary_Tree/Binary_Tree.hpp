@@ -12,9 +12,16 @@ public:
     class Node;
     
     template <typename NodeType, typename TreeType>
-    class TemplateIterator;
-    using Iterator = TemplateIterator<Node, BinaryTree>;
-    using ConstIterator = TemplateIterator<const Node, const BinaryTree>;
+    class IIterator;
+    
+    template <typename NodeType, typename TreeType>
+    class bfsTemplateIterator;
+    using bfsIterator = bfsTemplateIterator<Node, BinaryTree>;
+    using bfsConstIterator = bfsTemplateIterator<const Node, const BinaryTree>;
+    
+    template <typename NodeType, typename TreeType>
+    class lnrTemplateIterator; //TODO: implement me
+    using lnrConstIterator = lnrTemplateIterator<const Node, const BinaryTree>;
     
 public:
     BinaryTree() = default;
@@ -24,7 +31,7 @@ public:
     int height() const;
     int height(Node* root, int currentHeight = 0, int maxHeight = 0) const;
     int nodeCount(Node* root) const;
-    virtual int max() const;
+    virtual int max() const; //TODO: перегрузить не их а приватные методы -> их в protected
     virtual int min() const;
     ///returns -1 if not found
     virtual int level(const int key) const;
@@ -38,11 +45,11 @@ public:
     template<typename NodeType>
     std::list<NodeType*> levelNodes(NodeType* root, const int level) const;
     
-    Iterator begin();
-    Iterator end();
+    bfsIterator begin();
+    bfsIterator end();
     
-    ConstIterator begin() const;
-    ConstIterator end() const;
+    bfsConstIterator begin() const;
+    bfsConstIterator end() const;
 
     void clear();
     void clearFrom(Node* root);
@@ -53,10 +60,10 @@ public:
     bool balanced(Node* root) const;
     bool contains(const int key) const {return find(key) != nullptr;}
     
-    virtual void add(const int key);
+    void add(const int key);
     BinaryTree copy(Node* root) const;
     virtual bool remove(const int key) {return remove(find(key));}
-    virtual bool remove(Node* target);
+    bool remove(Node* target);
     /// BFS - proccessing
     virtual Node* find(const int key) const;
     /// NLR - processing
@@ -66,7 +73,7 @@ public:
     
     /// BFS - proccessing
     virtual std::vector<int> toVector() const;
-    std::vector<int> toVectorNlr() const;
+    std::vector<int> toVectorLnr() const;
     std::vector<Node* > getLeafs(Node* root) const;
     
     void printLeafs(Node* root) const;
@@ -76,13 +83,13 @@ public:
     BinaryTree& operator = (const BinaryTree& other);
     
 private:
-    void toVectorNlr(Node* root, std::vector<int>& nums) const;
+    void toVectorLnr(Node* root, std::vector<int>& nums) const;
     
     void getLeafs(Node* root, std::vector<Node* >& leafs) const;
     
     virtual Node* add(Node* root, const int value);
     
-    void max(Node* root, int& buffer) const;
+    void max(Node* root, int& buffer) const; //TODO: to protected
     void min(Node* root, int& buffer) const;
     
 private:
@@ -142,11 +149,27 @@ std::list<NodeType*> BinaryTree::levelNodes(NodeType* root, const int level) con
     return parents;
 }
 
+
+
+
 template <typename NodeType, typename TreeType>
-class BinaryTree::TemplateIterator {
+class BinaryTree::IIterator {
+public:
+    virtual ~IIterator() = default;
+    
+    virtual bool isValid() const = 0;
+    int getLevel() const;
+    //operator == ??
+};
+
+
+
+
+template <typename NodeType, typename TreeType>
+class BinaryTree::bfsTemplateIterator : public IIterator<NodeType, TreeType> {
     friend class BinaryTree;
 public:
-    TemplateIterator(TreeType* tree, NodeType* node) {
+    bfsTemplateIterator(TreeType* tree, NodeType* node) {
         assert(static_cast<bool>(tree));
         m_tree = tree;
         
@@ -159,9 +182,9 @@ public:
         update(m_level, node);
     }
     
-    ~TemplateIterator() = default;
+    ~bfsTemplateIterator() override = default;
     
-    bool isValid() const {
+    bool isValid() const override {
         for(auto it = m_levelNodes.begin(); it != m_levelNodes.end(); ++it) {
             if(it == m_iter)
                 return true;
@@ -182,7 +205,7 @@ public:
         return *m_iter;
     }
     
-    TemplateIterator& operator ++ () {
+    bfsTemplateIterator& operator ++ () {
         if(m_level > m_tree->maxLevel()) {
             return *this;
         }
@@ -202,7 +225,7 @@ public:
         return *this;
     }
     
-    TemplateIterator operator ++ (int) {
+    bfsTemplateIterator operator ++ (int) {
         auto buffer = *this;
         
         this->operator++();
@@ -210,7 +233,7 @@ public:
         return buffer;
     }
     
-    TemplateIterator& operator -- () {
+    bfsTemplateIterator& operator -- () {
         if(m_level < 0) {
             return *this;
         }
@@ -230,7 +253,7 @@ public:
         return *this;
     }
     
-    TemplateIterator operator -- (int)  {
+    bfsTemplateIterator operator -- (int)  {
         auto buffer = *this;
         
         this->operator--();
@@ -238,8 +261,8 @@ public:
         return buffer;
     }
     
-    bool operator == (const TemplateIterator& other) const {return *m_iter == (*other.m_iter);}
-    bool operator != (const TemplateIterator& other) const {return !(this->operator==(other));}
+    bool operator == (const bfsTemplateIterator& other) const {return *m_iter == (*other.m_iter);}
+    bool operator != (const bfsTemplateIterator& other) const {return !(this->operator==(other));}
     
 private:
     void update(const int newLevel, NodeType* node) {
@@ -260,5 +283,22 @@ private:
     std::list<NodeType* >::iterator m_iter = {};
     int m_level = 0;
 };
+
+
+
+template <typename NodeType, typename TreeType>
+class BinaryTree::lnrTemplateIterator : public IIterator<NodeType, TreeType> {
+public:
+    lnrTemplateIterator() = default;
+    ~lnrTemplateIterator() override = default;
+
+private:
+    //TODO: prevNode
+    //TODO: currentNodee
+    //TODO: nextNode
+ 
+
+};
+
 
 #endif /* Binary_Tree_hpp */

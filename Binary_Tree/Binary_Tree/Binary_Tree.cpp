@@ -142,11 +142,11 @@ int BinaryTree::maxLevel() const {
     return result - 1;
 }
 
-BinaryTree::Iterator BinaryTree::begin() {return Iterator(this, m_root);}
-BinaryTree::Iterator BinaryTree::end() {return Iterator(this, nullptr);}
+BinaryTree::bfsIterator BinaryTree::begin() {return bfsIterator(this, m_root);}
+BinaryTree::bfsIterator BinaryTree::end() {return bfsIterator(this, nullptr);}
 
-BinaryTree::ConstIterator BinaryTree::begin() const {return ConstIterator(this, m_root);}
-BinaryTree::ConstIterator BinaryTree::end() const {return ConstIterator(this, nullptr);}
+BinaryTree::bfsConstIterator BinaryTree::begin() const {return bfsConstIterator(this, m_root);}
+BinaryTree::bfsConstIterator BinaryTree::end() const {return bfsConstIterator(this, nullptr);}
 
 void BinaryTree::clearFrom(Node* root) {
     if(!root) {
@@ -363,32 +363,17 @@ BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
 }
 
 std::vector<int> BinaryTree::toVector() const {
-    std::vector<int> result;
+    std::vector<int> result = toVectorLnr();
     
-    std::list<Node*> unprocessedNodes(1, m_root);
-    Node* current = nullptr;
-    while(!unprocessedNodes.empty()) {
-        current = unprocessedNodes.front();
-        unprocessedNodes.pop_front();
-        
-        result.push_back(current->key());
-        
-        if(current->left()) {
-            unprocessedNodes.push_back(current->left());
-        }
-        
-        if(current->right()) {
-            unprocessedNodes.push_back(current->right());
-        }
-    }
+    std::sort(result.begin(), result.end());
     
     return result;
 }
 
-std::vector<int> BinaryTree::toVectorNlr() const {
+std::vector<int> BinaryTree::toVectorLnr() const {
     std::vector<int> result;
     
-    toVectorNlr(m_root, result);
+    toVectorLnr(m_root, result);
     
     return result;
 }
@@ -456,15 +441,15 @@ BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
 
 /* private */
 
-void BinaryTree::toVectorNlr(Node* root, std::vector<int>& nums) const {
+void BinaryTree::toVectorLnr(Node* root, std::vector<int>& nums) const {
     
     if(!root) {
         return;
     }
     
+    toVectorLnr(root->left(), nums);
     nums.push_back(root->key());
-    toVectorNlr(root->left(), nums);
-    toVectorNlr(root->right(), nums);
+    toVectorLnr(root->right(), nums);
 }
 
 void BinaryTree::getLeafs(Node* root, std::vector<Node* >& leafs) const {
