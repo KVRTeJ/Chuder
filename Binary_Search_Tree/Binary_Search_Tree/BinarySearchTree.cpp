@@ -48,7 +48,7 @@ BinaryTree::Node* SearchTree::find(const int key) const {
 }
 
 std::vector<int> SearchTree::toVector() const {
-    std::vector<int> result = toVectorNlr();;
+    std::vector<int> result = toVectorLnr();;
     
     return result;
 }
