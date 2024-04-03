@@ -30,5 +30,12 @@ int main() {
     std::cout << std::endl;
     
     foo.printLevels();
+    
+    std::cout << std::endl;std::cout << std::endl;std::cout << std::endl;
+    
+    auto vec = foo.toVector();
+    for(auto it = vec.begin(); it != vec.end(); ++it) {
+        std::cout << (*it) << ' ';
+    }
     return 0;
 }
