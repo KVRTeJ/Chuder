@@ -1,21 +1,5 @@
 #include "BinarySearchTree.hpp"
 
-int SearchTree::max() const {
-    const Node* result = root();
-    
-    for(;result->right() != nullptr; result = result->right());
-    
-    return result->key();
-}
-
-int SearchTree::min() const {
-    const Node* result = root();
-    
-    for(;result->left() != nullptr; result = result->left());
-    
-    return result->key();
-}
-
 int SearchTree::level(const int key) const {
     if(!root()) {
         return {};
@@ -31,6 +15,16 @@ int SearchTree::level(const int key) const {
     }
     
     return result;
+}
+
+SearchTree SearchTree::copy(Node* tree) {
+    BinaryTree parent = BinaryTree::copy(tree);
+    SearchTree newTree = {};
+    
+    newTree.setRoot(parent.root());
+    parent.setRoot(nullptr);
+    
+    return newTree;
 }
 
 BinaryTree::Node* SearchTree::find(const int key) const {
@@ -66,4 +60,22 @@ BinaryTree::Node* SearchTree::add(Node* root, const int value) {
     }
     
     return root;
+}
+
+void SearchTree::max(Node* root, int& buffer) const {
+    if(!root) {
+        return;
+    }
+    
+    buffer = root->key();
+    max(root->right(), buffer);
+}
+
+void SearchTree::min(Node* root, int& buffer) const {
+    if(!root) {
+        return;
+    }
+    
+    buffer = root->key();
+    min(root->left(), buffer);
 }
