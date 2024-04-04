@@ -10,6 +10,10 @@ int main() {
             foo.add(i);
         }
     }
+    
+    foo.clearFrom(foo.find(2));
+    foo.printHorizontal(foo.root());
+    return -1;
     foo.printHorizontal(foo.root());
     //foo.printLeafs(foo.root());
     auto nodes = foo.levelNodes(foo.root(), 5);

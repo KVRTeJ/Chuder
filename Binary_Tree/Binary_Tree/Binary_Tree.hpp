@@ -31,8 +31,8 @@ public:
     int height() const;
     int height(Node* root, int currentHeight = 0, int maxHeight = 0) const;
     int nodeCount(Node* root) const;
-    virtual int max() const; //TODO: перегрузить не их а приватные методы -> их в protected
-    virtual int min() const;
+    int max() const; //TODO: перегрузить не их а приватные методы -> их в protected
+    int min() const;
     ///returns -1 if not found
     virtual int level(const int key) const;
     int level(Node* root, Node* target, int currentLevel = 0) const;
@@ -53,7 +53,6 @@ public:
 
     void clear();
     void clearFrom(Node* root);
-    void clearFromInclusiveRoot(Node* root);
     
     bool empty() const {return m_root == nullptr;}
     bool balanced() const;
@@ -82,15 +81,18 @@ public:
     
     BinaryTree& operator = (const BinaryTree& other);
     
+protected:
+    virtual void max(Node* root, int& buffer) const;
+    virtual void min(Node* root, int& buffer) const;
+    
 private:
+    void clearFromInclusiveRoot(Node* root);
+    
     void toVectorLnr(Node* root, std::vector<int>& nums) const;
     
     void getLeafs(Node* root, std::vector<Node* >& leafs) const;
     
     virtual Node* add(Node* root, const int value);
-    
-    void max(Node* root, int& buffer) const; //TODO: to protected
-    void min(Node* root, int& buffer) const;
     
 private:
     Node* m_root = nullptr;

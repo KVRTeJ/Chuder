@@ -20,7 +20,9 @@ BinaryTree::BinaryTree(const BinaryTree& other) {
 }
 
 void BinaryTree::clear() {
-    clearFromInclusiveRoot(m_root);
+    clearFrom(m_root);
+    delete m_root;
+    m_root = nullptr;
 }
 
 int BinaryTree::nodeCount(Node* root) const {
@@ -153,8 +155,14 @@ void BinaryTree::clearFrom(Node* root) {
         return;
     }
     
-    clearFromInclusiveRoot(root->left());
-    clearFromInclusiveRoot(root->right());
+    if(root->left()) {
+        clearFromInclusiveRoot(root->left());
+        root->setLeft(nullptr);
+    }
+    if(root->right()) {
+        clearFromInclusiveRoot(root->right());
+        root->setRight(nullptr);
+    }
 }
 
 void BinaryTree::clearFromInclusiveRoot(Node* root) {
@@ -162,9 +170,16 @@ void BinaryTree::clearFromInclusiveRoot(Node* root) {
         return;
     }
     
-    clearFrom(root->left());
-    clearFrom(root->right());
+    if(root->left()) {
+        clearFromInclusiveRoot(root->left());
+        root->setLeft(nullptr);
+    }
+    if(root->right()) {
+        clearFromInclusiveRoot(root->right());
+        root->setRight(nullptr);
+    }
     delete root;
+    root = nullptr;
 }
 
 bool BinaryTree::balanced() const {
@@ -210,11 +225,13 @@ bool BinaryTree::remove(Node* node) {
             if(data.nodeParent->left() == data.target) {
                 data.nodeParent->setLeft(nullptr);
                 delete data.target;
+                data.target = nullptr;
                 if(data.replacementNode)
                     data.nodeParent->setLeft(data.replacementNode);
             } else {
                 data.nodeParent->setRight(nullptr);
                 delete data.target;
+                data.target = nullptr;
                 if(data.replacementNode)
                     data.nodeParent->setRight(data.replacementNode);
             }
@@ -429,7 +446,7 @@ void BinaryTree::printLevels() const {
 BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
     
     if(m_root != other.m_root) {
-        clear();
+        clearFrom(m_root);
         
         auto temp = copy(other.m_root);
         std::swap(m_root, temp.m_root);
