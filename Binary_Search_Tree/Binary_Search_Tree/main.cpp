@@ -23,7 +23,7 @@ int main() {
     std::cout << std::endl;
     std::cout << std::endl;
     
-    auto nums = foo.toVector();
+    auto nums = foo.toVectorAsc();
     for(auto it = nums.begin(); it != nums.end(); ++it) {
         std::cout << *it << ' ';
     }
@@ -31,9 +31,8 @@ int main() {
     
     std::cout << std::endl;    std::cout << std::endl;    std::cout << std::endl;
     
-    auto temp = foo.copy(foo.find(3));
+    auto temp = foo.copy(foo.find(7));
     foo = temp;
     foo.printHorizontal(foo.root());
-    
     return 0;
 }

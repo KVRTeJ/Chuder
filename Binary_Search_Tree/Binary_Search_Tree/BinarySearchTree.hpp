@@ -16,7 +16,7 @@ public:
 
     Node* find(const int key) const override;
     
-    std::vector<int> toVector() const override; //TODO: правильная реализация? (можно передавать лямбду в аргмуенты, в бинарном дереве сортировка, а тут nullpttr)
+    std::vector<int> toVectorAsc() const override;
     
     SearchTree& operator = (const SearchTree& other) = default;
     
