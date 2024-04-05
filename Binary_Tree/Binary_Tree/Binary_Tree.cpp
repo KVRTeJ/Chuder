@@ -379,7 +379,7 @@ BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
     return nullptr;
 }
 
-std::vector<int> BinaryTree::toVector() const {
+std::vector<int> BinaryTree::toVectorAsc() const {
     std::vector<int> result = toVectorLnr();
     
     std::sort(result.begin(), result.end());

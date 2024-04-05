@@ -70,8 +70,7 @@ public:
     ///if child == nullptr -> return leaf
     Node* findParent(Node* root, Node* child);
     
-    /// BFS - proccessing
-    virtual std::vector<int> toVector() const;
+    virtual std::vector<int> toVectorAsc() const;
     std::vector<int> toVectorLnr() const;
     std::vector<Node* > getLeafs(Node* root) const;
     
