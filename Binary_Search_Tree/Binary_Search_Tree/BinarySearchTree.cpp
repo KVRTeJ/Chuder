@@ -17,10 +17,6 @@ int SearchTree::level(const int key) const {
     return result;
 }
 
-bool SearchTree::remove(const int key) {
-    return false;
-}
-
 SearchTree SearchTree::copy(Node* tree) {
     BinaryTree parent = BinaryTree::copy(tree);
     SearchTree newTree = {};
@@ -82,4 +78,26 @@ void SearchTree::min(Node* root, int& buffer) const {
     
     buffer = root->key();
     min(root->left(), buffer);
+}
+
+void SearchTree::removeIfBothChildren(removeData& data) {
+    int buffer = data.target->key();
+    min(data.target->right(), buffer);
+    
+    data.replacementNode = find(buffer);
+    Node* replacementNodeParent = findParent(data.target, data.replacementNode);
+    
+    if(data.replacementNode->right()) {
+        replacementNodeParent->setLeft(data.replacementNode->right());
+    } else {
+        Node* replacementNodeChild = data.replacementNode->right();
+        if(replacementNodeParent->left() == data.replacementNode) {
+            replacementNodeParent->setLeft(replacementNodeChild);
+        }
+    }
+    
+    
+    data.replacementNode->setLeft(data.target->left());
+    data.replacementNode->setRight(data.target->right());
+    finishRemove(data);
 }

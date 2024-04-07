@@ -10,8 +10,6 @@ public:
     
     int level(const int key) const override;
     
-    bool remove(const int key) override; //TODO: imp me
-    
     SearchTree copy(Node* tree);
 
     Node* find(const int key) const override;
@@ -23,6 +21,8 @@ public:
 protected:
     void max(Node* root, int& buffer) const override;
     void min(Node* root, int& buffer) const override;
+    
+    void removeIfBothChildren(removeData& data) override; //FIXME: fixme case replacedNodeParent == target
     
 private:
     Node* add(Node* root, const int value) override;
