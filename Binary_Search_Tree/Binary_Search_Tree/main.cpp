@@ -1,27 +1,57 @@
 #include "BinarySearchTree.hpp"
 
 int main() {
+    srand(static_cast<unsigned>(time(0)));
     
     SearchTree foo;
-    std::vector<int> nums = {50, 20, 70, 10, 30, 60, 90, 5, 15, 25, 40, 35, 45};
-    for(auto it = nums.begin(); it != nums.end(); ++it) {
-        foo.BinaryTree::add(*it);
+    
+    int newNum = 0;
+    for(int i = 0; i < 150; ++i) {
+        newNum = rand() % 100;
+        foo.BinaryTree::add(newNum);
     }
+    bool wantPrint = false;
+    char answer = {};
+    std::cout << "Want to print tree? y/n: ";
+    std::cin >> answer;
+    if(answer == 'y')
+        wantPrint = true;
     
-    foo.BinaryTree::add(27);
-    foo.printHorizontal(foo.root());
+    if(wantPrint)
+        foo.printHorizontal(foo.root());
     
-    foo.remove(20);
-    std::cout << std::endl; std::cout << "-=-=-=-=-=-" << std::endl; std::cout << std::endl;
-    foo.printHorizontal(foo.root());
+    int maxSize = foo.nodeCount(foo.root());
+    std::vector<int> fooNums = foo.toVectorAsc();
+    assert(maxSize == fooNums.size());
     
-    foo.remove(25);
-    std::cout << std::endl; std::cout << "-=-=-=-=-=-" << std::endl; std::cout << std::endl;
-    foo.printHorizontal(foo.root());
+    std::cout << "size - " << maxSize << std::endl;
     
-    foo.remove(27);
-    std::cout << std::endl; std::cout << "-=-=-=-=-=-" << std::endl; std::cout << std::endl;
-    foo.printHorizontal(foo.root());
+    std::cout << '{';
+    for(auto it = fooNums.begin(); it != fooNums.end(); ++it) {
+        std::cout << *it << (it + 1 == fooNums.end() ? "": ", ");
+    }
+    std::cout << '}' << std::endl;
     
+    int currentSize = maxSize;
+    int iterationsCount = 0;
+    do {
+        newNum = rand() % 100;
+        std::cout << "deleted - " << newNum << (newNum / 10 ? " ": "  ");
+        if(foo.remove(newNum)) {
+            std::cout << "successfully";
+            --currentSize;
+            fooNums.erase(std::find(fooNums.begin(), fooNums.end(), newNum));
+        } else {
+            std::cout << "fail";
+        }
+        std::cout << std::endl;
+        assert(!static_cast<bool>(foo.find(newNum)));
+        assert(currentSize == foo.nodeCount(foo.root()));
+        assert(currentSize == fooNums.size());
+        ++iterationsCount;
+    } while(!foo.empty());
+    assert(currentSize == 0);
+    float probability = (static_cast<float>(maxSize) / iterationsCount) * 100;
+    std::cout << "Test is done!\nThe probability of a hit - " << probability << '%' << std::endl;
     return 0;
 }

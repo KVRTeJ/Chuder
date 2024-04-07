@@ -22,7 +22,7 @@ protected:
     void max(Node* root, int& buffer) const override;
     void min(Node* root, int& buffer) const override;
     
-    void removeIfBothChildren(removeData& data) override; //FIXME: fixme case replacedNodeParent == target
+    void removeIfBothChildren(removeData& data) override;
     
 private:
     Node* add(Node* root, const int value) override;

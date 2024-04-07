@@ -87,13 +87,19 @@ void SearchTree::removeIfBothChildren(removeData& data) {
     data.replacementNode = find(buffer);
     Node* replacementNodeParent = findParent(data.target, data.replacementNode);
     
+    if(replacementNodeParent == data.target) {
+        data.replacementNode->setLeft(data.target->left());
+        finishRemove(data);
+        return;
+    }
+    
     if(data.replacementNode->right()) {
         replacementNodeParent->setLeft(data.replacementNode->right());
     } else {
-        Node* replacementNodeChild = data.replacementNode->right();
-        if(replacementNodeParent->left() == data.replacementNode) {
-            replacementNodeParent->setLeft(replacementNodeChild);
-        }
+        if(replacementNodeParent->right() == data.replacementNode)
+            replacementNodeParent->setRight(nullptr);
+        else
+            replacementNodeParent->setLeft(nullptr);
     }
     
     
