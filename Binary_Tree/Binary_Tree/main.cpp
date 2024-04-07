@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 
 #include "Binary_Tree.hpp"
 
@@ -11,8 +12,13 @@ int main() {
         }
     }
     
-    foo.clearFrom(foo.find(2));
-    foo.printHorizontal(foo.root());
+    do {
+        foo.remove(foo.root());
+        foo.printHorizontal(foo.root());
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+        std::cout << std::endl;        std::cout << std::endl;
+    } while(!foo.empty());
+     
     return -1;
     foo.printHorizontal(foo.root());
     //foo.printLeafs(foo.root());
@@ -37,7 +43,7 @@ int main() {
     
     std::cout << std::endl;std::cout << std::endl;std::cout << std::endl;
     
-    auto vec = foo.toVector();
+    auto vec = foo.toVectorAsc();
     for(auto it = vec.begin(); it != vec.end(); ++it) {
         std::cout << (*it) << ' ';
     }
