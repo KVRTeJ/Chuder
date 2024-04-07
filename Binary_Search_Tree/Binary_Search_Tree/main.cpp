@@ -34,5 +34,8 @@ int main() {
     auto temp = foo.copy(foo.find(7));
     foo = temp;
     foo.printHorizontal(foo.root());
+    std::cout << std::endl;    std::cout << std::endl;    std::cout << std::endl;
+    foo.BinaryTree::add(7);
+    foo.printHorizontal(foo.root());
     return 0;
 }

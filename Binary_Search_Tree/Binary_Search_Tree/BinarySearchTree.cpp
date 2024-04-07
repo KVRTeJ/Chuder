@@ -17,6 +17,10 @@ int SearchTree::level(const int key) const {
     return result;
 }
 
+bool SearchTree::remove(const int key) {
+    return false;
+}
+
 SearchTree SearchTree::copy(Node* tree) {
     BinaryTree parent = BinaryTree::copy(tree);
     SearchTree newTree = {};
@@ -55,7 +59,7 @@ BinaryTree::Node* SearchTree::add(Node* root, const int value) {
         root = new Node(value);
     } else if(value < root->key()) {
         root->setLeft(add(root->left(), value));
-    } else {
+    } else if(value > root->key()){
         root->setRight(add(root->right(), value));
     }
     

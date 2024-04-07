@@ -10,7 +10,7 @@ public:
     
     int level(const int key) const override;
     
-    bool remove(const int key) override {return false;} //TODO: implement me
+    bool remove(const int key) override; //TODO: imp me
     
     SearchTree copy(Node* tree);
 
@@ -26,8 +26,6 @@ protected:
     
 private:
     Node* add(Node* root, const int value) override;
-    
-    
     
 };
 
