@@ -4,16 +4,6 @@
 
 #include "Binary_Tree.hpp"
 
-namespace {
-    
-    struct Data {
-        BinaryTree::Node* target = nullptr;
-        BinaryTree::Node* nodeParent = nullptr;
-        BinaryTree::Node* replacementNode = nullptr;
-    };
-    
-}
-
 BinaryTree::BinaryTree(const BinaryTree& other) {
     auto temp = copy(other.m_root);
     std::swap(m_root, temp.m_root);
@@ -211,7 +201,7 @@ void BinaryTree::add(const int key) {
 }
 
 bool BinaryTree::remove(Node* node) {
-    Data data = {};
+    removeData data = {};
     
     data.target = node;
     if(!data.target) {
@@ -219,50 +209,9 @@ bool BinaryTree::remove(Node* node) {
     }
     
     data.nodeParent = findParent(m_root, data.target);
-    
-    auto finishRemove {
-        [this](Data& data) {
-            if(data.nodeParent->left() == data.target) {
-                data.nodeParent->setLeft(nullptr);
-                delete data.target;
-                data.target = nullptr;
-                if(data.replacementNode)
-                    data.nodeParent->setLeft(data.replacementNode);
-            } else {
-                data.nodeParent->setRight(nullptr);
-                delete data.target;
-                data.target = nullptr;
-                if(data.replacementNode)
-                    data.nodeParent->setRight(data.replacementNode);
-            }
-        }
-    };
-    
-    if(data.nodeParent == data.target) {
-        clear();
-    } else {
-        if(data.target->left() == nullptr && data.target->right() == nullptr) {
-            finishRemove(data);
-            
-        } else if(!data.target->left()) {
-            data.replacementNode = data.target->right();
-            finishRemove(data);
-        } else if(!data.target->right()) {
-            data.replacementNode = data.target->left();
-            finishRemove(data);
-            
-        } else {
-            data.replacementNode = findParent(data.target, nullptr);
-            Node* leafParent = findParent(data.target, data.replacementNode);
-            if(leafParent->left() == data.replacementNode) {
-                leafParent->setLeft(nullptr);
-            } else {
-                leafParent->setRight(nullptr);
-            }
-            data.replacementNode->setLeft(data.target->left());
-            data.replacementNode->setRight(data.target->right());
-            finishRemove(data);
-        }
+    if(removeTrivialCase(data));
+    else {
+        removeIfBothChildren(data);
     }
     
     return true;
@@ -455,9 +404,66 @@ BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
         return *this;
 }
 
+/* protected */
+void BinaryTree::finishRemove(removeData& data) {
+    if(!data.nodeParent) {
+        return;
+    }
+    
+    if(data.nodeParent == data.target) {
+        m_root = data.replacementNode;
+        delete data.target;
+        data.target = nullptr;
+        data.nodeParent = nullptr;
+    } else if(data.nodeParent->left() == data.target) {
+        data.nodeParent->setLeft(nullptr);
+        delete data.target;
+        data.target = nullptr;
+        if(data.replacementNode)
+            data.nodeParent->setLeft(data.replacementNode);
+    } else {
+        data.nodeParent->setRight(nullptr);
+        delete data.target;
+        data.target = nullptr;
+        if(data.replacementNode)
+            data.nodeParent->setRight(data.replacementNode);
+    }
+    
+}
+
+bool BinaryTree::removeTrivialCase(removeData& data) {
+    
+    if(data.target->left() == nullptr && data.target->right() == nullptr) {
+        finishRemove(data);
+    } else if(!data.target->left()) {
+        data.replacementNode = data.target->right();
+        finishRemove(data);
+    } else if(!data.target->right()) {
+        data.replacementNode = data.target->left();
+        finishRemove(data);
+    } else {
+        return false;
+    }
+    
+    return true;
+}
+
+void BinaryTree::removeIfBothChildren(removeData& data) {
+    data.replacementNode = findParent(data.target, nullptr);
+    Node* leafParent = findParent(data.target, data.replacementNode);
+    
+    if(leafParent->left() == data.replacementNode) {
+        leafParent->setLeft(nullptr);
+    } else {
+        leafParent->setRight(nullptr);
+    }
+    
+    data.replacementNode->setLeft(data.target->left());
+    data.replacementNode->setRight(data.target->right());
+    finishRemove(data);
+}
 
 /* private */
-
 void BinaryTree::toVectorLnr(Node* root, std::vector<int>& nums) const {
     
     if(!root) {

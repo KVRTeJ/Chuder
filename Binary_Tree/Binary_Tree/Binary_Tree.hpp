@@ -31,7 +31,7 @@ public:
     int height() const;
     int height(Node* root, int currentHeight = 0, int maxHeight = 0) const;
     int nodeCount(Node* root) const;
-    int max() const; //TODO: перегрузить не их а приватные методы -> их в protected
+    int max() const;
     int min() const;
     ///returns -1 if not found
     virtual int level(const int key) const;
@@ -61,7 +61,7 @@ public:
     
     void add(const int key);
     BinaryTree copy(Node* root) const;
-    virtual bool remove(const int key) {return remove(find(key));}
+    bool remove(const int key) {return remove(find(key));}
     bool remove(Node* target);
     /// BFS - proccessing
     virtual Node* find(const int key) const;
@@ -75,7 +75,7 @@ public:
     std::vector<Node* > getLeafs(Node* root) const;
     
     void printLeafs(Node* root) const;
-    void printHorizontal(Node *root, int marginLeft = 2, int levelSpacing = 4) const;
+    void printHorizontal(Node *root, int marginLeft = 3, int levelSpacing = 5) const;
     void printLevels() const;
     
     BinaryTree& operator = (const BinaryTree& other);
@@ -83,6 +83,11 @@ public:
 protected:
     virtual void max(Node* root, int& buffer) const;
     virtual void min(Node* root, int& buffer) const;
+    
+    struct removeData;
+    void finishRemove(removeData& data);
+    bool removeTrivialCase(removeData& data);
+    virtual void removeIfBothChildren(removeData& data);
     
 private:
     void clearFromInclusiveRoot(Node* root);
@@ -118,6 +123,12 @@ private:
     int m_key = 0;
     Node* m_left = nullptr;
     Node* m_right = nullptr;
+};
+
+struct BinaryTree::removeData {
+    BinaryTree::Node* target = nullptr;
+    BinaryTree::Node* nodeParent = nullptr;
+    BinaryTree::Node* replacementNode = nullptr;
 };
 
 template<typename NodeType>
@@ -160,7 +171,6 @@ public:
     
     virtual bool isValid() const = 0;
     int getLevel() const;
-    //operator == ??
 };
 
 
