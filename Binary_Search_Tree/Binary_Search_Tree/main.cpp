@@ -20,6 +20,14 @@ int main() {
         ++it;
         ++counter;
     }
+    ++it;
+    
+    --it;
+    while((*it)->key() != tree.BinaryTree::min()) {
+        assert(nums[counter] == (*it)->key());
+        --it;
+        --counter;
+    }
     
     return -1;
     srand(static_cast<unsigned>(time(0)));

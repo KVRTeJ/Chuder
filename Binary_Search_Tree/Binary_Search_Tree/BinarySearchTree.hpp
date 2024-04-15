@@ -50,9 +50,15 @@ public:
     NodeType* operator * () {return m_currentNode;}
     
     lnrTemplateIterator& operator ++ () {
-        if(!m_nextNode)
+        if(!m_currentNode) {
             return *this;
-        
+        }
+        if(!m_nextNode) {
+            std::swap(m_currentNode, m_prevNode);
+            m_currentNode = nullptr;
+            return *this;
+        }
+            
         std::swap(m_currentNode, m_prevNode);
         m_currentNode = m_nextNode;
         updateNextNode();
@@ -60,11 +66,30 @@ public:
             m_nextNode = nullptr;
         return *this;
     }
-    lnrTemplateIterator operator ++ (int) const;
+    
+    lnrTemplateIterator operator ++ (int) const {
+        auto old = *this;
+        this->operator++();
+        return old;
+    }
     
     lnrTemplateIterator& operator -- () {
+        if(!m_prevNode)
+            return *this;
         
+        if(!m_currentNode) {
+            m_currentNode = m_prevNode;
+            updatePrevNode();
+            return *this;
+        }
+        std::swap(m_currentNode, m_nextNode);
+        std::swap(m_currentNode, m_prevNode);
+        updatePrevNode();
+        if(m_currentNode->key() < m_prevNode->key())
+            m_prevNode = nullptr;
+        return *this;
     }
+    
     lnrTemplateIterator operator -- (int) const {
         
     }
@@ -74,9 +99,23 @@ public:
     
 private:
     void updatePrevNode() {
-        m_prevNode = (m_currentNode->left()
-                      ? m_tree->find(m_tree->BinaryTree::max(m_currentNode->left()))
-                      : nullptr);
+        if(m_currentNode->left()) {
+            m_prevNode = m_tree->find(m_tree->BinaryTree::max(m_currentNode->left()));
+            return;
+        }
+        m_prevNode = m_tree->findParent(m_tree->root(), m_currentNode);
+        
+        if(m_prevNode == m_tree->root() && m_currentNode == m_tree->root()) {
+            m_prevNode = m_tree->find(m_tree->BinaryTree::max(m_currentNode->left()));
+            return;
+        }
+        
+        while(m_currentNode->key() < m_prevNode->key()) {
+            m_prevNode = m_tree->findParent(m_tree->root(), m_prevNode);
+            if(m_prevNode == m_tree->root())
+                break;
+        }
+        
     }
     
     void updateNextNode() {
