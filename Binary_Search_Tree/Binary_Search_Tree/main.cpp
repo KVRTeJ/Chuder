@@ -14,20 +14,25 @@ int main() {
     
     auto nums = tree.BinaryTree::toVectorAsc();
     int counter = 0;
-    SearchTree::lnrConstIterator it(&tree, tree.find(0));
+    SearchTree::lnrIterator it = tree.end();
+    it--;
     while((*it)->key() != tree.BinaryTree::max()) {
         assert(nums[counter] == (*it)->key());
+        std::cout << (*it)->key() << ' ';
         ++it;
         ++counter;
     }
-    ++it;
-    
-    --it;
+    it++;
+    std::cout << std::endl;    std::cout << std::endl;    std::cout << std::endl;
+    it--;
     while((*it)->key() != tree.BinaryTree::min()) {
         assert(nums[counter] == (*it)->key());
+        std::cout << (*it)->key() << ' ';
         --it;
         --counter;
     }
+    
+    
     
     return -1;
     srand(static_cast<unsigned>(time(0)));

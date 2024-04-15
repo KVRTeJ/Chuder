@@ -1,5 +1,21 @@
 #include "BinarySearchTree.hpp"
 
+SearchTree::lnrIterator SearchTree::begin() {
+    return lnrIterator(this, find(BinaryTree::min()));
+}
+
+SearchTree::lnrIterator SearchTree::end() {
+    return ++lnrIterator(this, find(BinaryTree::max()));
+}
+
+SearchTree::lnrConstIterator SearchTree::begin() const {
+    return lnrConstIterator(this, find(BinaryTree::min()));
+}
+
+SearchTree::lnrConstIterator SearchTree::end() const {
+    return ++lnrConstIterator(this, find(BinaryTree::max()));
+}
+
 int SearchTree::level(const int key) const {
     if(!root()) {
         return {};

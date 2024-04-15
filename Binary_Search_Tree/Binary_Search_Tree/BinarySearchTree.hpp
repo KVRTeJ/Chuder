@@ -8,10 +8,17 @@ public:
     template <typename NodeType, typename TreeType>
     class lnrTemplateIterator; //TODO: implement me
     using lnrConstIterator = lnrTemplateIterator<const Node, const SearchTree>;
+    using lnrIterator = lnrTemplateIterator<Node, SearchTree>;
     
 public:
     SearchTree() = default;
     ~SearchTree() override = default;
+    
+    lnrIterator begin();
+    lnrIterator end();
+    
+    lnrConstIterator begin() const;
+    lnrConstIterator end() const;
     
     int level(const int key) const override;
     
@@ -45,9 +52,20 @@ public:
     
     ~lnrTemplateIterator() override = default;
     
-    bool isValid() const override {return m_currentNode != nullptr;}//TODO: check prevNode nextNode
+    bool isValid() const override {
+        bool isProspective = m_prevNode && m_nextNode;
+        return isProspective || m_currentNode;
+    }
     
-    NodeType* operator * () {return m_currentNode;}
+    NodeType* operator * () {
+        if(!m_currentNode) {
+            Node empty = Node();
+            Node* result = &empty;
+            return result;
+        }
+        
+        return m_currentNode;
+    }
     
     lnrTemplateIterator& operator ++ () {
         if(!m_currentNode) {
@@ -62,12 +80,10 @@ public:
         std::swap(m_currentNode, m_prevNode);
         m_currentNode = m_nextNode;
         updateNextNode();
-        if(m_currentNode->key() > m_nextNode->key())
-            m_nextNode = nullptr;
         return *this;
     }
     
-    lnrTemplateIterator operator ++ (int) const {
+    lnrTemplateIterator operator ++ (int) {
         auto old = *this;
         this->operator++();
         return old;
@@ -85,13 +101,13 @@ public:
         std::swap(m_currentNode, m_nextNode);
         std::swap(m_currentNode, m_prevNode);
         updatePrevNode();
-        if(m_currentNode->key() < m_prevNode->key())
-            m_prevNode = nullptr;
         return *this;
     }
     
-    lnrTemplateIterator operator -- (int) const {
-        
+    lnrTemplateIterator operator -- (int) {
+        auto old = *this;
+        this->operator--();
+        return old;
     }
     
     bool operator == (const lnrTemplateIterator& other) const {return m_currentNode == other.m_currentNode;}
@@ -112,8 +128,11 @@ private:
         
         while(m_currentNode->key() < m_prevNode->key()) {
             m_prevNode = m_tree->findParent(m_tree->root(), m_prevNode);
-            if(m_prevNode == m_tree->root())
+            if(m_prevNode == m_tree->root()) {
+                if(m_prevNode->key() > m_currentNode->key())
+                    m_prevNode = nullptr;
                 break;
+            }
         }
         
     }
@@ -132,8 +151,11 @@ private:
         
         while(m_currentNode->key() > m_nextNode->key()) {
             m_nextNode = m_tree->findParent(m_tree->root(), m_nextNode);
-            if(m_nextNode == m_tree->root())
+            if(m_nextNode == m_tree->root()) {
+                if(m_nextNode->key() < m_currentNode->key())
+                    m_nextNode = nullptr;
                 break;
+            }
         }
         /*
         else if(m_nextNode == m_prevNode) {
