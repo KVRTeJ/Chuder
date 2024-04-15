@@ -1,6 +1,24 @@
 #include "BinarySearchTree.hpp"
 
 int main() {
+    
+    SearchTree tree;
+    tree.BinaryTree::add(5);
+    for(int i = 0; i < 90; ++i) {
+        tree.BinaryTree::add(rand() % 20);
+    }
+    
+    tree.BinaryTree::add(1);
+    tree.printHorizontal(tree.root());
+    auto temp = tree.findParent(tree.root(), tree.find(2));
+    SearchTree::lnrConstIterator it(&tree, tree.find(0));
+    ++it;
+    ++it;
+    ++it;
+    ++it;
+    ++it;
+    ++it;
+    return -1;
     srand(static_cast<unsigned>(time(0)));
     
     SearchTree foo;
