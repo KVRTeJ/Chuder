@@ -12,6 +12,7 @@ int main() {
         }
     }
     
+
     do {
         foo.remove(foo.root());
         foo.printHorizontal(foo.root());
@@ -48,4 +49,5 @@ int main() {
         std::cout << (*it) << ' ';
     }
     return 0;
+     
 }
