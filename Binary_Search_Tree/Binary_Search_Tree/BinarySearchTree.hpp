@@ -86,15 +86,21 @@ private:
         }
         m_nextNode = m_tree->findParent(m_tree->root(), m_currentNode);
         
-        if(m_nextNode == m_tree->root()) {
+        if(m_nextNode == m_tree->root() && m_currentNode == m_tree->root()) {
             m_nextNode = m_tree->find(m_tree->BinaryTree::min(m_currentNode->right()));
-            //return;
+            return;
         }
         
-        
+        while(m_currentNode->key() > m_nextNode->key()) {
+            m_nextNode = m_tree->findParent(m_tree->root(), m_nextNode);
+            if(m_nextNode == m_tree->root())
+                break;
+        }
+        /*
         else if(m_nextNode == m_prevNode) {
             m_nextNode = m_tree->findParent(m_tree->root(), m_nextNode);
         }
+         */
          
     }
 private:

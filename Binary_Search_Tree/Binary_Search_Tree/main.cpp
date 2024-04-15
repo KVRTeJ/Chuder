@@ -10,14 +10,17 @@ int main() {
     
     tree.BinaryTree::add(1);
     tree.printHorizontal(tree.root());
-    auto temp = tree.findParent(tree.root(), tree.find(2));
+
+    
+    auto nums = tree.BinaryTree::toVectorAsc();
+    int counter = 0;
     SearchTree::lnrConstIterator it(&tree, tree.find(0));
-    ++it;
-    ++it;
-    ++it;
-    ++it;
-    ++it;
-    ++it;
+    while((*it)->key() != tree.BinaryTree::max()) {
+        assert(nums[counter] == (*it)->key());
+        ++it;
+        ++counter;
+    }
+    
     return -1;
     srand(static_cast<unsigned>(time(0)));
     
