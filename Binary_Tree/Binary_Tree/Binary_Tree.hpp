@@ -19,10 +19,6 @@ public:
     using bfsIterator = bfsTemplateIterator<Node, BinaryTree>;
     using bfsConstIterator = bfsTemplateIterator<const Node, const BinaryTree>;
     
-    template <typename NodeType, typename TreeType>
-    class lnrTemplateIterator; //TODO: implement me
-    using lnrConstIterator = lnrTemplateIterator<const Node, const BinaryTree>;
-    
 public:
     BinaryTree() = default;
     BinaryTree(const BinaryTree& other);
@@ -31,8 +27,10 @@ public:
     int height() const;
     int height(Node* root, int currentHeight = 0, int maxHeight = 0) const;
     int nodeCount(Node* root) const;
-    int max() const;
-    int min() const;
+    int max() const {return max(m_root);}
+    int max(Node* root) const;
+    int min() const {return min(m_root);}
+    int min(Node* root) const;
     ///returns -1 if not found
     virtual int level(const int key) const;
     int level(Node* root, Node* target, int currentLevel = 0) const;
@@ -50,7 +48,7 @@ public:
     
     bfsConstIterator begin() const;
     bfsConstIterator end() const;
-
+    
     void clear();
     void clearFrom(Node* root);
     
@@ -69,6 +67,7 @@ public:
     Node* find(Node* start, Node* target) const;
     ///if child == nullptr -> return leaf
     Node* findParent(Node* root, Node* child);
+    const Node* findParent(const Node* root, const Node* child) const;
     
     virtual std::vector<int> toVectorAsc() const;
     std::vector<int> toVectorLnr() const;
@@ -167,10 +166,10 @@ std::list<NodeType*> BinaryTree::levelNodes(NodeType* root, const int level) con
 template <typename NodeType, typename TreeType>
 class BinaryTree::IIterator {
 public:
+    IIterator() = default;
     virtual ~IIterator() = default;
     
     virtual bool isValid() const = 0;
-    int getLevel() const;
 };
 
 
@@ -294,22 +293,5 @@ private:
     std::list<NodeType* >::iterator m_iter = {};
     int m_level = 0;
 };
-
-
-
-template <typename NodeType, typename TreeType>
-class BinaryTree::lnrTemplateIterator : public IIterator<NodeType, TreeType> {
-public:
-    lnrTemplateIterator() = default;
-    ~lnrTemplateIterator() override = default;
-
-private:
-    //TODO: prevNode
-    //TODO: currentNodee
-    //TODO: nextNode
- 
-
-};
-
 
 #endif /* Binary_Tree_hpp */

@@ -44,24 +44,24 @@ int BinaryTree::nodeCount(Node* root) const {
     return result;
 }
 
-int BinaryTree::max() const {
-    if(!m_root) {
+int BinaryTree::max(Node* root) const {
+    if(!root) {
         return {};
     }
     
-    int buffer = m_root->key();
-    max(m_root, buffer);
+    int buffer = root->key();
+    max(root, buffer);
     
     return buffer;
 }
 
-int BinaryTree::min() const {
-    if(!m_root) {
+int BinaryTree::min(Node* root) const {
+    if(!root) {
         return {};
     }
     
-    int buffer = m_root->key();
-    min(m_root, buffer);
+    int buffer = root->key();
+    min(root, buffer);
     
     return buffer;
 }
@@ -295,14 +295,14 @@ BinaryTree::Node* BinaryTree::find(Node* root, Node* target) const {
     return subTreeFindResult;
 }
 
-BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
+const BinaryTree::Node* BinaryTree::findParent(const Node* root, const Node* child) const {
     if(!root) {
         return nullptr;
     }
     
-    std::stack<BinaryTree::Node*> unprocessedNodes;
+    std::stack<const Node*> unprocessedNodes;
     unprocessedNodes.push(root);
-    Node* parent = nullptr;
+    const Node* parent = nullptr;
     while(!unprocessedNodes.empty()) {
         parent = unprocessedNodes.top();
         unprocessedNodes.pop();
@@ -326,6 +326,10 @@ BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
     }
     
     return nullptr;
+}
+
+BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
+    return const_cast<Node*>(findParent(const_cast<const Node*>(root), const_cast<const Node*>(child)));
 }
 
 std::vector<int> BinaryTree::toVectorAsc() const {
@@ -377,6 +381,7 @@ void BinaryTree::printHorizontal(Node *root, int marginLeft, int levelSpacing) c
     printHorizontal(root->left(), marginLeft + levelSpacing, levelSpacing);
 }
 
+
 void BinaryTree::printLevels() const {
     
     int current = {};
@@ -391,6 +396,7 @@ void BinaryTree::printLevels() const {
     
     std::cout << std::endl;
 }
+
 
 BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
     
