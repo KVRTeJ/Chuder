@@ -1,19 +1,19 @@
 #include "BinarySearchTree.hpp"
 
 SearchTree::lnrIterator SearchTree::begin() {
-    return lnrIterator(this, find(BinaryTree::min()));
+    return lnrIterator(this, find(min()));
 }
 
 SearchTree::lnrIterator SearchTree::end() {
-    return ++lnrIterator(this, find(BinaryTree::max()));
+    return ++lnrIterator(this, find(max()));
 }
 
 SearchTree::lnrConstIterator SearchTree::begin() const {
-    return lnrConstIterator(this, find(BinaryTree::min()));
+    return lnrConstIterator(this, find(min()));
 }
 
 SearchTree::lnrConstIterator SearchTree::end() const {
-    return ++lnrConstIterator(this, find(BinaryTree::max()));
+    return ++lnrConstIterator(this, find(max()));
 }
 
 int SearchTree::level(const int key) const {
@@ -65,47 +65,47 @@ std::vector<int> SearchTree::toVectorAsc() const {
 
 /* private */
 
-BinaryTree::Node* SearchTree::add(Node* root, const int value) {
+BinaryTree::Node* SearchTree::m_add(Node* root, const int value) {
     
     if(!root) {
         root = new Node(value);
     } else if(value < root->key()) {
-        root->setLeft(add(root->left(), value));
+        root->setLeft(m_add(root->left(), value));
     } else if(value > root->key()){
-        root->setRight(add(root->right(), value));
+        root->setRight(m_add(root->right(), value));
     }
     
     return root;
 }
 
-void SearchTree::max(Node* root, int& buffer) const {
+void SearchTree::m_max(Node* root, int& buffer) const {
     if(!root) {
         return;
     }
     
     buffer = root->key();
-    max(root->right(), buffer);
+    m_max(root->right(), buffer);
 }
 
-void SearchTree::min(Node* root, int& buffer) const {
+void SearchTree::m_min(Node* root, int& buffer) const {
     if(!root) {
         return;
     }
     
     buffer = root->key();
-    min(root->left(), buffer);
+    m_min(root->left(), buffer);
 }
 
-void SearchTree::removeIfBothChildren(removeData& data) {
+void SearchTree::m_removeIfBothChildren(m_removeData& data) {
     int buffer = data.target->key();
-    min(data.target->right(), buffer);
+    m_min(data.target->right(), buffer);
     
     data.replacementNode = find(buffer);
     Node* replacementNodeParent = findParent(data.target, data.replacementNode);
     
     if(replacementNodeParent == data.target) {
         data.replacementNode->setLeft(data.target->left());
-        finishRemove(data);
+        m_finishRemove(data);
         return;
     }
     
@@ -121,5 +121,5 @@ void SearchTree::removeIfBothChildren(removeData& data) {
     
     data.replacementNode->setLeft(data.target->left());
     data.replacementNode->setRight(data.target->right());
-    finishRemove(data);
+    m_finishRemove(data);
 }

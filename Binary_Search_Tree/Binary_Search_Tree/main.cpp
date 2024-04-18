@@ -3,20 +3,20 @@
 int main() {
     
     SearchTree tree;
-    tree.BinaryTree::add(5);
+    tree.add(5);
     for(int i = 0; i < 90; ++i) {
-        tree.BinaryTree::add(rand() % 20);
+        tree.add(rand() % 20);
     }
     
-    tree.BinaryTree::add(1);
+    tree.add(1);
     tree.printHorizontal(tree.root());
 
     
-    auto nums = tree.BinaryTree::toVectorAsc();
+    auto nums = tree.toVectorAsc();
     int counter = 0;
-    SearchTree::lnrIterator it = tree.end();
+    SearchTree::lnrIterator it = tree.begin();
     it--;
-    while((*it)->key() != tree.BinaryTree::max()) {
+    while((*it)->key() != tree.max()) {
         assert(nums[counter] == (*it)->key());
         std::cout << (*it)->key() << ' ';
         ++it;
@@ -25,16 +25,13 @@ int main() {
     it++;
     std::cout << std::endl;    std::cout << std::endl;    std::cout << std::endl;
     it--;
-    while((*it)->key() != tree.BinaryTree::min()) {
+    while((*it)->key() != tree.min()) {
         assert(nums[counter] == (*it)->key());
         std::cout << (*it)->key() << ' ';
         --it;
         --counter;
     }
     
-    
-    
-    return -1;
     srand(static_cast<unsigned>(time(0)));
     
     SearchTree foo;
@@ -42,10 +39,11 @@ int main() {
     int newNum = 0;
     for(int i = 0; i < 150; ++i) {
         newNum = rand() % 100;
-        foo.BinaryTree::add(newNum);
+        foo.add(newNum);
     }
     bool wantPrint = false;
     char answer = {};
+    std::cout << std::endl;
     std::cout << "Want to print tree? y/n: ";
     std::cin >> answer;
     if(answer == 'y')

@@ -6,7 +6,7 @@
 class SearchTree : public BinaryTree {
 public:
     template <typename NodeType, typename TreeType>
-    class lnrTemplateIterator; //TODO: implement me
+    class lnrTemplateIterator;
     using lnrConstIterator = lnrTemplateIterator<const Node, const SearchTree>;
     using lnrIterator = lnrTemplateIterator<Node, SearchTree>;
     
@@ -31,13 +31,13 @@ public:
     SearchTree& operator = (const SearchTree& other) = default;
     
 protected:
-    void max(Node* root, int& buffer) const override;
-    void min(Node* root, int& buffer) const override;
+    void m_max(Node* root, int& buffer) const override;
+    void m_min(Node* root, int& buffer) const override;
     
-    void removeIfBothChildren(removeData& data) override;
+    void m_removeIfBothChildren(m_removeData& data) override;
     
 private:
-    Node* add(Node* root, const int value) override;
+    Node* m_add(Node* root, const int value) override;
     
 };
 
@@ -46,8 +46,8 @@ class SearchTree::lnrTemplateIterator : public IIterator<NodeType, TreeType> {
 public:
     lnrTemplateIterator(TreeType* tree, NodeType* node)
     : m_tree(tree), m_currentNode(node) {
-        updatePrevNode();
-        updateNextNode();
+        m_updatePrevNode();
+        m_updateNextNode();
     }
     
     ~lnrTemplateIterator() override = default;
@@ -79,7 +79,7 @@ public:
             
         std::swap(m_currentNode, m_prevNode);
         m_currentNode = m_nextNode;
-        updateNextNode();
+        m_updateNextNode();
         return *this;
     }
     
@@ -95,12 +95,12 @@ public:
         
         if(!m_currentNode) {
             m_currentNode = m_prevNode;
-            updatePrevNode();
+            m_updatePrevNode();
             return *this;
         }
         std::swap(m_currentNode, m_nextNode);
         std::swap(m_currentNode, m_prevNode);
-        updatePrevNode();
+        m_updatePrevNode();
         return *this;
     }
     
@@ -114,15 +114,18 @@ public:
     bool operator != (const lnrTemplateIterator& other) const {return !(this->operator==(other));}
     
 private:
-    void updatePrevNode() {
+    void m_updatePrevNode() {
+        if(!m_currentNode)
+            return;
+        
         if(m_currentNode->left()) {
-            m_prevNode = m_tree->find(m_tree->BinaryTree::max(m_currentNode->left()));
+            m_prevNode = m_tree->find(m_tree->max(m_currentNode->left()));
             return;
         }
         m_prevNode = m_tree->findParent(m_tree->root(), m_currentNode);
         
         if(m_prevNode == m_tree->root() && m_currentNode == m_tree->root()) {
-            m_prevNode = m_tree->find(m_tree->BinaryTree::max(m_currentNode->left()));
+            m_prevNode = m_tree->find(m_tree->max(m_currentNode->left()));
             return;
         }
         
@@ -137,15 +140,18 @@ private:
         
     }
     
-    void updateNextNode() {
+    void m_updateNextNode() {
+        if(!m_currentNode)
+            return;
+        
         if(m_currentNode->right()) {
-            m_nextNode = m_tree->find(m_tree->BinaryTree::min(m_currentNode->right()));
+            m_nextNode = m_tree->find(m_tree->min(m_currentNode->right()));
             return;
         }
         m_nextNode = m_tree->findParent(m_tree->root(), m_currentNode);
         
         if(m_nextNode == m_tree->root() && m_currentNode == m_tree->root()) {
-            m_nextNode = m_tree->find(m_tree->BinaryTree::min(m_currentNode->right()));
+            m_nextNode = m_tree->find(m_tree->min(m_currentNode->right()));
             return;
         }
         
@@ -157,11 +163,6 @@ private:
                 break;
             }
         }
-        /*
-        else if(m_nextNode == m_prevNode) {
-            m_nextNode = m_tree->findParent(m_tree->root(), m_nextNode);
-        }
-         */
          
     }
 private:

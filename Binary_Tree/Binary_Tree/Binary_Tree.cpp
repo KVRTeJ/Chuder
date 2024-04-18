@@ -50,7 +50,7 @@ int BinaryTree::max(Node* root) const {
     }
     
     int buffer = root->key();
-    max(root, buffer);
+    m_max(root, buffer);
     
     return buffer;
 }
@@ -61,7 +61,7 @@ int BinaryTree::min(Node* root) const {
     }
     
     int buffer = root->key();
-    min(root, buffer);
+    m_min(root, buffer);
     
     return buffer;
 }
@@ -146,26 +146,26 @@ void BinaryTree::clearFrom(Node* root) {
     }
     
     if(root->left()) {
-        clearFromInclusiveRoot(root->left());
+        m_clearFromInclusiveRoot(root->left());
         root->setLeft(nullptr);
     }
     if(root->right()) {
-        clearFromInclusiveRoot(root->right());
+        m_clearFromInclusiveRoot(root->right());
         root->setRight(nullptr);
     }
 }
 
-void BinaryTree::clearFromInclusiveRoot(Node* root) {
+void BinaryTree::m_clearFromInclusiveRoot(Node* root) {
     if(!root) {
         return;
     }
     
     if(root->left()) {
-        clearFromInclusiveRoot(root->left());
+        m_clearFromInclusiveRoot(root->left());
         root->setLeft(nullptr);
     }
     if(root->right()) {
-        clearFromInclusiveRoot(root->right());
+        m_clearFromInclusiveRoot(root->right());
         root->setRight(nullptr);
     }
     delete root;
@@ -193,7 +193,7 @@ bool BinaryTree::balanced(Node* root) const {
 void BinaryTree::add(const int key) {
     
     if(m_root) {
-        add(m_root, key);
+        m_add(m_root, key);
     } else {
         m_root = new Node(key);
     }
@@ -201,7 +201,7 @@ void BinaryTree::add(const int key) {
 }
 
 bool BinaryTree::remove(Node* node) {
-    removeData data = {};
+    m_removeData data = {};
     
     data.target = node;
     if(!data.target) {
@@ -209,9 +209,9 @@ bool BinaryTree::remove(Node* node) {
     }
     
     data.nodeParent = findParent(m_root, data.target);
-    if(removeTrivialCase(data));
+    if(m_removeTrivialCase(data));
     else {
-        removeIfBothChildren(data);
+        m_removeIfBothChildren(data);
     }
     
     return true;
@@ -343,7 +343,7 @@ std::vector<int> BinaryTree::toVectorAsc() const {
 std::vector<int> BinaryTree::toVectorLnr() const {
     std::vector<int> result;
     
-    toVectorLnr(m_root, result);
+    m_toVectorLnr(m_root, result);
     
     return result;
 }
@@ -355,7 +355,7 @@ std::vector<BinaryTree::Node* > BinaryTree::getLeafs(Node* root) const {
     
     std::vector<Node* > leafs;
     
-    getLeafs(root, leafs);
+    m_getLeafs(root, leafs);
     
     return leafs;
 }
@@ -411,7 +411,7 @@ BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
 }
 
 /* protected */
-void BinaryTree::finishRemove(removeData& data) {
+void BinaryTree::m_finishRemove(m_removeData& data) {
     if(!data.nodeParent) {
         return;
     }
@@ -437,16 +437,16 @@ void BinaryTree::finishRemove(removeData& data) {
     
 }
 
-bool BinaryTree::removeTrivialCase(removeData& data) {
+bool BinaryTree::m_removeTrivialCase(m_removeData& data) {
     
     if(data.target->left() == nullptr && data.target->right() == nullptr) {
-        finishRemove(data);
+        m_finishRemove(data);
     } else if(!data.target->left()) {
         data.replacementNode = data.target->right();
-        finishRemove(data);
+        m_finishRemove(data);
     } else if(!data.target->right()) {
         data.replacementNode = data.target->left();
-        finishRemove(data);
+        m_finishRemove(data);
     } else {
         return false;
     }
@@ -454,7 +454,7 @@ bool BinaryTree::removeTrivialCase(removeData& data) {
     return true;
 }
 
-void BinaryTree::removeIfBothChildren(removeData& data) {
+void BinaryTree::m_removeIfBothChildren(m_removeData& data) {
     data.replacementNode = findParent(data.target, nullptr);
     Node* leafParent = findParent(data.target, data.replacementNode);
     
@@ -466,46 +466,46 @@ void BinaryTree::removeIfBothChildren(removeData& data) {
     
     data.replacementNode->setLeft(data.target->left());
     data.replacementNode->setRight(data.target->right());
-    finishRemove(data);
+    m_finishRemove(data);
 }
 
 /* private */
-void BinaryTree::toVectorLnr(Node* root, std::vector<int>& nums) const {
+void BinaryTree::m_toVectorLnr(Node* root, std::vector<int>& nums) const {
     
     if(!root) {
         return;
     }
     
-    toVectorLnr(root->left(), nums);
+    m_toVectorLnr(root->left(), nums);
     nums.push_back(root->key());
-    toVectorLnr(root->right(), nums);
+    m_toVectorLnr(root->right(), nums);
 }
 
-void BinaryTree::getLeafs(Node* root, std::vector<Node* >& leafs) const {
+void BinaryTree::m_getLeafs(Node* root, std::vector<Node* >& leafs) const {
     if(!root) {
         return;
     } else if(!root->left() && !root->right()) {
         leafs.push_back(root);
     } else {
-        getLeafs(root->left(), leafs);
-        getLeafs(root->right(), leafs);
+        m_getLeafs(root->left(), leafs);
+        m_getLeafs(root->right(), leafs);
     }
 }
 
-BinaryTree::Node* BinaryTree::add(Node* root, const int value) {
+BinaryTree::Node* BinaryTree::m_add(Node* root, const int value) {
 
     if(!root) {
         root = new Node(value);
     } else if(rand() % 2) {
-        root->setLeft(add(root->left(), value));
+        root->setLeft(m_add(root->left(), value));
     } else {
-        root->setRight(add(root->right(), value));
+        root->setRight(m_add(root->right(), value));
     }
 
     return root;
 }
 
-void BinaryTree::max(Node* root, int& buffer) const {
+void BinaryTree::m_max(Node* root, int& buffer) const {
     if(!root) {
         return;
     }
@@ -514,11 +514,11 @@ void BinaryTree::max(Node* root, int& buffer) const {
         buffer = root->key();
     }
     
-    max(root->left(), buffer);
-    max(root->right(), buffer);
+    m_max(root->left(), buffer);
+    m_max(root->right(), buffer);
 }
 
-void BinaryTree::min(Node* root, int& buffer) const {
+void BinaryTree::m_min(Node* root, int& buffer) const {
     if(!root) {
         return;
     }
@@ -527,6 +527,6 @@ void BinaryTree::min(Node* root, int& buffer) const {
         buffer = root->key();
     }
     
-    min(root->left(), buffer);
-    min(root->right(), buffer);
+    m_min(root->left(), buffer);
+    m_min(root->right(), buffer);
 }

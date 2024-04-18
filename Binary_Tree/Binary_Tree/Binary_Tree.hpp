@@ -80,22 +80,22 @@ public:
     BinaryTree& operator = (const BinaryTree& other);
     
 protected:
-    virtual void max(Node* root, int& buffer) const;
-    virtual void min(Node* root, int& buffer) const;
+    virtual void m_max(Node* root, int& buffer) const;
+    virtual void m_min(Node* root, int& buffer) const;
     
-    struct removeData;
-    void finishRemove(removeData& data);
-    bool removeTrivialCase(removeData& data);
-    virtual void removeIfBothChildren(removeData& data);
+    struct m_removeData;
+    void m_finishRemove(m_removeData& data);
+    bool m_removeTrivialCase(m_removeData& data);
+    virtual void m_removeIfBothChildren(m_removeData& data);
     
 private:
-    void clearFromInclusiveRoot(Node* root);
+    void m_clearFromInclusiveRoot(Node* root);
     
-    void toVectorLnr(Node* root, std::vector<int>& nums) const;
+    void m_toVectorLnr(Node* root, std::vector<int>& nums) const;
     
-    void getLeafs(Node* root, std::vector<Node* >& leafs) const;
+    void m_getLeafs(Node* root, std::vector<Node* >& leafs) const;
     
-    virtual Node* add(Node* root, const int value);
+    virtual Node* m_add(Node* root, const int value);
     
 private:
     Node* m_root = nullptr;
@@ -124,7 +124,7 @@ private:
     Node* m_right = nullptr;
 };
 
-struct BinaryTree::removeData {
+struct BinaryTree::m_removeData {
     BinaryTree::Node* target = nullptr;
     BinaryTree::Node* nodeParent = nullptr;
     BinaryTree::Node* replacementNode = nullptr;
