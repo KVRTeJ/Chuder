@@ -4,23 +4,15 @@
 
 #include "Binary_Tree.hpp"
 
-namespace {
-    
-    struct Data {
-        BinaryTree::Node* target = nullptr;
-        BinaryTree::Node* nodeParent = nullptr;
-        BinaryTree::Node* replacementNode = nullptr;
-    };
-    
-}
-
 BinaryTree::BinaryTree(const BinaryTree& other) {
     auto temp = copy(other.m_root);
     std::swap(m_root, temp.m_root);
 }
 
 void BinaryTree::clear() {
-    clearFromInclusiveRoot(m_root);
+    clearFrom(m_root);
+    delete m_root;
+    m_root = nullptr;
 }
 
 int BinaryTree::nodeCount(Node* root) const {
@@ -52,24 +44,24 @@ int BinaryTree::nodeCount(Node* root) const {
     return result;
 }
 
-int BinaryTree::max() const {
-    if(!m_root) {
+int BinaryTree::max(Node* root) const {
+    if(!root) {
         return {};
     }
     
-    int buffer = m_root->key();
-    max(m_root, buffer);
+    int buffer = root->key();
+    m_max(root, buffer);
     
     return buffer;
 }
 
-int BinaryTree::min() const {
-    if(!m_root) {
+int BinaryTree::min(Node* root) const {
+    if(!root) {
         return {};
     }
     
-    int buffer = m_root->key();
-    min(m_root, buffer);
+    int buffer = root->key();
+    m_min(root, buffer);
     
     return buffer;
 }
@@ -142,29 +134,42 @@ int BinaryTree::maxLevel() const {
     return result - 1;
 }
 
-BinaryTree::Iterator BinaryTree::begin() {return Iterator(this, m_root);}
-BinaryTree::Iterator BinaryTree::end() {return Iterator(this, nullptr);}
+BinaryTree::bfsIterator BinaryTree::begin() {return bfsIterator(this, m_root);}
+BinaryTree::bfsIterator BinaryTree::end() {return bfsIterator(this, nullptr);}
 
-BinaryTree::ConstIterator BinaryTree::begin() const {return ConstIterator(this, m_root);}
-BinaryTree::ConstIterator BinaryTree::end() const {return ConstIterator(this, nullptr);}
+BinaryTree::bfsConstIterator BinaryTree::begin() const {return bfsConstIterator(this, m_root);}
+BinaryTree::bfsConstIterator BinaryTree::end() const {return bfsConstIterator(this, nullptr);}
 
 void BinaryTree::clearFrom(Node* root) {
     if(!root) {
         return;
     }
     
-    clearFromInclusiveRoot(root->left());
-    clearFromInclusiveRoot(root->right());
+    if(root->left()) {
+        m_clearFromInclusiveRoot(root->left());
+        root->setLeft(nullptr);
+    }
+    if(root->right()) {
+        m_clearFromInclusiveRoot(root->right());
+        root->setRight(nullptr);
+    }
 }
 
-void BinaryTree::clearFromInclusiveRoot(Node* root) {
+void BinaryTree::m_clearFromInclusiveRoot(Node* root) {
     if(!root) {
         return;
     }
     
-    clearFrom(root->left());
-    clearFrom(root->right());
+    if(root->left()) {
+        m_clearFromInclusiveRoot(root->left());
+        root->setLeft(nullptr);
+    }
+    if(root->right()) {
+        m_clearFromInclusiveRoot(root->right());
+        root->setRight(nullptr);
+    }
     delete root;
+    root = nullptr;
 }
 
 bool BinaryTree::balanced() const {
@@ -188,7 +193,7 @@ bool BinaryTree::balanced(Node* root) const {
 void BinaryTree::add(const int key) {
     
     if(m_root) {
-        add(m_root, key);
+        m_add(m_root, key);
     } else {
         m_root = new Node(key);
     }
@@ -196,7 +201,7 @@ void BinaryTree::add(const int key) {
 }
 
 bool BinaryTree::remove(Node* node) {
-    Data data = {};
+    m_removeData data = {};
     
     data.target = node;
     if(!data.target) {
@@ -204,48 +209,9 @@ bool BinaryTree::remove(Node* node) {
     }
     
     data.nodeParent = findParent(m_root, data.target);
-    
-    auto finishRemove {
-        [this](Data& data) {
-            if(data.nodeParent->left() == data.target) {
-                data.nodeParent->setLeft(nullptr);
-                delete data.target;
-                if(data.replacementNode)
-                    data.nodeParent->setLeft(data.replacementNode);
-            } else {
-                data.nodeParent->setRight(nullptr);
-                delete data.target;
-                if(data.replacementNode)
-                    data.nodeParent->setRight(data.replacementNode);
-            }
-        }
-    };
-    
-    if(data.nodeParent == data.target) {
-        clear();
-    } else {
-        if(data.target->left() == nullptr && data.target->right() == nullptr) {
-            finishRemove(data);
-            
-        } else if(!data.target->left()) {
-            data.replacementNode = data.target->right();
-            finishRemove(data);
-        } else if(!data.target->right()) {
-            data.replacementNode = data.target->left();
-            finishRemove(data);
-            
-        } else {
-            data.replacementNode = findParent(data.target, nullptr);
-            Node* leafParent = findParent(data.target, data.replacementNode);
-            if(leafParent->left() == data.replacementNode) {
-                leafParent->setLeft(nullptr);
-            } else {
-                leafParent->setRight(nullptr);
-            }
-            data.replacementNode->setLeft(data.target->left());
-            data.replacementNode->setRight(data.target->right());
-            finishRemove(data);
-        }
+    if(m_removeTrivialCase(data));
+    else {
+        m_removeIfBothChildren(data);
     }
     
     return true;
@@ -329,14 +295,14 @@ BinaryTree::Node* BinaryTree::find(Node* root, Node* target) const {
     return subTreeFindResult;
 }
 
-BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
+const BinaryTree::Node* BinaryTree::findParent(const Node* root, const Node* child) const {
     if(!root) {
         return nullptr;
     }
     
-    std::stack<BinaryTree::Node*> unprocessedNodes;
+    std::stack<const Node*> unprocessedNodes;
     unprocessedNodes.push(root);
-    Node* parent = nullptr;
+    const Node* parent = nullptr;
     while(!unprocessedNodes.empty()) {
         parent = unprocessedNodes.top();
         unprocessedNodes.pop();
@@ -362,33 +328,22 @@ BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
     return nullptr;
 }
 
-std::vector<int> BinaryTree::toVector() const {
-    std::vector<int> result;
+BinaryTree::Node* BinaryTree::findParent(Node* root, Node* child) {
+    return const_cast<Node*>(findParent(const_cast<const Node*>(root), const_cast<const Node*>(child)));
+}
+
+std::vector<int> BinaryTree::toVectorAsc() const {
+    std::vector<int> result = toVectorLnr();
     
-    std::list<Node*> unprocessedNodes(1, m_root);
-    Node* current = nullptr;
-    while(!unprocessedNodes.empty()) {
-        current = unprocessedNodes.front();
-        unprocessedNodes.pop_front();
-        
-        result.push_back(current->key());
-        
-        if(current->left()) {
-            unprocessedNodes.push_back(current->left());
-        }
-        
-        if(current->right()) {
-            unprocessedNodes.push_back(current->right());
-        }
-    }
+    std::sort(result.begin(), result.end());
     
     return result;
 }
 
-std::vector<int> BinaryTree::toVectorNlr() const {
+std::vector<int> BinaryTree::toVectorLnr() const {
     std::vector<int> result;
     
-    toVectorNlr(m_root, result);
+    m_toVectorLnr(m_root, result);
     
     return result;
 }
@@ -400,7 +355,7 @@ std::vector<BinaryTree::Node* > BinaryTree::getLeafs(Node* root) const {
     
     std::vector<Node* > leafs;
     
-    getLeafs(root, leafs);
+    m_getLeafs(root, leafs);
     
     return leafs;
 }
@@ -426,6 +381,7 @@ void BinaryTree::printHorizontal(Node *root, int marginLeft, int levelSpacing) c
     printHorizontal(root->left(), marginLeft + levelSpacing, levelSpacing);
 }
 
+
 void BinaryTree::printLevels() const {
     
     int current = {};
@@ -441,10 +397,11 @@ void BinaryTree::printLevels() const {
     std::cout << std::endl;
 }
 
+
 BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
     
     if(m_root != other.m_root) {
-        clear();
+        clearFrom(m_root);
         
         auto temp = copy(other.m_root);
         std::swap(m_root, temp.m_root);
@@ -453,45 +410,102 @@ BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
         return *this;
 }
 
+/* protected */
+void BinaryTree::m_finishRemove(m_removeData& data) {
+    if(!data.nodeParent) {
+        return;
+    }
+    
+    if(data.nodeParent == data.target) {
+        m_root = data.replacementNode;
+        delete data.target;
+        data.target = nullptr;
+        data.nodeParent = nullptr;
+    } else if(data.nodeParent->left() == data.target) {
+        data.nodeParent->setLeft(nullptr);
+        delete data.target;
+        data.target = nullptr;
+        if(data.replacementNode)
+            data.nodeParent->setLeft(data.replacementNode);
+    } else {
+        data.nodeParent->setRight(nullptr);
+        delete data.target;
+        data.target = nullptr;
+        if(data.replacementNode)
+            data.nodeParent->setRight(data.replacementNode);
+    }
+    
+}
+
+bool BinaryTree::m_removeTrivialCase(m_removeData& data) {
+    
+    if(data.target->left() == nullptr && data.target->right() == nullptr) {
+        m_finishRemove(data);
+    } else if(!data.target->left()) {
+        data.replacementNode = data.target->right();
+        m_finishRemove(data);
+    } else if(!data.target->right()) {
+        data.replacementNode = data.target->left();
+        m_finishRemove(data);
+    } else {
+        return false;
+    }
+    
+    return true;
+}
+
+void BinaryTree::m_removeIfBothChildren(m_removeData& data) {
+    data.replacementNode = findParent(data.target, nullptr);
+    Node* leafParent = findParent(data.target, data.replacementNode);
+    
+    if(leafParent->left() == data.replacementNode) {
+        leafParent->setLeft(nullptr);
+    } else {
+        leafParent->setRight(nullptr);
+    }
+    
+    data.replacementNode->setLeft(data.target->left());
+    data.replacementNode->setRight(data.target->right());
+    m_finishRemove(data);
+}
 
 /* private */
-
-void BinaryTree::toVectorNlr(Node* root, std::vector<int>& nums) const {
+void BinaryTree::m_toVectorLnr(Node* root, std::vector<int>& nums) const {
     
     if(!root) {
         return;
     }
     
+    m_toVectorLnr(root->left(), nums);
     nums.push_back(root->key());
-    toVectorNlr(root->left(), nums);
-    toVectorNlr(root->right(), nums);
+    m_toVectorLnr(root->right(), nums);
 }
 
-void BinaryTree::getLeafs(Node* root, std::vector<Node* >& leafs) const {
+void BinaryTree::m_getLeafs(Node* root, std::vector<Node* >& leafs) const {
     if(!root) {
         return;
     } else if(!root->left() && !root->right()) {
         leafs.push_back(root);
     } else {
-        getLeafs(root->left(), leafs);
-        getLeafs(root->right(), leafs);
+        m_getLeafs(root->left(), leafs);
+        m_getLeafs(root->right(), leafs);
     }
 }
 
-BinaryTree::Node* BinaryTree::add(Node* root, const int value) {
+BinaryTree::Node* BinaryTree::m_add(Node* root, const int value) {
 
     if(!root) {
         root = new Node(value);
     } else if(rand() % 2) {
-        root->setLeft(add(root->left(), value));
+        root->setLeft(m_add(root->left(), value));
     } else {
-        root->setRight(add(root->right(), value));
+        root->setRight(m_add(root->right(), value));
     }
 
     return root;
 }
 
-void BinaryTree::max(Node* root, int& buffer) const {
+void BinaryTree::m_max(Node* root, int& buffer) const {
     if(!root) {
         return;
     }
@@ -500,11 +514,11 @@ void BinaryTree::max(Node* root, int& buffer) const {
         buffer = root->key();
     }
     
-    max(root->left(), buffer);
-    max(root->right(), buffer);
+    m_max(root->left(), buffer);
+    m_max(root->right(), buffer);
 }
 
-void BinaryTree::min(Node* root, int& buffer) const {
+void BinaryTree::m_min(Node* root, int& buffer) const {
     if(!root) {
         return;
     }
@@ -513,6 +527,6 @@ void BinaryTree::min(Node* root, int& buffer) const {
         buffer = root->key();
     }
     
-    min(root->left(), buffer);
-    min(root->right(), buffer);
+    m_min(root->left(), buffer);
+    m_min(root->right(), buffer);
 }
