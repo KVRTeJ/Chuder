@@ -3,14 +3,22 @@
 
 #include "BinarySearchTree.hpp"
 
-class avlTree : public SearchTree {
+class AvlTree : public SearchTree {
 public:
-    avlTree() = default;
-    ~avlTree() = default;
+    AvlTree() = default;
+    ~AvlTree() = default;
     
-    avlTree& operator = (const avlTree& other) = default;
-private:
+    AvlTree copy(Node* tree) const;
     
+    AvlTree& operator = (const AvlTree& other) = default;
+    
+//private:
+    bool turnRight(Node* middle, Node* top = nullptr);
+    bool turnLeft(Node* middle, Node* top = nullptr);
+    bool doubleTurnLRightLeft(Node* middle, Node* top = nullptr); //TODO: implement me
+    bool doubleTurnLeftRight(Node* middle, Node* top = nullptr); //TODO: implement me
+    
+    Node* m_add(Node* root, const int value) override;
 };
 
 #endif /* AVL_Tree_hpp */

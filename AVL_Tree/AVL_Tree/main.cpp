@@ -1,17 +1,17 @@
 #include "AVL_Tree.hpp"
 
 int main() {
-    avlTree boo;
+    AvlTree boo;
     
-    boo.add(10);
-    boo.add(9);
-    boo.add(11);
-    boo.add(11);
-    boo.add(12);
-    boo.add(115);
-    boo.add(114);
+    boo.add(6);
+    boo.add(4);
+    boo.add(8);
+    boo.add(2);
+    boo.add(3);
+    boo.add(1);
     
     boo.printHorizontal(boo.root());
     
+    boo.turnLeft(nullptr);
     return 0;
 }
