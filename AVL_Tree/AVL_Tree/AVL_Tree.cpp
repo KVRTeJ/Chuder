@@ -95,15 +95,17 @@ bool AvlTree::doubleTurnLeftRight(Node* middle, Node* top) {
 }
 
 BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
+    static bool isFixed = true;
     
     if(!root) {
         root = new Node(value);
+        isFixed = false;
     } else if(value < root->key()) {
         root->setLeft(m_add(root->left(), value));
-        
+        //TODO: balace
     } else if(value > root->key()){
         root->setRight(m_add(root->right(), value));
-        
+        //TODO: balance
     }
     
     return root;
