@@ -23,9 +23,7 @@ bool AvlTree::turnRight(Node* middle, Node* top) {
         setRoot(bottom);
     }
     
-    if(middle->left()) {
-        middle->setLeft(bottom->right());
-    }
+    middle->setLeft(bottom->right());
     bottom->setRight(middle);
     
     return true;
@@ -46,6 +44,52 @@ bool AvlTree::turnLeft(Node* middle, Node* top) {
     
     middle->setRight(bottom->left());
     bottom->setLeft(middle);
+    
+    return true;
+}
+
+bool AvlTree::doubleTurnLRightLeft(Node* middle, Node* top) {
+    if(!middle || !middle->right() || !middle->right()->left()) {
+        return false;
+    }
+    
+    Node* bottom = middle->right();
+    Node* extra = bottom->left();
+    
+    middle->setRight(extra);
+    bottom->setLeft(extra->right());
+    extra->setRight(bottom);
+    
+    if(top) {
+        top->setRight(extra);
+    } else {
+        setRoot(extra);
+    }
+    middle->setRight(extra->left());
+    extra->setLeft(middle);
+    
+    return true;
+}
+
+bool AvlTree::doubleTurnLeftRight(Node* middle, Node* top) {
+    if(!middle || !middle->left() || !middle->left()->right()) {
+        return false;
+    }
+    
+    Node* bottom = middle->left();
+    Node* extra = bottom->right();
+    
+    middle->setLeft(extra);
+    bottom->setRight(extra->left());
+    extra->setLeft(bottom);
+    
+    if(top) {
+        top->setLeft(extra);
+    } else {
+        setRoot(extra);
+    }
+    middle->setLeft(extra->right());
+    extra->setRight(middle);
     
     return true;
 }
