@@ -1,6 +1,6 @@
 #include "AVL_Tree.hpp"
 
-const int g_maxNum = 200;
+const int g_maxNum = 100;
 
 int main() {
     AvlTree boo;
