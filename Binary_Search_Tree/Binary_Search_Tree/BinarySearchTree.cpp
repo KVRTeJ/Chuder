@@ -33,7 +33,7 @@ int SearchTree::level(const int key) const {
     return result;
 }
 
-SearchTree SearchTree::copy(Node* tree) {
+SearchTree SearchTree::copy(Node* tree) const {
     BinaryTree parent = BinaryTree::copy(tree);
     SearchTree newTree = {};
     

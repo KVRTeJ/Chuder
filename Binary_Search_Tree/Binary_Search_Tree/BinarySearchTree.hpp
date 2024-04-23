@@ -22,7 +22,7 @@ public:
     
     int level(const int key) const override;
     
-    SearchTree copy(Node* tree);
+    SearchTree copy(Node* tree) const;
 
     Node* find(const int key) const override;
     
@@ -35,8 +35,6 @@ protected:
     void m_min(Node* root, int& buffer) const override;
     
     void m_removeIfBothChildren(m_removeData& data) override;
-    
-private:
     Node* m_add(Node* root, const int value) override;
     
 };

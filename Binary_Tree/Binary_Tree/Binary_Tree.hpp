@@ -55,6 +55,7 @@ public:
     bool empty() const {return m_root == nullptr;}
     bool balanced() const;
     bool balanced(Node* root) const;
+    int balance(Node* root) const;
     bool contains(const int key) const {return find(key) != nullptr;}
     
     void add(const int key);
@@ -73,8 +74,9 @@ public:
     std::vector<int> toVectorLnr() const;
     std::vector<Node* > getLeafs(Node* root) const;
     
-    void printLeafs(Node* root) const;
+    void print(Node* root = nullptr) const;
     void printHorizontal(Node *root, int marginLeft = 3, int levelSpacing = 5) const;
+    void printLeafs(Node* root) const;
     void printLevels() const;
     
     BinaryTree& operator = (const BinaryTree& other);

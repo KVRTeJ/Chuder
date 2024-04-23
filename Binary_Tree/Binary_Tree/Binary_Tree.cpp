@@ -1,4 +1,5 @@
 #include <stack>
+#include <queue>
 #include <random>
 #include <algorithm>
 
@@ -177,17 +178,23 @@ bool BinaryTree::balanced() const {
 }
 
 bool BinaryTree::balanced(Node* root) const {
+    int heightDifference = balance(root);
+    bool isBalance = !heightDifference || heightDifference == 1 || heightDifference == -1;
+    
+    return isBalance && balanced(root->left()) && balanced(root->right());
+}
+
+int BinaryTree::balance(Node* root) const {
     if(!root) {
-        return true;
+        return 0;
     }
     
     int leftSubTreeHeight = height(root->left());
     int rightSubTreeHeight = height(root->right());
     
-    int heightDifference = leftSubTreeHeight - rightSubTreeHeight;
-    bool isBalance = !heightDifference || heightDifference == 1 || heightDifference == -1;
+    int heightDifference = rightSubTreeHeight - leftSubTreeHeight;
     
-    return isBalance && balanced(root->left()) && balanced(root->right());
+    return heightDifference;
 }
 
 void BinaryTree::add(const int key) {
@@ -197,7 +204,7 @@ void BinaryTree::add(const int key) {
     } else {
         m_root = new Node(key);
     }
-    
+    print();
 }
 
 bool BinaryTree::remove(Node* node) {
@@ -358,6 +365,56 @@ std::vector<BinaryTree::Node* > BinaryTree::getLeafs(Node* root) const {
     m_getLeafs(root, leafs);
     
     return leafs;
+}
+
+void BinaryTree::print(Node* root) const {
+    if(!root) {
+        root = m_root;
+        if(!root) {
+            return;
+        }
+    }
+    
+    auto setIndentation = [](int count) {
+        for (int i = 0; i < count; ++i)
+            std::cout << ' ' << ' ';
+    };
+    
+    int height = this->height(root);
+    std::queue<Node*> unprocessedNodes;
+    unprocessedNodes.push(root);
+    
+    int levelNodes = 1;
+    int level = 0;
+    int maxLevelWidth = pow(2, height) - 1;
+    
+    while (!unprocessedNodes.empty() && level <= height) {
+        int width = maxLevelWidth / pow(2, level);
+        int padding = width / 2;
+        setIndentation(padding);
+        
+        for (int i = 0; i < levelNodes; ++i) {
+            Node* current = unprocessedNodes.front();
+            unprocessedNodes.pop();
+            if (current != nullptr) {
+                std::cout << (current->key() < 10 ? '0' : '\0') << current->key();
+                unprocessedNodes.push(current->left());
+                unprocessedNodes.push(current->right());
+            }
+            else {
+                std::cout << "xx";
+                unprocessedNodes.push(nullptr);
+                unprocessedNodes.push(nullptr);
+            }
+            setIndentation(width);
+            
+        }
+        std::cout << std::endl;
+        
+        levelNodes *= 2;
+        ++level;
+    }
+    
 }
 
 void BinaryTree::printLeafs(Node* root) const {
