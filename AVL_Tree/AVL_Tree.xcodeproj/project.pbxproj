@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		2C680BA92BD5234C00AF83C7 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C680BA82BD5234C00AF83C7 /* main.cpp */; };
 		2C680BB12BD523AD00AF83C7 /* AVL_Tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C680BAF2BD523AD00AF83C7 /* AVL_Tree.cpp */; };
-		2C680BB82BD5246500AF83C7 /* Binary_Tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C680BB72BD5246500AF83C7 /* Binary_Tree.cpp */; };
 		2C680BBB2BD5247200AF83C7 /* BinarySearchTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C680BBA2BD5247200AF83C7 /* BinarySearchTree.cpp */; };
+		2C680BC02BD811AE00AF83C7 /* Binary_Tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2C680BBE2BD811AE00AF83C7 /* Binary_Tree.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,10 +30,10 @@
 		2C680BA82BD5234C00AF83C7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		2C680BAF2BD523AD00AF83C7 /* AVL_Tree.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AVL_Tree.cpp; sourceTree = "<group>"; };
 		2C680BB02BD523AD00AF83C7 /* AVL_Tree.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AVL_Tree.hpp; sourceTree = "<group>"; };
-		2C680BB62BD5246500AF83C7 /* Binary_Tree.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Binary_Tree.hpp; path = ../../../Binary_Tree/Binary_Tree/Binary_Tree.hpp; sourceTree = "<group>"; };
-		2C680BB72BD5246500AF83C7 /* Binary_Tree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Binary_Tree.cpp; path = ../../../Binary_Tree/Binary_Tree/Binary_Tree.cpp; sourceTree = "<group>"; };
 		2C680BB92BD5247200AF83C7 /* BinarySearchTree.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = BinarySearchTree.hpp; path = ../../Binary_Search_Tree/Binary_Search_Tree/BinarySearchTree.hpp; sourceTree = "<group>"; };
 		2C680BBA2BD5247200AF83C7 /* BinarySearchTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BinarySearchTree.cpp; path = ../../Binary_Search_Tree/Binary_Search_Tree/BinarySearchTree.cpp; sourceTree = "<group>"; };
+		2C680BBE2BD811AE00AF83C7 /* Binary_Tree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Binary_Tree.cpp; path = ../../Binary_Tree/Binary_Tree/Binary_Tree.cpp; sourceTree = "<group>"; };
+		2C680BBF2BD811AE00AF83C7 /* Binary_Tree.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Binary_Tree.hpp; path = ../../Binary_Tree/Binary_Tree/Binary_Tree.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,20 +77,20 @@
 		2C680BB42BD5244300AF83C7 /* SearchTree */ = {
 			isa = PBXGroup;
 			children = (
+				2C680BBD2BD8118E00AF83C7 /* BinaryTree */,
 				2C680BBA2BD5247200AF83C7 /* BinarySearchTree.cpp */,
 				2C680BB92BD5247200AF83C7 /* BinarySearchTree.hpp */,
-				2C680BB52BD5244B00AF83C7 /* BinaryTree */,
 			);
 			name = SearchTree;
 			sourceTree = "<group>";
 		};
-		2C680BB52BD5244B00AF83C7 /* BinaryTree */ = {
+		2C680BBD2BD8118E00AF83C7 /* BinaryTree */ = {
 			isa = PBXGroup;
 			children = (
-				2C680BB72BD5246500AF83C7 /* Binary_Tree.cpp */,
-				2C680BB62BD5246500AF83C7 /* Binary_Tree.hpp */,
+				2C680BBE2BD811AE00AF83C7 /* Binary_Tree.cpp */,
+				2C680BBF2BD811AE00AF83C7 /* Binary_Tree.hpp */,
 			);
-			path = BinaryTree;
+			name = BinaryTree;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -150,10 +150,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C680BC02BD811AE00AF83C7 /* Binary_Tree.cpp in Sources */,
 				2C680BBB2BD5247200AF83C7 /* BinarySearchTree.cpp in Sources */,
 				2C680BA92BD5234C00AF83C7 /* main.cpp in Sources */,
 				2C680BB12BD523AD00AF83C7 /* AVL_Tree.cpp in Sources */,
-				2C680BB82BD5246500AF83C7 /* Binary_Tree.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
