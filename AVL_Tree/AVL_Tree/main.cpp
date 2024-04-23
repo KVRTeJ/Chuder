@@ -3,12 +3,10 @@
 int main() {
     AvlTree boo;
     
-    boo.add(60);
-    boo.add(50);
-    boo.add(40);
-    boo.add(41);
-    boo.add(42);
-
+    std::vector<int> nums = {10, 20, 40, 35, 38, 36, 5};
+    for(auto it = nums.begin(); it != nums.end(); ++it) {
+        boo.add(*it);   
+    }
     
     return 0;
 }

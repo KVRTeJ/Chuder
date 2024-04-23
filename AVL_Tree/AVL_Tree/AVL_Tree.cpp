@@ -17,10 +17,12 @@ bool AvlTree::turnRight(Node* middle, Node* top) {
     
     Node* bottom = middle->left();
     
-    if(!top || top == this->root()) {
+    if(!top) {
         setRoot(bottom);
     } else {
-        top->setLeft(bottom);
+        (top->left() == middle
+         ? top->setLeft(bottom)
+         : top->setRight(bottom));
     }
     
     middle->setLeft(bottom->right());
@@ -36,10 +38,12 @@ bool AvlTree::turnLeft(Node* middle, Node* top) {
     
     Node* bottom = middle->right();
     
-    if(!top || top == this->root()) {
+    if(!top) {
         setRoot(bottom);
     } else {
-        top->setRight(bottom);
+        (top->left() == middle
+         ? top->setLeft(bottom)
+         : top->setRight(bottom));
     }
     
     middle->setRight(bottom->left());
@@ -60,10 +64,12 @@ bool AvlTree::doubleTurnRightLeft(Node* middle, Node* top) {
     bottom->setLeft(extra->right());
     extra->setRight(bottom);
     
-    if(!top || top == this->root()) {
+    if(!top) {
         setRoot(extra);
     } else {
-        top->setRight(extra);
+        (top->left() == middle
+         ? top->setLeft(bottom)
+         : top->setRight(bottom));
     }
     middle->setRight(extra->left());
     extra->setLeft(middle);
@@ -83,16 +89,53 @@ bool AvlTree::doubleTurnLeftRight(Node* middle, Node* top) {
     bottom->setRight(extra->left());
     extra->setLeft(bottom);
     
-    if(!top || top == this->root()) {
+    if(!top) {
         setRoot(extra);
     } else {
-        top->setLeft(extra);
+        (top->left() == middle
+         ? top->setLeft(bottom)
+         : top->setRight(bottom));
     }
     
     middle->setLeft(extra->right());
     extra->setRight(middle);
     
     return true;
+}
+
+void AvlTree::doBalance(Node* root, Node* nodeSide, bool& isFixed, int& currentBalance) {
+    currentBalance = balance(root);
+    switch(currentBalance) {
+        case 0:
+            isFixed = true;
+            break;
+            
+        case -2:
+            if(balance(nodeSide) == 1) {
+                doubleTurnLeftRight(root, (findParent(this->root(), root) == root
+                                           ? nullptr
+                                           : findParent(this->root(), root)) );
+            } else {
+                turnRight(root, (findParent(this->root(), root) == root
+                                 ? nullptr
+                                 : findParent(this->root(), root)) );
+            }
+            isFixed = true;
+            break;
+            
+        case 2:
+            if(balance(nodeSide) == -1) {
+                doubleTurnRightLeft(root, (findParent(this->root(), root) == root
+                                           ? nullptr
+                                           : findParent(this->root(), root)) );
+            } else {
+                turnLeft(root, (findParent(this->root(), root) == root
+                                ? nullptr
+                                : findParent(this->root(), root)) );
+            }
+            isFixed = true;
+            break;
+    }
 }
 
 BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
@@ -105,62 +148,17 @@ BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
     } else if(value < root->key()) {
         root->setLeft(m_add(root->left(), value));
         if(!isFixed) {
-            
-            currentBalance = balance(root);
-            switch(currentBalance) {
-                case 0:
-                    isFixed = true;
-                    break;
-                    
-                case -2:
-                    if(balance(root->left()) == 1) {
-                        doubleTurnLeftRight(root, findParent(this->root(), root));
-                    } else {
-                        turnRight(root, findParent(this->root(), root));
-                    }
-                    break;
-                    
-                case 2:
-                    if(balance(root->left()) == -1) {
-                        doubleTurnRightLeft(root, findParent(this->root(), root));
-                    } else {
-                        turnLeft(root, findParent(this->root(), root));
-                    }
-                    break;
-            }
-            
+            doBalance(root, root->left(), isFixed, currentBalance);
         }
     } else if(value > root->key()){
         root->setRight(m_add(root->right(), value));
         if(!isFixed) {
-            
-            currentBalance = balance(root);
-            switch(currentBalance) {
-                case 0:
-                    isFixed = true;
-                    break;
-                    
-                case -2:
-                    if(balance(root->right()) == 1) {
-                        doubleTurnLeftRight(root, findParent(this->root(), root));
-                        turnRight(root, findParent(this->root(), root));
-                    } else {
-                        turnRight(root, findParent(this->root(), root));
-                    }
-                    break;
-                    
-                case 2:
-                    if(balance(root->right()) == -1) {
-                        doubleTurnRightLeft(root, findParent(this->root(), root));
-                    } else {
-                        turnLeft(root, findParent(this->root(), root));
-                    }
-                    break;
-            }
-            
+            doBalance(root, root->right(), isFixed, currentBalance);
         }
     }
     
     return root;
 }
+
+
 

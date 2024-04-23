@@ -17,6 +17,7 @@ public:
     bool turnLeft(Node* middle, Node* top = nullptr);
     bool doubleTurnRightLeft(Node* middle, Node* top = nullptr);
     bool doubleTurnLeftRight(Node* middle, Node* top = nullptr);
+    void doBalance(Node* root, Node* nodeSide, bool& isFixed, int& currentBalance);
     
     Node* m_add(Node* root, const int value) override;
 };
