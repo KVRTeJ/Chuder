@@ -13,11 +13,16 @@ public:
     AvlTree& operator = (const AvlTree& other) = default;
     
 //private:
-    bool turnRight(Node* middle, Node* top = nullptr);
-    bool turnLeft(Node* middle, Node* top = nullptr);
-    bool doubleTurnRightLeft(Node* middle, Node* top = nullptr);
-    bool doubleTurnLeftRight(Node* middle, Node* top = nullptr);
-    void doBalance(Node* root, Node* nodeSide, bool& isFixed, int& currentBalance);
+    ///returns middle->left()
+    Node* turnRight(Node* middle, Node* top = nullptr);
+    ///returns middle->right()
+    Node* turnLeft(Node* middle, Node* top = nullptr);
+    ///returns middle->right()->left()
+    Node* doubleTurnRightLeft(Node* middle, Node* top = nullptr);
+    ///returns middle->left()->right()
+    Node* doubleTurnLeftRight(Node* middle, Node* top = nullptr);
+    
+    void doBalance(Node*& root, Node* nodeSide, bool& isFixed, int& currentBalance);
     
     Node* m_add(Node* root, const int value) override;
 };

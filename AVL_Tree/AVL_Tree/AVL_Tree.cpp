@@ -10,9 +10,9 @@ AvlTree AvlTree::copy(Node* tree) const {
     return newTree;
 }
 
-bool AvlTree::turnRight(Node* middle, Node* top) {
+BinaryTree::Node* AvlTree::turnRight(Node* middle, Node* top) {
     if(!middle || !middle->left()) {
-        return false;
+        return {};
     }
     
     Node* bottom = middle->left();
@@ -28,12 +28,12 @@ bool AvlTree::turnRight(Node* middle, Node* top) {
     middle->setLeft(bottom->right());
     bottom->setRight(middle);
     
-    return true;
+    return bottom;
 }
 
-bool AvlTree::turnLeft(Node* middle, Node* top) {
+BinaryTree::Node* AvlTree::turnLeft(Node* middle, Node* top) {
     if(!middle || !middle->right()) {
-        return false;
+        return {};
     }
     
     Node* bottom = middle->right();
@@ -49,12 +49,12 @@ bool AvlTree::turnLeft(Node* middle, Node* top) {
     middle->setRight(bottom->left());
     bottom->setLeft(middle);
     
-    return true;
+    return bottom;
 }
 
-bool AvlTree::doubleTurnRightLeft(Node* middle, Node* top) {
+BinaryTree::Node* AvlTree::doubleTurnRightLeft(Node* middle, Node* top) {
     if(!middle || !middle->right() || !middle->right()->left()) {
-        return false;
+        return {};
     }
     
     Node* bottom = middle->right();
@@ -68,18 +68,18 @@ bool AvlTree::doubleTurnRightLeft(Node* middle, Node* top) {
         setRoot(extra);
     } else {
         (top->left() == middle
-         ? top->setLeft(bottom)
-         : top->setRight(bottom));
+         ? top->setLeft(extra)
+         : top->setRight(extra));
     }
     middle->setRight(extra->left());
     extra->setLeft(middle);
     
-    return true;
+    return extra;
 }
 
-bool AvlTree::doubleTurnLeftRight(Node* middle, Node* top) {
+BinaryTree::Node* AvlTree::doubleTurnLeftRight(Node* middle, Node* top) {
     if(!middle || !middle->left() || !middle->left()->right()) {
-        return false;
+        return {};
     }
     
     Node* bottom = middle->left();
@@ -93,17 +93,17 @@ bool AvlTree::doubleTurnLeftRight(Node* middle, Node* top) {
         setRoot(extra);
     } else {
         (top->left() == middle
-         ? top->setLeft(bottom)
-         : top->setRight(bottom));
+         ? top->setLeft(extra)
+         : top->setRight(extra));
     }
     
     middle->setLeft(extra->right());
     extra->setRight(middle);
     
-    return true;
+    return extra;
 }
 
-void AvlTree::doBalance(Node* root, Node* nodeSide, bool& isFixed, int& currentBalance) {
+void AvlTree::doBalance(Node*& root, Node* nodeSide, bool& isFixed, int& currentBalance) {
     currentBalance = balance(root);
     switch(currentBalance) {
         case 0:
@@ -112,11 +112,11 @@ void AvlTree::doBalance(Node* root, Node* nodeSide, bool& isFixed, int& currentB
             
         case -2:
             if(balance(nodeSide) == 1) {
-                doubleTurnLeftRight(root, (findParent(this->root(), root) == root
+                root = doubleTurnLeftRight(root, (findParent(this->root(), root) == root
                                            ? nullptr
                                            : findParent(this->root(), root)) );
             } else {
-                turnRight(root, (findParent(this->root(), root) == root
+                root = turnRight(root, (findParent(this->root(), root) == root
                                  ? nullptr
                                  : findParent(this->root(), root)) );
             }
@@ -125,11 +125,11 @@ void AvlTree::doBalance(Node* root, Node* nodeSide, bool& isFixed, int& currentB
             
         case 2:
             if(balance(nodeSide) == -1) {
-                doubleTurnRightLeft(root, (findParent(this->root(), root) == root
+                root = doubleTurnRightLeft(root, (findParent(this->root(), root) == root
                                            ? nullptr
                                            : findParent(this->root(), root)) );
             } else {
-                turnLeft(root, (findParent(this->root(), root) == root
+                root = turnLeft(root, (findParent(this->root(), root) == root
                                 ? nullptr
                                 : findParent(this->root(), root)) );
             }
