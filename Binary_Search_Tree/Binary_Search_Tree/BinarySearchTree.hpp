@@ -22,7 +22,7 @@ public:
     
     int level(const int key) const override;
     
-    SearchTree copy(Node* tree) const;
+    static SearchTree copy(Node* tree);
 
     Node* find(const int key) const override;
     

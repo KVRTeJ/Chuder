@@ -76,10 +76,14 @@ public:
     
     void print(Node* root = nullptr) const;
     void printHorizontal(Node *root, int marginLeft = 3, int levelSpacing = 5) const;
+    void printHorizontalUnicode(Node* root, const std::string& prefix = "", bool isLeft = false) const;
+    
     void printLeafs(Node* root) const;
     void printLevels() const;
     
     BinaryTree& operator = (const BinaryTree& other);
+    bool operator == (const BinaryTree& other) const;
+    bool operator != (const BinaryTree& other) const {return !operator==(other);}
     
 protected:
     virtual void m_max(Node* root, int& buffer) const;

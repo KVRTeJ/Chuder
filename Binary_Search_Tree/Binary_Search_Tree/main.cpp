@@ -9,7 +9,7 @@ int main() {
     }
     
     tree.add(1);
-    tree.printHorizontal(tree.root());
+    tree.print(tree.root());
 
     
     auto nums = tree.toVectorAsc();
