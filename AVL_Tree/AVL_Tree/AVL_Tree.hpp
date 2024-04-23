@@ -8,11 +8,11 @@ public:
     AvlTree() = default;
     ~AvlTree() = default;
     
-    AvlTree copy(Node* tree) const;
+    static AvlTree copy(Node* tree);
     
     AvlTree& operator = (const AvlTree& other) = default;
     
-//private:
+private:
     ///returns middle->left()
     Node* turnRight(Node* middle, Node* top = nullptr);
     ///returns middle->right()

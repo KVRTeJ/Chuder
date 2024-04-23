@@ -1,11 +1,13 @@
 #include "AVL_Tree.hpp"
 
-AvlTree AvlTree::copy(Node* tree) const {
-    BinaryTree parent = BinaryTree::copy(tree);
+AvlTree AvlTree::copy(Node* tree) {
+    BinaryTree parent;
+    parent = parent.copy(tree);
     AvlTree newTree = {};
     
-    newTree.setRoot(parent.root());
-    parent.setRoot(nullptr);
+    for(auto it = parent.begin(); it != parent.end(); ++it) {
+        newTree.add((*it)->key());
+    }
     
     return newTree;
 }
