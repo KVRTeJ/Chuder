@@ -15,7 +15,7 @@ public:
 //private:
     bool turnRight(Node* middle, Node* top = nullptr);
     bool turnLeft(Node* middle, Node* top = nullptr);
-    bool doubleTurnLRightLeft(Node* middle, Node* top = nullptr);
+    bool doubleTurnRightLeft(Node* middle, Node* top = nullptr);
     bool doubleTurnLeftRight(Node* middle, Node* top = nullptr);
     
     Node* m_add(Node* root, const int value) override;
