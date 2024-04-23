@@ -178,6 +178,9 @@ bool BinaryTree::balanced() const {
 }
 
 bool BinaryTree::balanced(Node* root) const {
+    if(!root)
+        return true;
+    
     int heightDifference = balance(root);
     bool isBalance = !heightDifference || heightDifference == 1 || heightDifference == -1;
     
@@ -204,7 +207,7 @@ void BinaryTree::add(const int key) {
     } else {
         m_root = new Node(key);
     }
-    print();
+    
 }
 
 bool BinaryTree::remove(Node* node) {
@@ -375,9 +378,9 @@ void BinaryTree::print(Node* root) const {
         }
     }
     
-    auto setIndentation = [](int count) {
+    auto setIndentation = [](const int count, const char symbol = ' ') {
         for (int i = 0; i < count; ++i)
-            std::cout << ' ' << ' ';
+            std::cout << symbol;
     };
     
     int height = this->height(root);
@@ -388,25 +391,40 @@ void BinaryTree::print(Node* root) const {
     int level = 0;
     int maxLevelWidth = pow(2, height) - 1;
     
-    while (!unprocessedNodes.empty() && level <= height) {
+    while(!unprocessedNodes.empty() && level <= height) {
         int width = maxLevelWidth / pow(2, level);
         int padding = width / 2;
         setIndentation(padding);
         
-        for (int i = 0; i < levelNodes; ++i) {
+        for(int i = 0; i < levelNodes; ++i) {
             Node* current = unprocessedNodes.front();
             unprocessedNodes.pop();
-            if (current != nullptr) {
-                std::cout << (current->key() < 10 ? '0' : '\0') << current->key();
+            if(current) {
+                std::cout << "┌";
+                setIndentation(padding, '-');
+                
+                std::cout << current->key() << (current->key() < 10 ? '-' : '\0');
+                
+                setIndentation(padding, '-');
+                std::cout << "┐";
+                
                 unprocessedNodes.push(current->left());
                 unprocessedNodes.push(current->right());
-            }
-            else {
+            } else {
+                if(level >= height) {
+                    return;
+                }
+                
+                std::cout << "┌";
+                setIndentation(padding, '-');
                 std::cout << "xx";
+                setIndentation(padding, '-');
+                std::cout << "┐";
+    
                 unprocessedNodes.push(nullptr);
                 unprocessedNodes.push(nullptr);
             }
-            setIndentation(width);
+            setIndentation(width - 1);
             
         }
         std::cout << std::endl;
@@ -438,6 +456,21 @@ void BinaryTree::printHorizontal(Node *root, int marginLeft, int levelSpacing) c
     printHorizontal(root->left(), marginLeft + levelSpacing, levelSpacing);
 }
 
+void BinaryTree::printHorizontalUnicode(Node* root, const std::string& prefix, bool isLeft) const {
+    if(!root) {
+        return;
+    }
+    
+    std::cout << prefix;
+    
+    std::cout << (isLeft ? "├──" : "└──" );
+    
+    std::cout << root->key() << std::endl;
+    
+    printHorizontalUnicode(root->left(), prefix + (isLeft ? "│   " : "    "), true);
+    printHorizontalUnicode(root->right(), prefix + (isLeft ? "│   " : "    "), false);
+}
+
 
 void BinaryTree::printLevels() const {
     
@@ -465,6 +498,26 @@ BinaryTree& BinaryTree::operator = (const BinaryTree& other) {
     }
     
         return *this;
+}
+
+bool BinaryTree::operator == (const BinaryTree& other) const {
+    if(m_root == other.m_root) {
+        return true;
+    }
+    
+    if(!m_root || !other.m_root) {
+        return false;
+    }
+    
+    auto it = begin();
+    auto jt = other.begin();
+    for(;it != end() && jt != other.end(); ++it, ++jt) {
+        if((*it)->key() != (*jt)->key()) {
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 /* protected */

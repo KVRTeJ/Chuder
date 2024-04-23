@@ -33,12 +33,14 @@ int SearchTree::level(const int key) const {
     return result;
 }
 
-SearchTree SearchTree::copy(Node* tree) const {
-    BinaryTree parent = BinaryTree::copy(tree);
+SearchTree SearchTree::copy(Node* tree) {
+    BinaryTree parent;
+    parent = parent.copy(tree);
     SearchTree newTree = {};
     
-    newTree.setRoot(parent.root());
-    parent.setRoot(nullptr);
+    for(auto it = parent.begin(); it != parent.end(); ++it) {
+        newTree.add((*it)->key());
+    }
     
     return newTree;
 }
