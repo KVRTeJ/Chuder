@@ -25,6 +25,10 @@ private:
     void doBalance(Node*& root, Node* nodeSide, bool& isFixed, int& currentBalance);
     
     Node* m_add(Node* root, const int value) override;
+    
+    void m_finishRemove(m_removeData& data) override;
+    bool m_removeTrivialCase(m_removeData& data) override;
+    void m_removeIfBothChildren(m_removeData& data) override;
 };
 
 #endif /* AVL_Tree_hpp */

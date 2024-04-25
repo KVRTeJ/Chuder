@@ -5,9 +5,8 @@ AvlTree AvlTree::copy(Node* tree) {
     parent = parent.copy(tree);
     AvlTree newTree = {};
     
-    for(auto it = parent.begin(); it != parent.end(); ++it) {
-        newTree.add((*it)->key());
-    }
+    newTree.setRoot(parent.root());
+    parent.setRoot(nullptr);
     
     return newTree;
 }
@@ -162,5 +161,59 @@ BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
     return root;
 }
 
+void AvlTree::m_finishRemove(m_removeData& data) {
+    if(!data.nodeParent) {
+        return;
+    }
+    
+    if(data.nodeParent == data.target) {
+        setRoot(data.replacementNode);
+        delete data.target;
+        data.target = nullptr;
+        data.nodeParent = nullptr;
+    } else if(data.nodeParent->left() == data.target) {
+        data.nodeParent->setLeft(nullptr);
+        delete data.target;
+        data.target = nullptr;
+        if(data.replacementNode)
+            data.nodeParent->setLeft(data.replacementNode);
+    } else {
+        data.nodeParent->setRight(nullptr);
+        delete data.target;
+        data.target = nullptr;
+        if(data.replacementNode)
+            data.nodeParent->setRight(data.replacementNode);
+    }
+}
 
+bool AvlTree::m_removeTrivialCase(m_removeData& data) {
+    if(data.target->left() == nullptr && data.target->right() == nullptr) {
+        
+        m_finishRemove(data);
+    } else if(!data.target->left()) {
+        data.replacementNode = data.target->right();
+        m_finishRemove(data);
+    } else if(!data.target->right()) {
+        data.replacementNode = data.target->left();
+        m_finishRemove(data);
+    } else {
+        return false;
+    }
+    
+    return true;
+}
 
+void AvlTree::m_removeIfBothChildren(m_removeData& data) {
+    data.replacementNode = findParent(data.target, nullptr);
+    Node* leafParent = findParent(data.target, data.replacementNode);
+    
+    if(leafParent->left() == data.replacementNode) {
+        leafParent->setLeft(nullptr);
+    } else {
+        leafParent->setRight(nullptr);
+    }
+    
+    data.replacementNode->setLeft(data.target->left());
+    data.replacementNode->setRight(data.target->right());
+    m_finishRemove(data);
+}
