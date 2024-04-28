@@ -26,9 +26,22 @@ private:
     
     Node* m_add(Node* root, const int value) override;
     
-    void m_finishRemove(m_removeData& data) override;
-    bool m_removeTrivialCase(m_removeData& data) override;
-    void m_removeIfBothChildren(m_removeData& data) override;
+    m_removeData* allocateRemoveData() override;
+    
+    class m_removeDataAvl;
+    void m_finishRemove(m_removeData* data) override;
+    bool m_removeTrivialCase(m_removeData* data) override;
+    void m_removeIfBothChildren(m_removeData* data) override;
+};
+
+class AvlTree::m_removeDataAvl : public m_removeData {
+public:
+    m_removeDataAvl() = default;
+    ~m_removeDataAvl() = default;
+    
+    std::list<BinaryTree::Node* >& way() override {return m_way;}
+private:
+    std::list<BinaryTree::Node* > m_way = {};
 };
 
 #endif /* AVL_Tree_hpp */

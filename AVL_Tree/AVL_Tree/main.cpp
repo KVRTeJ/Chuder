@@ -34,6 +34,10 @@ int main() {
     boo.print();
     std::cout << std::endl;
     
+    boo.remove(32);
+    boo.print();
+    std::cout << std::endl;
+    
     auto list = boo.way(boo.find(2));
     printList(list);
     

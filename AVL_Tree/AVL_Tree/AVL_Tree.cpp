@@ -105,6 +105,10 @@ BinaryTree::Node* AvlTree::doubleTurnLeftRight(Node* middle, Node* top) {
 }
 
 void AvlTree::doBalance(Node*& root, Node* nodeSide, bool& isFixed, int& currentBalance) {
+    if(nodeSide == root) {
+        return;
+    }
+    
     currentBalance = balance(root);
     switch(currentBalance) {
         case 0:
@@ -161,40 +165,62 @@ BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
     return root;
 }
 
-void AvlTree::m_finishRemove(m_removeData& data) {
-    if(!data.nodeParent) {
+SearchTree::m_removeData* AvlTree::allocateRemoveData() { return new m_removeDataAvl;}
+
+void AvlTree::m_finishRemove(m_removeData* data) {
+    if(!data->nodeParent) {
         return;
     }
     
-    if(data.nodeParent == data.target) {
-        setRoot(data.replacementNode);
-        delete data.target;
-        data.target = nullptr;
-        data.nodeParent = nullptr;
-    } else if(data.nodeParent->left() == data.target) {
-        data.nodeParent->setLeft(nullptr);
-        delete data.target;
-        data.target = nullptr;
-        if(data.replacementNode)
-            data.nodeParent->setLeft(data.replacementNode);
+    if(data->nodeParent == data->target) {
+        setRoot(data->replacementNode);
+        delete data->target;
+        data->target = nullptr;
+        data->nodeParent = nullptr;
+    } else if(data->nodeParent->left() == data->target) {
+        data->nodeParent->setLeft(nullptr);
+        
+        delete data->target;
+        data->target = nullptr;
+        if(data->replacementNode)
+            data->nodeParent->setLeft(data->replacementNode);
     } else {
-        data.nodeParent->setRight(nullptr);
-        delete data.target;
-        data.target = nullptr;
-        if(data.replacementNode)
-            data.nodeParent->setRight(data.replacementNode);
+        data->nodeParent->setRight(nullptr);
+        delete data->target;
+        data->target = nullptr;
+        if(data->replacementNode)
+            data->nodeParent->setRight(data->replacementNode);
     }
+    
+    if(data->way().empty()) {
+        data->way() = way(data->nodeParent);
+    } else {
+        data->way() = way(*--data->way().end());
+    }
+    
+    int currentBalance;
+    bool isFixed = false;
+    auto itChild = data->way().end();
+    auto itCurrent = itChild;
+    Node* current = nullptr;
+    Node* child = nullptr;
+    while(itCurrent != data->way().begin()) {
+        --itCurrent;
+        current = *itCurrent;
+        doBalance(current, child, isFixed, currentBalance);
+        child = current;
+    }
+    
 }
 
-bool AvlTree::m_removeTrivialCase(m_removeData& data) {
-    if(data.target->left() == nullptr && data.target->right() == nullptr) {
-        
+bool AvlTree::m_removeTrivialCase(m_removeData* data) {
+    if(data->target->left() == nullptr && data->target->right() == nullptr) {
         m_finishRemove(data);
-    } else if(!data.target->left()) {
-        data.replacementNode = data.target->right();
+    } else if(!data->target->left()) {
+        data->replacementNode = data->target->right();
         m_finishRemove(data);
-    } else if(!data.target->right()) {
-        data.replacementNode = data.target->left();
+    } else if(!data->target->right()) {
+        data->replacementNode = data->target->left();
         m_finishRemove(data);
     } else {
         return false;
@@ -203,17 +229,32 @@ bool AvlTree::m_removeTrivialCase(m_removeData& data) {
     return true;
 }
 
-void AvlTree::m_removeIfBothChildren(m_removeData& data) {
-    data.replacementNode = findParent(data.target, nullptr);
-    Node* leafParent = findParent(data.target, data.replacementNode);
+void AvlTree::m_removeIfBothChildren(m_removeData* data) {
+    int buffer = data->target->key();
+    m_min(data->target->right(), buffer);
     
-    if(leafParent->left() == data.replacementNode) {
-        leafParent->setLeft(nullptr);
-    } else {
-        leafParent->setRight(nullptr);
+    data->replacementNode = find(buffer);
+    Node* replacementNodeParent = findParent(data->target, data->replacementNode);
+    
+    data->way() = way(replacementNodeParent);//TODO: перегрузить в нахождении ^
+    
+    if(replacementNodeParent == data->target) {
+        data->replacementNode->setLeft(data->target->left());
+        m_finishRemove(data);
+        return;
     }
     
-    data.replacementNode->setLeft(data.target->left());
-    data.replacementNode->setRight(data.target->right());
+    if(data->replacementNode->right()) {
+        replacementNodeParent->setLeft(data->replacementNode->right());
+    } else {
+        if(replacementNodeParent->right() == data->replacementNode)
+            replacementNodeParent->setRight(nullptr);
+        else
+            replacementNodeParent->setLeft(nullptr);
+    }
+    
+    
+    data->replacementNode->setLeft(data->target->left());
+    data->replacementNode->setRight(data->target->right());
     m_finishRemove(data);
 }
