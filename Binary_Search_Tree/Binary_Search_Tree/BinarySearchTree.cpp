@@ -38,9 +38,8 @@ SearchTree SearchTree::copy(Node* tree) {
     parent = parent.copy(tree);
     SearchTree newTree = {};
     
-    for(auto it = parent.begin(); it != parent.end(); ++it) {
-        newTree.add((*it)->key());
-    }
+    newTree.setRoot(parent.root());
+    parent.setRoot(nullptr);
     
     return newTree;
 }
@@ -98,30 +97,30 @@ void SearchTree::m_min(Node* root, int& buffer) const {
     m_min(root->left(), buffer);
 }
 
-void SearchTree::m_removeIfBothChildren(m_removeData& data) {
-    int buffer = data.target->key();
-    m_min(data.target->right(), buffer);
+void SearchTree::m_removeIfBothChildren(RemoveData* data) {
+    int buffer = data->target->key();
+    m_min(data->target->right(), buffer);
     
-    data.replacementNode = find(buffer);
-    Node* replacementNodeParent = findParent(data.target, data.replacementNode);
+    data->replacementNode = find(buffer);
+    Node* replacementNodeParent = findReplasementNodeParent(data);
     
-    if(replacementNodeParent == data.target) {
-        data.replacementNode->setLeft(data.target->left());
+    if(replacementNodeParent == data->target) {
+        data->replacementNode->setLeft(data->target->left());
         m_finishRemove(data);
         return;
     }
     
-    if(data.replacementNode->right()) {
-        replacementNodeParent->setLeft(data.replacementNode->right());
+    if(data->replacementNode->right()) {
+        replacementNodeParent->setLeft(data->replacementNode->right());
     } else {
-        if(replacementNodeParent->right() == data.replacementNode)
+        if(replacementNodeParent->right() == data->replacementNode)
             replacementNodeParent->setRight(nullptr);
         else
             replacementNodeParent->setLeft(nullptr);
     }
     
     
-    data.replacementNode->setLeft(data.target->left());
-    data.replacementNode->setRight(data.target->right());
+    data->replacementNode->setLeft(data->target->left());
+    data->replacementNode->setRight(data->target->right());
     m_finishRemove(data);
 }

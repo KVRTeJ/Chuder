@@ -34,8 +34,10 @@ protected:
     void m_max(Node* root, int& buffer) const override;
     void m_min(Node* root, int& buffer) const override;
     
-    void m_removeIfBothChildren(m_removeData& data) override;
+    void m_removeIfBothChildren(RemoveData* data) override;
     Node* m_add(Node* root, const int value) override;
+    
+    virtual Node* findReplasementNodeParent(RemoveData* data) {return findParent(data->target, data->replacementNode);}
     
 };
 
