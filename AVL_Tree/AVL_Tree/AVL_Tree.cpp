@@ -205,9 +205,9 @@ BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
     return root;
 }
 
-SearchTree::m_removeData* AvlTree::allocateRemoveData() { return new RemoveDataAvl;}
+SearchTree::RemoveData* AvlTree::allocateRemoveData() { return new RemoveDataAvl;}
 
-void AvlTree::m_finishRemove(m_removeData* data) {
+void AvlTree::m_finishRemove(RemoveData* data) {
     
     BinaryTree::m_finishRemove(data);
     
@@ -227,7 +227,7 @@ void AvlTree::m_finishRemove(m_removeData* data) {
     
 }
 
-BinaryTree::Node* AvlTree::findReplasementNodeParent(m_removeData* data) {
+BinaryTree::Node* AvlTree::findReplasementNodeParent(RemoveData* data) {
     Node* replacementNodeParent = findParent(data->target, data->replacementNode);
     
     if(replacementNodeParent != data->target) {

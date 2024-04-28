@@ -27,14 +27,14 @@ private:
     
     Node* m_add(Node* root, const int value) override;
     
-    m_removeData* allocateRemoveData() override;
+    RemoveData* allocateRemoveData() override;
     
     class RemoveDataAvl;
-    void m_finishRemove(m_removeData* data) override;
-    Node* findReplasementNodeParent(m_removeData* data) override;
+    void m_finishRemove(RemoveData* data) override;
+    Node* findReplasementNodeParent(RemoveData* data) override;
 };
 
-class AvlTree::RemoveDataAvl : public m_removeData {
+class AvlTree::RemoveDataAvl : public RemoveData {
 public:
     RemoveDataAvl() = default;
     ~RemoveDataAvl() = default;
