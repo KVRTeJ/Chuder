@@ -143,6 +143,50 @@ void AvlTree::doBalance(Node*& root, Node* nodeSide, bool& isFixed, int& current
     }
 }
 
+void AvlTree::doBalanceRemove(Node*& root, Node* nodeSide, bool& isFixed, int& currentBalance) {
+    if(nodeSide == root) {
+        return;
+    }
+    
+    currentBalance = balance(root);
+    switch(currentBalance) {
+        case 1:
+            isFixed = true;
+            break;
+            
+        case -1:
+            isFixed = true;
+            break;
+            
+        case -2:
+            if(balance(root->left()) < 1) {
+                root = turnRight(root, (findParent(this->root(), root) == root
+                                 ? nullptr
+                                 : findParent(this->root(), root)) );
+            } else {
+                root = doubleTurnLeftRight(root, (findParent(this->root(), root) == root
+                                           ? nullptr
+                                           : findParent(this->root(), root)) );
+            }
+            isFixed = true;
+            break;
+
+        case 2:
+            if(balance(root->right()) > -1) {
+                root = turnLeft(root, (findParent(this->root(), root) == root
+                                ? nullptr
+                                : findParent(this->root(), root)) );
+            } else {
+                root = doubleTurnRightLeft(root, (findParent(this->root(), root) == root
+                                           ? nullptr
+                                           : findParent(this->root(), root)) );
+            }
+            isFixed = true;
+            break;
+    }
+}
+
+
 BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
     static bool isFixed = true;
     static int currentBalance = INT_MIN;
@@ -207,7 +251,7 @@ void AvlTree::m_finishRemove(m_removeData* data) {
     while(itCurrent != data->way().begin()) {
         --itCurrent;
         current = *itCurrent;
-        doBalance(current, child, isFixed, currentBalance);
+        doBalanceRemove(current, child, isFixed, currentBalance);
         child = current;
     }
     
@@ -236,8 +280,11 @@ void AvlTree::m_removeIfBothChildren(m_removeData* data) {
     data->replacementNode = find(buffer);
     Node* replacementNodeParent = findParent(data->target, data->replacementNode);
     
-    data->way() = way(replacementNodeParent);//TODO: перегрузить в нахождении ^
-    
+    if(replacementNodeParent != data->target) {
+        data->way().push_back(replacementNodeParent);//TODO: перегрузить в нахождении ^
+    } else {
+        data->way().push_back(data->replacementNode);
+    }
     if(replacementNodeParent == data->target) {
         data->replacementNode->setLeft(data->target->left());
         m_finishRemove(data);
