@@ -2,8 +2,6 @@
 
 #include <thread>
 
-const int g_maxNum = 100;
-
 int main() {
     
     auto printList = [](std::list<BinaryTree::Node*> list) {
@@ -88,7 +86,7 @@ int main() {
         nums.erase(it);
         
         std::cout << "step - " << iterCount;
-        std::cout << "\t removed - " << *it << "\t current size - " << boo.nodeCount(boo.root()) <<  std::endl;
+        std::cout << "\t removed - " << current << "\t current size - " << boo.nodeCount(boo.root()) <<  std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
         if(printAnswer == 'y') {
             std::cout << "printing tree. . ." << std::endl;
