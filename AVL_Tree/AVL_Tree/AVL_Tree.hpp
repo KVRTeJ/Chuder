@@ -29,15 +29,15 @@ private:
     
     m_removeData* allocateRemoveData() override;
     
-    class m_removeDataAvl;
+    class RemoveDataAvl;
     void m_finishRemove(m_removeData* data) override;
     Node* findReplasementNodeParent(m_removeData* data) override;
 };
 
-class AvlTree::m_removeDataAvl : public m_removeData {
+class AvlTree::RemoveDataAvl : public m_removeData {
 public:
-    m_removeDataAvl() = default;
-    ~m_removeDataAvl() = default;
+    RemoveDataAvl() = default;
+    ~RemoveDataAvl() = default;
     
     std::list<BinaryTree::Node* >& way() override {return m_way;}
 private:

@@ -205,7 +205,7 @@ BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
     return root;
 }
 
-SearchTree::m_removeData* AvlTree::allocateRemoveData() { return new m_removeDataAvl;}
+SearchTree::m_removeData* AvlTree::allocateRemoveData() { return new RemoveDataAvl;}
 
 void AvlTree::m_finishRemove(m_removeData* data) {
     
