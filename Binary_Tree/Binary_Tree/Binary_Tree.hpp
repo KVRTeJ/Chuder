@@ -39,6 +39,7 @@ public:
     void setRoot(Node* node) {m_root = node;}
     Node* root() {return m_root;}
     const Node* root() const {return m_root;}
+    std::list<Node* > way(Node* target) const;
     
     template<typename NodeType>
     std::list<NodeType*> levelNodes(NodeType* root, const int level) const;
@@ -89,12 +90,14 @@ protected:
     virtual void m_max(Node* root, int& buffer) const;
     virtual void m_min(Node* root, int& buffer) const;
     
-    struct m_removeData;
-    void m_finishRemove(m_removeData& data);
-    bool m_removeTrivialCase(m_removeData& data);
-    virtual void m_removeIfBothChildren(m_removeData& data);
+    class RemoveData;//TODO: rename ! m_
+    virtual RemoveData* allocateRemoveData();
+    virtual void m_finishRemove(RemoveData* data);
+    virtual bool m_removeTrivialCase(RemoveData* data);
+    virtual void m_removeIfBothChildren(RemoveData* data);
     
 private:
+    bool way(Node* root, Node* target, std::list<Node* >& result) const;
     void m_clearFromInclusiveRoot(Node* root);
     
     void m_toVectorLnr(Node* root, std::vector<int>& nums) const;
@@ -130,7 +133,13 @@ private:
     Node* m_right = nullptr;
 };
 
-struct BinaryTree::m_removeData {
+class BinaryTree::RemoveData {
+public:
+    RemoveData() = default;
+    ~RemoveData() = default;
+    
+    virtual std::list<BinaryTree::Node* >& way() {throw std::runtime_error("m_removeData::way: can't call in base class");}
+    
     BinaryTree::Node* target = nullptr;
     BinaryTree::Node* nodeParent = nullptr;
     BinaryTree::Node* replacementNode = nullptr;

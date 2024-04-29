@@ -135,6 +135,12 @@ int BinaryTree::maxLevel() const {
     return result - 1;
 }
 
+std::list<BinaryTree::Node* > BinaryTree::way(Node* target) const {
+    std::list<Node* > result;
+    way(m_root, target, result);
+    return result;
+}
+
 BinaryTree::bfsIterator BinaryTree::begin() {return bfsIterator(this, m_root);}
 BinaryTree::bfsIterator BinaryTree::end() {return bfsIterator(this, nullptr);}
 
@@ -153,6 +159,27 @@ void BinaryTree::clearFrom(Node* root) {
     if(root->right()) {
         m_clearFromInclusiveRoot(root->right());
         root->setRight(nullptr);
+    }
+}
+
+bool BinaryTree::way(Node* root, Node* target, std::list<Node* >& result) const {
+    if(!root) {
+        return false;
+    }
+    
+    result.push_back(root);
+    
+    if(root == target) {
+        return true;
+    } else {
+        bool isFindLeft = way(root->left(), target, result);
+        bool isFindRight = way(root->right(), target, result);
+        if(isFindLeft || isFindRight) {
+            return true;
+        } else {
+            result.pop_back();
+            return false;
+        }
     }
 }
 
@@ -211,19 +238,20 @@ void BinaryTree::add(const int key) {
 }
 
 bool BinaryTree::remove(Node* node) {
-    m_removeData data = {};
+    RemoveData* data = allocateRemoveData();
     
-    data.target = node;
-    if(!data.target) {
+    data->target = node;
+    if(!data->target) {
         return false;
     }
     
-    data.nodeParent = findParent(m_root, data.target);
+    data->nodeParent = findParent(m_root, data->target);
     if(m_removeTrivialCase(data));
     else {
         m_removeIfBothChildren(data);
     }
     
+    delete data;
     return true;
 }
 
@@ -521,41 +549,46 @@ bool BinaryTree::operator == (const BinaryTree& other) const {
 }
 
 /* protected */
-void BinaryTree::m_finishRemove(m_removeData& data) {
-    if(!data.nodeParent) {
+
+BinaryTree::RemoveData* BinaryTree::allocateRemoveData() {
+    return new RemoveData;
+}
+
+void BinaryTree::m_finishRemove(RemoveData* data) {
+    if(!data->nodeParent) {
         return;
     }
     
-    if(data.nodeParent == data.target) {
-        m_root = data.replacementNode;
-        delete data.target;
-        data.target = nullptr;
-        data.nodeParent = nullptr;
-    } else if(data.nodeParent->left() == data.target) {
-        data.nodeParent->setLeft(nullptr);
-        delete data.target;
-        data.target = nullptr;
-        if(data.replacementNode)
-            data.nodeParent->setLeft(data.replacementNode);
+    if(data->nodeParent == data->target) {
+        m_root = data->replacementNode;
+        delete data->target;
+        data->target = nullptr;
+        data->nodeParent = nullptr;
+    } else if(data->nodeParent->left() == data->target) {
+        data->nodeParent->setLeft(nullptr);
+        delete data->target;
+        data->target = nullptr;
+        if(data->replacementNode)
+            data->nodeParent->setLeft(data->replacementNode);
     } else {
-        data.nodeParent->setRight(nullptr);
-        delete data.target;
-        data.target = nullptr;
-        if(data.replacementNode)
-            data.nodeParent->setRight(data.replacementNode);
+        data->nodeParent->setRight(nullptr);
+        delete data->target;
+        data->target = nullptr;
+        if(data->replacementNode)
+            data->nodeParent->setRight(data->replacementNode);
     }
     
 }
 
-bool BinaryTree::m_removeTrivialCase(m_removeData& data) {
+bool BinaryTree::m_removeTrivialCase(RemoveData* data) {
     
-    if(data.target->left() == nullptr && data.target->right() == nullptr) {
+    if(data->target->left() == nullptr && data->target->right() == nullptr) {
         m_finishRemove(data);
-    } else if(!data.target->left()) {
-        data.replacementNode = data.target->right();
+    } else if(!data->target->left()) {
+        data->replacementNode = data->target->right();
         m_finishRemove(data);
-    } else if(!data.target->right()) {
-        data.replacementNode = data.target->left();
+    } else if(!data->target->right()) {
+        data->replacementNode = data->target->left();
         m_finishRemove(data);
     } else {
         return false;
@@ -564,18 +597,18 @@ bool BinaryTree::m_removeTrivialCase(m_removeData& data) {
     return true;
 }
 
-void BinaryTree::m_removeIfBothChildren(m_removeData& data) {
-    data.replacementNode = findParent(data.target, nullptr);
-    Node* leafParent = findParent(data.target, data.replacementNode);
+void BinaryTree::m_removeIfBothChildren(RemoveData* data) {
+    data->replacementNode = findParent(data->target, nullptr);
+    Node* leafParent = findParent(data->target, data->replacementNode);
     
-    if(leafParent->left() == data.replacementNode) {
+    if(leafParent->left() == data->replacementNode) {
         leafParent->setLeft(nullptr);
     } else {
         leafParent->setRight(nullptr);
     }
     
-    data.replacementNode->setLeft(data.target->left());
-    data.replacementNode->setRight(data.target->right());
+    data->replacementNode->setLeft(data->target->left());
+    data->replacementNode->setRight(data->target->right());
     m_finishRemove(data);
 }
 
