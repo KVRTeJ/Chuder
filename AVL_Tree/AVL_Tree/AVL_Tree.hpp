@@ -22,8 +22,8 @@ private:
     ///returns middle->left()->right()
     Node* doubleTurnLeftRight(Node* middle, Node* top = nullptr);
     
-    void doBalance(Node*& root, Node* nodeSide, bool& isFixed, int& currentBalance);
-    void doBalanceRemove(Node*& root, bool& isFixed, int& currentBalance);
+    void doBalance(Node*& root, Node* nodeSide);
+    void doBalanceRemove(Node*& root);
     
     Node* m_add(Node* root, const int value) override;
     
@@ -32,6 +32,10 @@ private:
     class RemoveDataAvl;
     void m_finishRemove(RemoveData* data) override;
     Node* findReplasementNodeParent(RemoveData* data) override;
+    
+private:
+    int currentBalance = INT_MIN;
+    bool isFixed = false;
 };
 
 class AvlTree::RemoveDataAvl : public RemoveData {

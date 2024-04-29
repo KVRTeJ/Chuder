@@ -104,7 +104,7 @@ BinaryTree::Node* AvlTree::doubleTurnLeftRight(Node* middle, Node* top) {
     return extra;
 }
 
-void AvlTree::doBalance(Node*& root, Node* nodeSide, bool& isFixed, int& currentBalance) {
+void AvlTree::doBalance(Node*& root, Node* nodeSide) {
     if(nodeSide == root) {
         return;
     }
@@ -143,7 +143,7 @@ void AvlTree::doBalance(Node*& root, Node* nodeSide, bool& isFixed, int& current
     }
 }
 
-void AvlTree::doBalanceRemove(Node*& root, bool& isFixed, int& currentBalance) {
+void AvlTree::doBalanceRemove(Node*& root) {
     currentBalance = balance(root);
     switch(currentBalance) {
         case 1:
@@ -184,21 +184,18 @@ void AvlTree::doBalanceRemove(Node*& root, bool& isFixed, int& currentBalance) {
 
 
 BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
-    static bool isFixed = true;
-    static int currentBalance = INT_MIN;
-    
     if(!root) {
         root = new Node(value);
         isFixed = false;
     } else if(value < root->key()) {
         root->setLeft(m_add(root->left(), value));
         if(!isFixed) {
-            doBalance(root, root->left(), isFixed, currentBalance);
+            doBalance(root, root->left());
         }
     } else if(value > root->key()){
         root->setRight(m_add(root->right(), value));
         if(!isFixed) {
-            doBalance(root, root->right(), isFixed, currentBalance);
+            doBalance(root, root->right());
         }
     }
     
@@ -217,12 +214,10 @@ void AvlTree::m_finishRemove(RemoveData* data) {
         data->way() = way(*--data->way().end());
     }
     
-    int currentBalance = INT_MIN;
-    bool isFixed = false;
     auto itCurrent = data->way().end();
     while(itCurrent != data->way().begin()) {
         --itCurrent;
-        doBalanceRemove(*itCurrent, isFixed, currentBalance);
+        doBalanceRemove(*itCurrent);
     }
     
 }
