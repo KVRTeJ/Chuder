@@ -109,6 +109,7 @@ void AvlTree::doBalance(Node*& root, Node* nodeSide) {
         return;
     }
     
+    auto rootParent = findParent(this->root(), root);
     currentBalance = balance(root);
     switch(currentBalance) {
         case 0:
@@ -117,26 +118,26 @@ void AvlTree::doBalance(Node*& root, Node* nodeSide) {
             
         case -2:
             if(balance(nodeSide) == 1) {
-                root = doubleTurnLeftRight(root, (findParent(this->root(), root) == root
+                root = doubleTurnLeftRight(root, (rootParent == root
                                            ? nullptr
-                                           : findParent(this->root(), root)) );
+                                           : rootParent) );
             } else {
-                root = turnRight(root, (findParent(this->root(), root) == root
+                root = turnRight(root, (rootParent == root
                                  ? nullptr
-                                 : findParent(this->root(), root)) );
+                                 : rootParent) );
             }
             isFixed = true;
             break;
             
         case 2:
             if(balance(nodeSide) == -1) {
-                root = doubleTurnRightLeft(root, (findParent(this->root(), root) == root
+                root = doubleTurnRightLeft(root, (rootParent == root
                                            ? nullptr
-                                           : findParent(this->root(), root)) );
+                                           : rootParent) );
             } else {
-                root = turnLeft(root, (findParent(this->root(), root) == root
+                root = turnLeft(root, (rootParent == root
                                 ? nullptr
-                                : findParent(this->root(), root)) );
+                                : rootParent) );
             }
             isFixed = true;
             break;
@@ -144,6 +145,8 @@ void AvlTree::doBalance(Node*& root, Node* nodeSide) {
 }
 
 void AvlTree::doBalanceRemove(Node*& root) {
+    auto rootParent = findParent(this->root(), root);
+    
     currentBalance = balance(root);
     switch(currentBalance) {
         case 1:
@@ -156,26 +159,26 @@ void AvlTree::doBalanceRemove(Node*& root) {
             
         case -2:
             if(balance(root->left()) < 1) {
-                root = turnRight(root, (findParent(this->root(), root) == root
+                root = turnRight(root, (rootParent == root
                                  ? nullptr
-                                 : findParent(this->root(), root)) );
+                                 : rootParent) );
             } else {
-                root = doubleTurnLeftRight(root, (findParent(this->root(), root) == root
+                root = doubleTurnLeftRight(root, (rootParent == root
                                            ? nullptr
-                                           : findParent(this->root(), root)) );
+                                           : rootParent) );
             }
             isFixed = true;
             break;
 
         case 2:
             if(balance(root->right()) > -1) {
-                root = turnLeft(root, (findParent(this->root(), root) == root
+                root = turnLeft(root, (rootParent == root
                                 ? nullptr
-                                : findParent(this->root(), root)) );
+                                : rootParent) );
             } else {
-                root = doubleTurnRightLeft(root, (findParent(this->root(), root) == root
+                root = doubleTurnRightLeft(root, (rootParent == root
                                            ? nullptr
-                                           : findParent(this->root(), root)) );
+                                           : rootParent) );
             }
             isFixed = true;
             break;
