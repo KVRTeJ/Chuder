@@ -61,7 +61,6 @@ BinaryTree::Node* AvlTree::doubleTurnRightLeft(Node* middle, Node* top) {
     Node* bottom = middle->right();
     Node* extra = bottom->left();
     
-    middle->setRight(extra);
     bottom->setLeft(extra->right());
     extra->setRight(bottom);
     
@@ -86,7 +85,6 @@ BinaryTree::Node* AvlTree::doubleTurnLeftRight(Node* middle, Node* top) {
     Node* bottom = middle->left();
     Node* extra = bottom->right();
     
-    middle->setLeft(extra);
     bottom->setRight(extra->left());
     extra->setLeft(bottom);
     
