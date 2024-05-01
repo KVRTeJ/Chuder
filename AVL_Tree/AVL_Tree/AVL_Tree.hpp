@@ -4,6 +4,7 @@
 #include "BinarySearchTree.hpp"
 
 class AvlTree : public SearchTree {
+    using BinaryTree::findParent;
 public:
     AvlTree() = default;
     ~AvlTree() = default;
