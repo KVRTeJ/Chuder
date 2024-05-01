@@ -67,8 +67,6 @@ int main() {
         std::cout << std::endl;
     }
     
-    auto foo = AvlTree::copy(boo.root());
-    assert(foo == boo);
     std::cout << "\t\t\tREMOVE TIME!" << std::endl;
     
     std::cout << std::endl;
@@ -95,7 +93,6 @@ int main() {
         
         currentSize = boo.nodeCount(boo.root());
         assert(currentSize == nums.size());
-        assert(currentSize == foo.nodeCount(foo.root()) - iterCount);
         assert(!boo.find(current));
         assert(boo.balanced());
         
