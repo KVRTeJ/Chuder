@@ -4,6 +4,7 @@
 #include "Binary_Tree.hpp"
 
 class SearchTree : public BinaryTree {
+    using BinaryTree::findParent;
 public:
     template <typename NodeType, typename TreeType>
     class lnrTemplateIterator;
@@ -25,6 +26,7 @@ public:
     static SearchTree copy(Node* tree);
 
     Node* find(const int key) const override;
+    const Node* findParent(const Node* root, const Node* child) const override;
     
     std::vector<int> toVectorAsc() const override;
     
@@ -37,7 +39,10 @@ protected:
     void m_removeIfBothChildren(RemoveData* data) override;
     Node* m_add(Node* root, const int value) override;
     
-    virtual Node* findReplasementNodeParent(RemoveData* data) {return findParent(data->target, data->replacementNode);}
+    virtual Node* findReplasementNodeParent(RemoveData* data) {return BinaryTree::findParent(data->target, data->replacementNode);}
+    
+private:
+    bool m_way(Node* root, Node* target, std::list<Node* >& result) const override;
     
 };
 
@@ -122,7 +127,7 @@ private:
             m_prevNode = m_tree->find(m_tree->max(m_currentNode->left()));
             return;
         }
-        m_prevNode = m_tree->findParent(m_tree->root(), m_currentNode);
+        m_prevNode = m_tree->BinaryTree::findParent(m_tree->root(), m_currentNode);
         
         if(m_prevNode == m_tree->root() && m_currentNode == m_tree->root()) {
             m_prevNode = m_tree->find(m_tree->max(m_currentNode->left()));
@@ -130,7 +135,7 @@ private:
         }
         
         while(m_currentNode->key() < m_prevNode->key()) {
-            m_prevNode = m_tree->findParent(m_tree->root(), m_prevNode);
+            m_prevNode = m_tree->BinaryTree::findParent(m_tree->root(), m_prevNode);
             if(m_prevNode == m_tree->root()) {
                 if(m_prevNode->key() > m_currentNode->key())
                     m_prevNode = nullptr;
@@ -148,7 +153,7 @@ private:
             m_nextNode = m_tree->find(m_tree->min(m_currentNode->right()));
             return;
         }
-        m_nextNode = m_tree->findParent(m_tree->root(), m_currentNode);
+        m_nextNode = m_tree->BinaryTree::findParent(m_tree->root(), m_currentNode);
         
         if(m_nextNode == m_tree->root() && m_currentNode == m_tree->root()) {
             m_nextNode = m_tree->find(m_tree->min(m_currentNode->right()));
@@ -156,7 +161,7 @@ private:
         }
         
         while(m_currentNode->key() > m_nextNode->key()) {
-            m_nextNode = m_tree->findParent(m_tree->root(), m_nextNode);
+            m_nextNode = m_tree->BinaryTree::findParent(m_tree->root(), m_nextNode);
             if(m_nextNode == m_tree->root()) {
                 if(m_nextNode->key() < m_currentNode->key())
                     m_nextNode = nullptr;

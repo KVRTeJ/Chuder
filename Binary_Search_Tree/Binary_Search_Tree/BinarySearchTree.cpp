@@ -58,6 +58,37 @@ BinaryTree::Node* SearchTree::find(const int key) const {
     return current;
 }
 
+const BinaryTree::Node* SearchTree::findParent(const Node* root, const Node* child) const {
+    if(!child || !root) {
+        return BinaryTree::findParent(root, child);
+    }
+    
+    if(root->key() == child->key()) {
+        return root;
+    }
+
+    const Node* current = root;
+    
+    while(current->left() || current->right()) {
+        
+        if(current->left())
+            if(current->left()->key() == child->key()) {
+                return current;
+            }
+        if(current->right())
+            if(current->right()->key() == child->key()) {
+                return current;
+            }
+        
+        current = (current->key() > child->key()
+                   ? (current->left() ? current->left() : current)
+                   : (current->right() ? current->right() : current));
+        
+    }
+    
+    return nullptr;
+}
+
 std::vector<int> SearchTree::toVectorAsc() const {
     std::vector<int> result = toVectorLnr();;
     
@@ -123,4 +154,20 @@ void SearchTree::m_removeIfBothChildren(RemoveData* data) {
     data->replacementNode->setLeft(data->target->left());
     data->replacementNode->setRight(data->target->right());
     m_finishRemove(data);
+}
+
+bool SearchTree::m_way(Node* root, Node* target, std::list<Node* >& result) const {
+    if(!root) {
+        return false;
+    }
+    
+    result.push_back(root);
+    
+    if(root == target) {
+        return true;
+    } else {
+        return m_way( (root->key() > target->key()
+                     ? root->left()
+                     : root->right()), target, result);
+    }
 }
