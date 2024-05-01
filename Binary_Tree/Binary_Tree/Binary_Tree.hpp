@@ -69,7 +69,7 @@ public:
     Node* find(Node* start, Node* target) const;
     ///if child == nullptr -> return leaf
     Node* findParent(Node* root, Node* child);
-    const Node* findParent(const Node* root, const Node* child) const;
+    virtual const Node* findParent(const Node* root, const Node* child) const;
     
     virtual std::vector<int> toVectorAsc() const;
     std::vector<int> toVectorLnr() const;
@@ -95,9 +95,10 @@ protected:
     virtual void m_finishRemove(RemoveData* data);
     virtual bool m_removeTrivialCase(RemoveData* data);
     virtual void m_removeIfBothChildren(RemoveData* data);
+    virtual bool m_way(Node* root, Node* target, std::list<Node* >& result) const;
     
 private:
-    bool way(Node* root, Node* target, std::list<Node* >& result) const;
+    
     void m_clearFromInclusiveRoot(Node* root);
     
     void m_toVectorLnr(Node* root, std::vector<int>& nums) const;

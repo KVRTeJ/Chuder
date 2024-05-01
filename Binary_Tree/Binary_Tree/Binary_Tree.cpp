@@ -136,8 +136,12 @@ int BinaryTree::maxLevel() const {
 }
 
 std::list<BinaryTree::Node* > BinaryTree::way(Node* target) const {
+    if(!target) {
+        return {};
+    }
+    
     std::list<Node* > result;
-    way(m_root, target, result);
+    m_way(m_root, target, result);
     return result;
 }
 
@@ -162,7 +166,7 @@ void BinaryTree::clearFrom(Node* root) {
     }
 }
 
-bool BinaryTree::way(Node* root, Node* target, std::list<Node* >& result) const {
+bool BinaryTree::m_way(Node* root, Node* target, std::list<Node* >& result) const {
     if(!root) {
         return false;
     }
@@ -172,8 +176,8 @@ bool BinaryTree::way(Node* root, Node* target, std::list<Node* >& result) const 
     if(root == target) {
         return true;
     } else {
-        bool isFindLeft = way(root->left(), target, result);
-        bool isFindRight = way(root->right(), target, result);
+        bool isFindLeft = m_way(root->left(), target, result);
+        bool isFindRight = m_way(root->right(), target, result);
         if(isFindLeft || isFindRight) {
             return true;
         } else {
