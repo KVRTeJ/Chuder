@@ -1,5 +1,7 @@
 #include "AVL_Tree.hpp"
 
+#include <algorithm>
+
 AvlTree AvlTree::copy(Node* tree) {
     BinaryTree parent;
     parent = parent.copy(tree);
@@ -29,6 +31,9 @@ BinaryTree::Node* AvlTree::turnRight(Node* middle, Node* top) {
     middle->setLeft(bottom->right());
     bottom->setRight(middle);
     
+    middle->setBalance(middle->balance() + 1 + std::max(0, -bottom->balance()));
+    bottom->setBalance(bottom->balance() + 1 + std::max(0, static_cast<int>(middle->balance())));
+    
     return bottom;
 }
 
@@ -50,6 +55,9 @@ BinaryTree::Node* AvlTree::turnLeft(Node* middle, Node* top) {
     middle->setRight(bottom->left());
     bottom->setLeft(middle);
     
+    middle->setBalance(balance(middle));
+    bottom->setBalance(balance(bottom));
+    
     return bottom;
 }
 
@@ -59,22 +67,9 @@ BinaryTree::Node* AvlTree::doubleTurnRightLeft(Node* middle, Node* top) {
     }
     
     Node* bottom = middle->right();
-    Node* extra = bottom->left();
-    
-    bottom->setLeft(extra->right());
-    extra->setRight(bottom);
-    
-    if(!top) {
-        setRoot(extra);
-    } else {
-        (top->left() == middle
-         ? top->setLeft(extra)
-         : top->setRight(extra));
-    }
-    middle->setRight(extra->left());
-    extra->setLeft(middle);
-    
-    return extra;
+    turnRight(bottom, middle);
+    return turnLeft(middle, top);
+
 }
 
 BinaryTree::Node* AvlTree::doubleTurnLeftRight(Node* middle, Node* top) {
@@ -83,23 +78,8 @@ BinaryTree::Node* AvlTree::doubleTurnLeftRight(Node* middle, Node* top) {
     }
     
     Node* bottom = middle->left();
-    Node* extra = bottom->right();
-    
-    bottom->setRight(extra->left());
-    extra->setLeft(bottom);
-    
-    if(!top) {
-        setRoot(extra);
-    } else {
-        (top->left() == middle
-         ? top->setLeft(extra)
-         : top->setRight(extra));
-    }
-    
-    middle->setLeft(extra->right());
-    extra->setRight(middle);
-    
-    return extra;
+    turnLeft(bottom, middle);
+    return turnRight(middle, top);
 }
 
 void AvlTree::doBalance(Node*& root, Node* nodeSide) {
@@ -108,14 +88,13 @@ void AvlTree::doBalance(Node*& root, Node* nodeSide) {
     }
     
     auto rootParent = findParent(this->root(), root);
-    currentBalance = balance(root);
-    switch(currentBalance) {
+    switch(root->balance()) {
         case 0:
             isFixed = true;
             break;
             
         case -2:
-            if(balance(nodeSide) == 1) {
+            if(nodeSide->balance() == 1) {
                 root = doubleTurnLeftRight(root, (rootParent == root
                                            ? nullptr
                                            : rootParent) );
@@ -128,7 +107,7 @@ void AvlTree::doBalance(Node*& root, Node* nodeSide) {
             break;
             
         case 2:
-            if(balance(nodeSide) == -1) {
+            if(nodeSide->balance() == -1) {
                 root = doubleTurnRightLeft(root, (rootParent == root
                                            ? nullptr
                                            : rootParent) );
@@ -145,8 +124,7 @@ void AvlTree::doBalance(Node*& root, Node* nodeSide) {
 void AvlTree::doBalanceRemove(Node*& root) {
     auto rootParent = findParent(this->root(), root);
     
-    currentBalance = balance(root);
-    switch(currentBalance) {
+    switch(root->balance()) {
         case 1:
             isFixed = true;
             break;
@@ -156,7 +134,7 @@ void AvlTree::doBalanceRemove(Node*& root) {
             break;
             
         case -2:
-            if(balance(root->left()) < 1) {
+            if(root->left()->balance() < 1) {
                 root = turnRight(root, (rootParent == root
                                  ? nullptr
                                  : rootParent) );
@@ -169,7 +147,7 @@ void AvlTree::doBalanceRemove(Node*& root) {
             break;
 
         case 2:
-            if(balance(root->right()) > -1) {
+            if(root->right()->balance() > -1) {
                 root = turnLeft(root, (rootParent == root
                                 ? nullptr
                                 : rootParent) );
@@ -191,11 +169,13 @@ BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
     } else if(value < root->key()) {
         root->setLeft(m_add(root->left(), value));
         if(!isFixed) {
+            root->setBalance(root->balance() - 1);
             doBalance(root, root->left());
         }
     } else if(value > root->key()){
         root->setRight(m_add(root->right(), value));
         if(!isFixed) {
+            root->setBalance(root->balance() + 1);
             doBalance(root, root->right());
         }
     }
@@ -216,14 +196,28 @@ void AvlTree::m_finishRemove(RemoveData* data) {
     }
     
     auto itCurrent = data->way().end();
+    auto itBefore = itCurrent;
     while(itCurrent != data->way().begin()) {
         --itCurrent;
+        if(itBefore != data->way().end()){
+            (*itCurrent)->setBalance((*itCurrent)->balance() + ((*itCurrent)->left() == *itBefore
+                                                                ? 1
+                                                                : -1) );
+        } else {
+            (*itCurrent)->setBalance((*itCurrent)->balance() + ((*itCurrent)->left() == nullptr
+                                                                ? 1
+                                                                : -1) );
+        }
+        
         doBalanceRemove(*itCurrent);
+        if(isFixed)
+            break;
+        itBefore = itCurrent;
     }
     
 }
 
-BinaryTree::Node* AvlTree::findReplasementNodeParent(RemoveData* data) {
+BinaryTree::Node* AvlTree::findReplaсementNodeParent(RemoveData* data) {
     Node* replacementNodeParent = findParent(data->target, data->replacementNode);
     
     if(replacementNodeParent != data->target) {

@@ -31,11 +31,10 @@ private:
     RemoveData* allocateRemoveData() override;
     
     class RemoveDataAvl;
-    void m_finishRemove(RemoveData* data) override;
-    Node* findReplasementNodeParent(RemoveData* data) override;
+    void m_finishRemove(RemoveData* data) override; //FIXME: replacementNode->right()
+    Node* findReplaсementNodeParent(RemoveData* data) override;
     
 private:
-    int currentBalance = INT_MIN;
     bool isFixed = false;
 };
 

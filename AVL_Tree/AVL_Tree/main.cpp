@@ -51,20 +51,21 @@ int main() {
         boo.add(*it);
         currentSize = boo.nodeCount(boo.root());
         
-        std::cout << "added - " << *it << "\t current size - " << currentSize << std::endl;
+    
         std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
         if(printAnswer == 'y') {
+            std::cout << "added - " << *it << "\t current size - " << currentSize << std::endl;
             std::cout << "printing tree. . ." << std::endl;
             boo.print();
+            std::cout << std::endl;
+            std::cout << std::endl;
+            std::cout << std::endl;
         }
         
         assert(boo.find(*it));
         assert(boo.find(*it)->key() == *it);
         assert(boo.balanced());
         
-        std::cout << std::endl;
-        std::cout << std::endl;
-        std::cout << std::endl;
     }
     
     std::cout << "\t\t\tREMOVE TIME!" << std::endl;
@@ -83,22 +84,22 @@ int main() {
         boo.remove(*it);
         nums.erase(it);
         
-        std::cout << "step - " << iterCount;
-        std::cout << "\t removed - " << current << "\t current size - " << boo.nodeCount(boo.root()) <<  std::endl;
+        
         std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
         if(printAnswer == 'y') {
+            std::cout << "step - " << iterCount;
+            std::cout << "\t removed - " << current << "\t current size - " << boo.nodeCount(boo.root()) <<  std::endl;
             std::cout << "printing tree. . ." << std::endl;
             boo.print();
+            std::cout << std::endl;
+            std::cout << std::endl;
+            std::cout << std::endl;
         }
         
         currentSize = boo.nodeCount(boo.root());
         assert(currentSize == nums.size());
         assert(!boo.find(current));
         assert(boo.balanced());
-        
-        std::cout << std::endl;
-        std::cout << std::endl;
-        std::cout << std::endl;
         
         it = nums.begin();
     }
