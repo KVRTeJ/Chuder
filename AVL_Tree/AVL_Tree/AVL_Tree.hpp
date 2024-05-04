@@ -24,14 +24,14 @@ private:
     Node* doubleTurnLeftRight(Node* middle, Node* top = nullptr);
     
     void doBalance(Node*& root, Node* nodeSide);
-    void doBalanceRemove(Node*& root);
+    bool doBalanceRemove(Node* root);
     
     Node* m_add(Node* root, const int value) override;
     
     RemoveData* allocateRemoveData() override;
     
     class RemoveDataAvl;
-    void m_finishRemove(RemoveData* data) override; //FIXME: replacementNode->right()
+    bool m_finishRemove(RemoveData* data) override; //FIXME: replacementNode->right()
     Node* findReplaсementNodeParent(RemoveData* data) override;
     
 private:
