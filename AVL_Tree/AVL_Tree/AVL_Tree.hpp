@@ -44,6 +44,7 @@ public:
     ~RemoveDataAvl() = default;
     
     std::list<BinaryTree::Node* >& way() override {return m_way;}
+    void updateWay(Node* node) override {m_way.clear(); m_way.push_back(node);};
 private:
     std::list<BinaryTree::Node* > m_way = {};
 };

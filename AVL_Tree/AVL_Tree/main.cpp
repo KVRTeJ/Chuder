@@ -17,7 +17,8 @@ int main() {
     
     int size = -1;
     std::cout << "tree size: ";
-    std::cin >> size;
+    //std::cin >> size;
+    size = 20;
     
     std::vector<int> nums(size);
     
@@ -37,12 +38,14 @@ int main() {
     
     int sleepTime = 0;
     std::cout << "sleep time(seconds): ";
-    std::cin >> sleepTime;
+    //std::cin >> sleepTime;
+    sleepTime = 0;
     sleepTime *= 1000;
     
     char printAnswer = 'n';
     std::cout << "wanna print tree? y/n: ";
-    std::cin >> printAnswer;
+    //std::cin >> printAnswer;
+    printAnswer = 'y';
     
     std::cout << std::endl;
     
@@ -79,6 +82,10 @@ int main() {
     int iterCount = 0;
     auto it = nums.begin();
     while(!nums.empty()) {
+        
+        if(*it == 12) {
+            
+        }
         ++iterCount;
         current = *it;
         boo.remove(*it);

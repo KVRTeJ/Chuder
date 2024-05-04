@@ -188,6 +188,7 @@ SearchTree::RemoveData* AvlTree::allocateRemoveData() { return new RemoveDataAvl
 void AvlTree::m_finishRemove(RemoveData* data) {
     
     BinaryTree::m_finishRemove(data);
+    isFixed = false;
     
     if(data->way().empty()) {
         data->way() = way(data->nodeParent);
@@ -199,6 +200,10 @@ void AvlTree::m_finishRemove(RemoveData* data) {
     auto itBefore = itCurrent;
     while(itCurrent != data->way().begin()) {
         --itCurrent;
+        if((*itCurrent)->isLeaf()) {
+            itBefore = itCurrent;
+            continue;
+        }
         if(itBefore != data->way().end()){
             (*itCurrent)->setBalance((*itCurrent)->balance() + ((*itCurrent)->left() == *itBefore
                                                                 ? 1
