@@ -44,9 +44,12 @@ public:
     ~RemoveDataAvl() = default;
     
     std::list<BinaryTree::Node* >& way() override {return m_way;}
+    bool& wasLeft() override {return m_wasLeft;}
     void updateWay(Node* node) override {m_way.clear(); m_way.push_back(node);};
+    
 private:
     std::list<BinaryTree::Node* > m_way = {};
+    bool m_wasLeft = false;
 };
 
 #endif /* AVL_Tree_hpp */

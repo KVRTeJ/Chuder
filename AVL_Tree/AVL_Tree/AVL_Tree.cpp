@@ -196,10 +196,10 @@ BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
 
 SearchTree::RemoveData* AvlTree::allocateRemoveData() { return new RemoveDataAvl;}
 
-bool AvlTree::m_finishRemove(RemoveData* data) {
+bool AvlTree::m_finishRemove(RemoveData* data) { //FIXME: fixxxxxxmeeeeeeee
     //TODO: check balance in removeIfBothCildren
     //TODO: fix case 2
-    bool wasLeft = BinaryTree::m_finishRemove(data);
+    BinaryTree::m_finishRemove(data);
     isFixed = false;
     
     if(data->way().empty()) {
@@ -219,7 +219,7 @@ bool AvlTree::m_finishRemove(RemoveData* data) {
                                                   ? 1
                                                   : -1));
         } else {
-            (*it)->setBalance((*it)->balance() + (wasLeft
+            (*it)->setBalance((*it)->balance() + (data->wasLeft()
                                                   ? 1
                                                   : -1));
         }

@@ -83,7 +83,7 @@ int main() {
     auto it = nums.begin();
     while(!nums.empty()) {
         
-        if(*it == 32) {
+        if(*it == 29) {
             
         }
         ++iterCount;
