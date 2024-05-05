@@ -90,9 +90,9 @@ protected:
     virtual void m_max(Node* root, int& buffer) const;
     virtual void m_min(Node* root, int& buffer) const;
     
-    class RemoveData;//TODO: rename ! m_
+    class RemoveData;
     virtual RemoveData* allocateRemoveData();
-    virtual bool m_finishRemove(RemoveData* data); //TODO: bool -> void
+    virtual void m_finishRemove(RemoveData* data);
     virtual bool m_removeTrivialCase(RemoveData* data);
     virtual void m_removeIfBothChildren(RemoveData* data);
     virtual bool m_way(Node* root, Node* target, std::list<Node* >& result) const;
@@ -120,7 +120,7 @@ public:
     {}
     
     int key() const {return m_key;}
-    short balance() const {return m_balance;} //TODO: to char
+    char balance() const {return m_balance;}
     Node* left() const {return m_left;}
     Node* right() const {return m_right;}
     
@@ -132,7 +132,7 @@ public:
     
 private:
     int m_key = 0;
-    short m_balance = 0; //TODO: to char
+    char m_balance = 0;
     Node* m_left = nullptr;
     Node* m_right = nullptr;
 };
@@ -144,7 +144,6 @@ public:
     
     virtual std::list<BinaryTree::Node* >& way() {throw std::runtime_error("m_removeData::way: can't call in base class");}
     virtual bool& wasLeft() {throw std::runtime_error("m_removeData::way: can't call in base class");}
-    virtual void updateWay(Node* node) {};
     
     BinaryTree::Node* target = nullptr;
     BinaryTree::Node* nodeParent = nullptr;
