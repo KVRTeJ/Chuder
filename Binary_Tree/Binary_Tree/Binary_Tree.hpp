@@ -92,7 +92,7 @@ protected:
     
     class RemoveData;//TODO: rename ! m_
     virtual RemoveData* allocateRemoveData();
-    virtual void m_finishRemove(RemoveData* data);
+    virtual bool m_finishRemove(RemoveData* data); //TODO: bool -> void
     virtual bool m_removeTrivialCase(RemoveData* data);
     virtual void m_removeIfBothChildren(RemoveData* data);
     virtual bool m_way(Node* root, Node* target, std::list<Node* >& result) const;
@@ -120,16 +120,19 @@ public:
     {}
     
     int key() const {return m_key;}
+    short balance() const {return m_balance;} //TODO: to char
     Node* left() const {return m_left;}
     Node* right() const {return m_right;}
     
+    void setKey(const int key) {m_key = key;}
+    void setBalance(const short balance) {m_balance = balance;}
     void setLeft(Node* other) {m_left = other;}
     void setRight(Node* other) {m_right = other;}
-    
-    void setKey(const int key) {m_key = key;}
+    bool isLeaf() const {return !(static_cast<bool>(m_left) || static_cast<bool>(m_right));}
     
 private:
     int m_key = 0;
+    short m_balance = 0; //TODO: to char
     Node* m_left = nullptr;
     Node* m_right = nullptr;
 };
@@ -140,6 +143,8 @@ public:
     ~RemoveData() = default;
     
     virtual std::list<BinaryTree::Node* >& way() {throw std::runtime_error("m_removeData::way: can't call in base class");}
+    virtual bool& wasLeft() {throw std::runtime_error("m_removeData::way: can't call in base class");}
+    virtual void updateWay(Node* node) {};
     
     BinaryTree::Node* target = nullptr;
     BinaryTree::Node* nodeParent = nullptr;

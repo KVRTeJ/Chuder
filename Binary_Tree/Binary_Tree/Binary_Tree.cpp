@@ -558,9 +558,9 @@ BinaryTree::RemoveData* BinaryTree::allocateRemoveData() {
     return new RemoveData;
 }
 
-void BinaryTree::m_finishRemove(RemoveData* data) {
+bool BinaryTree::m_finishRemove(RemoveData* data) {
     if(!data->nodeParent) {
-        return;
+        return false;
     }
     
     if(data->nodeParent == data->target) {
@@ -582,6 +582,7 @@ void BinaryTree::m_finishRemove(RemoveData* data) {
             data->nodeParent->setRight(data->replacementNode);
     }
     
+    return false;
 }
 
 bool BinaryTree::m_removeTrivialCase(RemoveData* data) {
@@ -590,9 +591,13 @@ bool BinaryTree::m_removeTrivialCase(RemoveData* data) {
         m_finishRemove(data);
     } else if(!data->target->left()) {
         data->replacementNode = data->target->right();
+        data->wasLeft() = false;
+        data->replacementNode->setBalance(data->target->balance());
         m_finishRemove(data);
     } else if(!data->target->right()) {
         data->replacementNode = data->target->left();
+        data->wasLeft() = true;
+        data->replacementNode->setBalance(data->target->balance());
         m_finishRemove(data);
     } else {
         return false;
