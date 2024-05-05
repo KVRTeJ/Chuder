@@ -96,7 +96,6 @@ std::vector<int> SearchTree::toVectorAsc() const {
 }
 
 /* private */
-
 BinaryTree::Node* SearchTree::m_add(Node* root, const int value) {
     
     if(!root) {
@@ -146,7 +145,6 @@ void SearchTree::m_removeIfBothChildren(RemoveData* data) {
     
     if(data->replacementNode->right()) {
         replacementNodeParent->setLeft(data->replacementNode->right());
-        data->updateWay(data->replacementNode->right());
     } else {
         if(replacementNodeParent->right() == data->replacementNode)
             replacementNodeParent->setRight(nullptr);
