@@ -133,8 +133,11 @@ void SearchTree::m_removeIfBothChildren(RemoveData* data) {
     m_min(data->target->right(), buffer);
     
     data->replacementNode = find(buffer);
-    Node* replacementNodeParent = findReplasementNodeParent(data);
-    
+    data->replacementNode->setBalance(data->target->balance());
+    Node* replacementNodeParent = findReplaсementNodeParent(data);
+    data->wasLeft() = (replacementNodeParent->left() == data->replacementNode
+    ? true
+    : false);
     if(replacementNodeParent == data->target) {
         data->replacementNode->setLeft(data->target->left());
         m_finishRemove(data);
@@ -143,13 +146,13 @@ void SearchTree::m_removeIfBothChildren(RemoveData* data) {
     
     if(data->replacementNode->right()) {
         replacementNodeParent->setLeft(data->replacementNode->right());
+        data->updateWay(data->replacementNode->right());
     } else {
         if(replacementNodeParent->right() == data->replacementNode)
             replacementNodeParent->setRight(nullptr);
         else
             replacementNodeParent->setLeft(nullptr);
     }
-    
     
     data->replacementNode->setLeft(data->target->left());
     data->replacementNode->setRight(data->target->right());
