@@ -24,14 +24,14 @@ private:
     Node* doubleTurnLeftRight(Node* middle, Node* top = nullptr);
     
     void doBalance(Node*& root, Node* nodeSide);
-    bool doBalanceRemove(Node* root);
+    bool doBalanceRemove(Node*& root);
     
     Node* m_add(Node* root, const int value) override;
     
     RemoveData* allocateRemoveData() override;
     
     class RemoveDataAvl;
-    bool m_finishRemove(RemoveData* data) override; //FIXME: replacementNode->right()
+    void m_finishRemove(RemoveData* data) override;
     Node* findReplaсementNodeParent(RemoveData* data) override;
     
 private:
@@ -45,7 +45,6 @@ public:
     
     std::list<BinaryTree::Node* >& way() override {return m_way;}
     bool& wasLeft() override {return m_wasLeft;}
-    void updateWay(Node* node) override {m_way.clear(); m_way.push_back(node);};
     
 private:
     std::list<BinaryTree::Node* > m_way = {};

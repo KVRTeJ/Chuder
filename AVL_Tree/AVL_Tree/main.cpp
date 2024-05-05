@@ -1,6 +1,7 @@
 #include "AVL_Tree.hpp"
 
 #include <thread>
+#include <chrono>
 
 int main() {
     
@@ -17,8 +18,7 @@ int main() {
     
     int size = -1;
     std::cout << "tree size: ";
-    //std::cin >> size;
-    size = 20;
+    std::cin >> size;
     
     std::vector<int> nums(size);
     
@@ -38,18 +38,17 @@ int main() {
     
     int sleepTime = 0;
     std::cout << "sleep time(seconds): ";
-    //std::cin >> sleepTime;
-    sleepTime = 0;
+    std::cin >> sleepTime;
     sleepTime *= 1000;
     
     char printAnswer = 'n';
     std::cout << "wanna print tree? y/n: ";
-    //std::cin >> printAnswer;
-    printAnswer = 'y';
+    std::cin >> printAnswer;
     
     std::cout << std::endl;
     
     int currentSize = -1;
+    auto beginAdd = std::chrono::steady_clock::now();
     for(auto it = nums.begin(); it != nums.end(); ++it) {
         boo.add(*it);
         currentSize = boo.nodeCount(boo.root());
@@ -70,6 +69,16 @@ int main() {
         assert(boo.balanced());
         
     }
+    auto endAdd = std::chrono::steady_clock::now();
+    
+    auto elapsedMsAdd = std::chrono::duration_cast<std::chrono::milliseconds>(endAdd - beginAdd);
+    std::cout << "The time of addition: " << (elapsedMsAdd / 1000.0).count() << " s\n";
+    
+    if(printAnswer != 'y') {
+        std::cout << std::endl;
+        std::cout << std::endl;
+        std::cout << std::endl;
+    }
     
     std::cout << "\t\t\tREMOVE TIME!" << std::endl;
     
@@ -81,9 +90,10 @@ int main() {
     int current = INT_MIN;
     int iterCount = 0;
     auto it = nums.begin();
+    auto beginRemove = std::chrono::steady_clock::now();
     while(!nums.empty()) {
         
-        if(*it == 29) {
+        if(*it == 10) {
             
         }
         ++iterCount;
@@ -110,6 +120,11 @@ int main() {
         
         it = nums.begin();
     }
+    auto endRemove = std::chrono::steady_clock::now();
+    
+    
+    auto elapsedMsRemove = std::chrono::duration_cast<std::chrono::milliseconds>(endRemove - beginRemove);
+    std::cout << "The time of deletion: " << (elapsedMsRemove / 1000.0).count() << " s\n";
     
     return 0;
 }

@@ -55,8 +55,8 @@ BinaryTree::Node* AvlTree::turnLeft(Node* middle, Node* top) {
     middle->setRight(bottom->left());
     bottom->setLeft(middle);
     
-    middle->setBalance(balance(middle));
-    bottom->setBalance(balance(bottom));
+    middle->setBalance(middle->balance() - 1 - std::max(0, static_cast<int>(bottom->balance())));
+    bottom->setBalance(bottom->balance() - 1 - std::max(0, -middle->balance()));
     
     return bottom;
 }
@@ -124,7 +124,7 @@ void AvlTree::doBalance(Node*& root, Node* nodeSide) {
     }
 }
 
-bool AvlTree::doBalanceRemove(Node* root) {
+bool AvlTree::doBalanceRemove(Node*& root) {
     auto rootParent = findParent(this->root(), root);
     
     switch(root->balance()) {
@@ -148,7 +148,6 @@ bool AvlTree::doBalanceRemove(Node* root) {
                                            ? nullptr
                                            : rootParent) );
             }
-            isFixed = true;
             break;
 
         case 2:
@@ -161,7 +160,6 @@ bool AvlTree::doBalanceRemove(Node* root) {
                                            ? nullptr
                                            : rootParent) );
             }
-            isFixed = true;
             break;
             
         default:
@@ -196,23 +194,19 @@ BinaryTree::Node* AvlTree::m_add(Node* root, const int value) {
 
 SearchTree::RemoveData* AvlTree::allocateRemoveData() { return new RemoveDataAvl;}
 
-bool AvlTree::m_finishRemove(RemoveData* data) { //FIXME: fixxxxxxmeeeeeeee
-    //TODO: check balance in removeIfBothCildren
-    //TODO: fix case 2
+void AvlTree::m_finishRemove(RemoveData* data) {
     BinaryTree::m_finishRemove(data);
     isFixed = false;
     
     if(data->way().empty()) {
         data->way() = way(data->nodeParent);
     } else {
-        data->way() = way(*--data->way().end());
+        data->way() = way(*data->way().rbegin());
     }
     
     
     bool canNext = false;
     for(auto it = data->way().rbegin(), itBefore = it; it != data->way().rend(); canNext = false, itBefore = it, ++it) {
-        if((*it)->isLeaf())
-            continue;
         
         if(itBefore != it) {
             (*it)->setBalance((*it)->balance() + ((*it)->left() == *itBefore
@@ -227,11 +221,8 @@ bool AvlTree::m_finishRemove(RemoveData* data) { //FIXME: fixxxxxxmeeeeeeee
         while(!canNext) {
             canNext = doBalanceRemove(*it);
         }
-        if(isFixed)
-            break;
+        if(isFixed) break;
     }
-    
-    return true;
 }
 
 BinaryTree::Node* AvlTree::findReplaсementNodeParent(RemoveData* data) {
