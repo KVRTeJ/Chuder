@@ -16,7 +16,10 @@ private:
 
 class HuffmanTree::Node {
 public:
-    explicit Node(std::string symbols) = default;
+    explicit Node(std::string symbols)
+    {
+        throw std::runtime_error("IMPLEMENT ME");
+    }
     ~Node() = default;
     
 private:
