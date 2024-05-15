@@ -39,6 +39,7 @@ public:
     void setRoot(Node* node) {m_root = node;}
     Node* root() {return m_root;}
     const Node* root() const {return m_root;}
+    std::list<Node* > way(Node* target) const;
     
     template<typename NodeType>
     std::list<NodeType*> levelNodes(NodeType* root, const int level) const;
@@ -68,7 +69,7 @@ public:
     Node* find(Node* start, Node* target) const;
     ///if child == nullptr -> return leaf
     Node* findParent(Node* root, Node* child);
-    const Node* findParent(const Node* root, const Node* child) const;
+    virtual const Node* findParent(const Node* root, const Node* child) const;
     
     virtual std::vector<int> toVectorAsc() const;
     std::vector<int> toVectorLnr() const;
@@ -89,12 +90,15 @@ protected:
     virtual void m_max(Node* root, int& buffer) const;
     virtual void m_min(Node* root, int& buffer) const;
     
-    struct m_removeData;
-    void m_finishRemove(m_removeData& data);
-    bool m_removeTrivialCase(m_removeData& data);
-    virtual void m_removeIfBothChildren(m_removeData& data);
+    class RemoveData;
+    virtual RemoveData* allocateRemoveData();
+    virtual void m_finishRemove(RemoveData* data);
+    virtual bool m_removeTrivialCase(RemoveData* data);
+    virtual void m_removeIfBothChildren(RemoveData* data);
+    virtual bool m_way(Node* root, Node* target, std::list<Node* >& result) const;
     
 private:
+    
     void m_clearFromInclusiveRoot(Node* root);
     
     void m_toVectorLnr(Node* root, std::vector<int>& nums) const;
@@ -116,21 +120,31 @@ public:
     {}
     
     int key() const {return m_key;}
+    char balance() const {return m_balance;}
     Node* left() const {return m_left;}
     Node* right() const {return m_right;}
     
+    void setKey(const int key) {m_key = key;}
+    void setBalance(const short balance) {m_balance = balance;}
     void setLeft(Node* other) {m_left = other;}
     void setRight(Node* other) {m_right = other;}
-    
-    void setKey(const int key) {m_key = key;}
+    bool isLeaf() const {return !(static_cast<bool>(m_left) || static_cast<bool>(m_right));}
     
 private:
     int m_key = 0;
+    char m_balance = 0;
     Node* m_left = nullptr;
     Node* m_right = nullptr;
 };
 
-struct BinaryTree::m_removeData {
+class BinaryTree::RemoveData {
+public:
+    RemoveData() = default;
+    ~RemoveData() = default;
+    
+    virtual std::list<BinaryTree::Node* >& way() {throw std::runtime_error("m_removeData::way: can't call in base class");}
+    virtual bool& wasLeft() {throw std::runtime_error("m_removeData::way: can't call in base class");}
+    
     BinaryTree::Node* target = nullptr;
     BinaryTree::Node* nodeParent = nullptr;
     BinaryTree::Node* replacementNode = nullptr;

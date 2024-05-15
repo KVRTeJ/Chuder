@@ -4,6 +4,7 @@
 #include "Binary_Tree.hpp"
 
 class SearchTree : public BinaryTree {
+    using BinaryTree::findParent;
 public:
     template <typename NodeType, typename TreeType>
     class lnrTemplateIterator;
@@ -25,6 +26,7 @@ public:
     static SearchTree copy(Node* tree);
 
     Node* find(const int key) const override;
+    const Node* findParent(const Node* root, const Node* child) const override;
     
     std::vector<int> toVectorAsc() const override;
     
@@ -34,8 +36,13 @@ protected:
     void m_max(Node* root, int& buffer) const override;
     void m_min(Node* root, int& buffer) const override;
     
-    void m_removeIfBothChildren(m_removeData& data) override;
+    void m_removeIfBothChildren(RemoveData* data) override;
     Node* m_add(Node* root, const int value) override;
+    
+    virtual Node* findReplaсementNodeParent(RemoveData* data) {return BinaryTree::findParent(data->target, data->replacementNode);}
+    
+private:
+    bool m_way(Node* root, Node* target, std::list<Node* >& result) const override;
     
 };
 
@@ -154,7 +161,7 @@ private:
         }
         
         while(m_currentNode->key() > m_nextNode->key()) {
-            m_nextNode = m_tree->findParent(m_tree->root(), m_nextNode);
+            m_nextNode = m_tree->BinaryTree::findParent(m_tree->root(), m_nextNode);
             if(m_nextNode == m_tree->root()) {
                 if(m_nextNode->key() < m_currentNode->key())
                     m_nextNode = nullptr;

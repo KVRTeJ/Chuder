@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2C84FA032BAF35AB00178C10"
-               BuildableName = "Binary_Search_Tree"
-               BlueprintName = "Binary_Search_Tree"
-               ReferencedContainer = "container:Binary_Search_Tree.xcodeproj">
+               BlueprintIdentifier = "2C680BA42BD5234C00AF83C7"
+               BuildableName = "AVL_Tree"
+               BlueprintName = "AVL_Tree"
+               ReferencedContainer = "container:AVL_Tree.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -34,7 +34,7 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
-      useCustomWorkingDirectory = "NO"
+      useCustomWorkingDirectory = "YES"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -46,10 +46,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2C84FA032BAF35AB00178C10"
-            BuildableName = "Binary_Search_Tree"
-            BlueprintName = "Binary_Search_Tree"
-            ReferencedContainer = "container:Binary_Search_Tree.xcodeproj">
+            BlueprintIdentifier = "2C680BA42BD5234C00AF83C7"
+            BuildableName = "AVL_Tree"
+            BlueprintName = "AVL_Tree"
+            ReferencedContainer = "container:AVL_Tree.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -63,10 +63,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2C84FA032BAF35AB00178C10"
-            BuildableName = "Binary_Search_Tree"
-            BlueprintName = "Binary_Search_Tree"
-            ReferencedContainer = "container:Binary_Search_Tree.xcodeproj">
+            BlueprintIdentifier = "2C680BA42BD5234C00AF83C7"
+            BuildableName = "AVL_Tree"
+            BlueprintName = "AVL_Tree"
+            ReferencedContainer = "container:AVL_Tree.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
