@@ -3,7 +3,8 @@
 #include "HuffmanTree.hpp"
 
 int main(int argc, const char * argv[]) {
-    
-    std::cout << "Hello, World!\n";
+    HuffmanTree foo;
+    std::string fooStr = "qwertyq";
+    foo.build(fooStr);
     return 0;
 }
