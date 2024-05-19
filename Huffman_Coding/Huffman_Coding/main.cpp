@@ -4,7 +4,7 @@
 
 int main(int argc, const char * argv[]) {
     HuffmanTree foo;
-    std::string fooStr = "qwertyq";
+    std::string fooStr = "qwertyqwqqwee";
     foo.build(fooStr);
     return 0;
 }

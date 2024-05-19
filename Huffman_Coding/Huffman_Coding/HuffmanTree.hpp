@@ -21,31 +21,25 @@ private:
 
 class HuffmanTree::Node {
 public:
-    explicit Node(std::string symbols)
-    {
-        add(symbols);
-    }
+    explicit Node(std::string symbols = "", int frequency = 1)
+    : m_data(symbols), m_frequency(frequency)
+    {}
     ~Node() = default;
     
     bool contains(const char symbol) const;
     void add(const std::string& data) {m_data += data;}
     
+    std::string data() const {return m_data;}
     int frequency() const {return m_frequency;}
     Node* left() const {return m_left;}
     Node* right() const {return m_right;}
     
+    void setData(const std::string& data) {m_data = data;}
     void setFrequency(const int value) {m_frequency = value;}
     void setLeft(Node* node) {m_left = node;}
     void setRight(Node* node) {m_right = node;}
     
-    Node& operator++() {
-        ++m_frequency; return *this;
-    }
-    Node operator++(int) {
-        auto old = *this;
-        ++m_frequency;
-        return old;
-    }
+    void incrementFrequency() {++m_frequency;}
     
 private:
     std::string m_data = {};//TODO: to BoolVector
