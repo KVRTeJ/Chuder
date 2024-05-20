@@ -26,10 +26,11 @@ namespace {
                     std::swap(*it, *jt);
     }
     
-    void add(std::list<HuffmanTree::Node*>& nodes, HuffmanTree::Node* node) { //FIXME: makes an addition to the end
-        auto it = nodes.begin(), jt = ++it;
+    void add(std::list<HuffmanTree::Node*>& nodes, HuffmanTree::Node* node) {
+        auto it = nodes.begin(), jt = ++nodes.begin();
         for(; jt != nodes.end(); it = jt, ++jt) {
-            if((*it)->frequency() < node->frequency() && node->frequency() <= (*jt)->frequency()) {
+            std::cout << "node - " << node->frequency() << " it - " << (*it)->frequency() << " jt - " << (*jt)->frequency() << std::endl;
+            if((*it)->frequency() <= node->frequency() && node->frequency() < (*jt)->frequency()) {
                 break;
             }
         }
