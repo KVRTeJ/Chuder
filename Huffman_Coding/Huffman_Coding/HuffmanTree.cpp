@@ -19,11 +19,27 @@ namespace {
         return;
     }
     
+    auto min(const std::list<HuffmanTree::Node*>::iterator& start, const std::list<HuffmanTree::Node*>::iterator& stop) {
+        auto min = start;
+        for(auto it = start; it != stop; ++it) {
+            if((*it)->frequency() < (*min)->frequency()) {
+                min = it;
+            }
+        }
+        
+        return min;
+    }
     void sort(std::list<HuffmanTree::Node*>& nodes) {
-        for(auto it = nodes.begin(); it != nodes.end(); it++) //TODO: PLEASE TAKE AWAY THIS SHAME
-            for(auto jt = nodes.begin(); jt != nodes.end(); jt++)
+        /*
+        for(auto it = ++nodes.begin(); it != nodes.end(); ++it) //TODO: PLEASE TAKE AWAY THIS SHAME
+            for(auto jt = nodes.begin(); jt != nodes.end(); ++jt)
                 if((*it)->frequency() < (*jt)->frequency())
                     std::swap(*it, *jt);
+         */
+        
+        for(auto it = nodes.begin(); it != nodes.end(); ++it) {
+            std::swap(*it, *min(it, nodes.end()));
+        }
     }
     
     void add(std::list<HuffmanTree::Node*>& nodes, HuffmanTree::Node* node) {
@@ -36,6 +52,16 @@ namespace {
         
         nodes.insert(jt, node);
     }
+    
+    void print(const std::list<HuffmanTree::Node*>& nodes) {
+        std::cout << '[';
+        for(auto it = nodes.begin(); it != nodes.end();) {
+            std::cout << (*it)->data() << (++it == nodes.end()
+                                           ? ""
+                                           : ", ");
+        }
+        std::cout << ']' << std::endl;
+    }
 };
 
 void HuffmanTree::build(const std::string& text) {
@@ -44,8 +70,9 @@ void HuffmanTree::build(const std::string& text) {
     for(int i = 0; i != text.size(); ++i) {
         pushBack(nodes, text[i]);
     }
+    print(nodes);
     sort(nodes);
-    
+    print(nodes);
     int currentSize = static_cast<int>(nodes.size());
     auto first = *(nodes.begin());
     auto second = *(++nodes.begin());

@@ -15,11 +15,11 @@ int main(int argc, const char * argv[]) {
     
     std::string encodeStr;
     foo.encode(example, encodeStr);
-    std::cout << "encoded -  " << encodeStr << std::endl;
+    std::cout << "encoded  - " << encodeStr << std::endl;
     
     std::string decodeStr;
     foo.decode(encodeStr, decodeStr);
-    std::cout << "decoded -  " << decodeStr << std::endl;
+    std::cout << "decoded  - " << decodeStr << std::endl;
     assert(foo.root()->data() == decodeStr);
     return 0;
 }
