@@ -10,10 +10,19 @@ public:
     HuffmanTree() = default;
     ~HuffmanTree() = default;
     
+    Node* root() const {return m_root;}
+    
     void build(const std::string& text);
     ///returns compression ratio in percent
-    int encode(const std::string& text, std::string& result) const; //TODO: to filename
-    bool decode(const std::string& text, std::string& result) const; //TODO: to filename
+    int encode(const std::string& text, std::string& encoded); //TODO: to filename
+    bool decode(const std::string& encoded, std::string& decoded); //TODO: to filename
+    
+    void printHorizontal(Node *root, int marginLeft = 3, int levelSpacing = 5) const;
+    void printHorizontalUnicode(Node* root, const std::string& prefix = "", bool isLeft = false) const;
+    
+private:
+    void doCoding(Node* current, std::string& encoded) const;
+    void doDeCoding(Node* current, const std::string& encoded, int& pos, std::string& decoded) const;
     
 private:
     Node* m_root = nullptr;
