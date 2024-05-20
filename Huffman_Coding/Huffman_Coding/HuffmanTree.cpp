@@ -68,9 +68,7 @@ void HuffmanTree::build(const std::string& text) {
         }
         second = *(++nodes.begin());
     }
-    
-        
-    assert(false);
+    m_root = first;
 }
 
 bool HuffmanTree::Node::contains(const char symbol) const {
