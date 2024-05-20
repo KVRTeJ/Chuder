@@ -29,14 +29,7 @@ namespace {
         
         return min;
     }
-    void sort(std::list<HuffmanTree::Node*>& nodes) {
-        /*
-        for(auto it = ++nodes.begin(); it != nodes.end(); ++it) //TODO: PLEASE TAKE AWAY THIS SHAME
-            for(auto jt = nodes.begin(); jt != nodes.end(); ++jt)
-                if((*it)->frequency() < (*jt)->frequency())
-                    std::swap(*it, *jt);
-         */
-        
+    void sort(std::list<HuffmanTree::Node*>& nodes) { //TODO: ITS BETTER THAT BUBBLE SORT
         for(auto it = nodes.begin(); it != nodes.end(); ++it) {
             std::swap(*it, *min(it, nodes.end()));
         }
