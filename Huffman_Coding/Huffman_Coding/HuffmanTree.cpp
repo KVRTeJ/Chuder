@@ -55,6 +55,29 @@ namespace {
         }
         std::cout << ']' << std::endl;
     }
+    
+    void addToFile(const std::string& fileName, const Set& set) {
+        std::ofstream file(fileName);
+        for(int i = 0; i < Set::MAX_CARDINALIS; ++i) {
+            if(set.contains(i)) {
+                file << static_cast<char>(i);
+            }
+        }
+    }
+    
+    int bytes(const std::string& fileName) {
+        std::ifstream file(fileName);
+        int result = 0;
+        
+        while(file.eof()) {
+            file.get();
+            ++result;
+        }
+        --result;
+        
+        file.close();
+        return result;
+    }
 };
 
 void HuffmanTree::clear(Node* current) {
@@ -94,7 +117,8 @@ void HuffmanTree::build(const std::string& inputFileName) {
         nodes.pop_front();
         nodes.pop_front();
         
-        parent = new Node(first->data() + second->data(), first->frequency() + second->frequency());
+        parent = new Node(first->data() | second->data(), first->frequency() + second->frequency());
+        std::cout << "first - " << first->data() << " second - " << second->data() << " parent - " << parent->data() << std::endl;
         parent->setLeft(first);
         parent->setRight(second);
         add(nodes, parent);
@@ -115,11 +139,19 @@ int HuffmanTree::encode(const std::string& inputFileName, std::string& outputFil
         build(inputFileName);
     }
     
-    //TODO: create the type point to file and to arguments in methdot
-    int compressionRatio = -1; //TODO: IMPLEMENT ME
-    doCoding(m_root, outputFileName);
-    
-    return compressionRatio;
+    std::ofstream output(outputFileName);
+    BoolVector encoded(0, 0);
+    doCoding(m_root, encoded);
+    encoded.print();
+    uint8_t* coded = encoded.cells();
+    output << encoded.unsignificantRankCount();
+    for(int i = 0; i < encoded.cellCount(); ++i) {
+        output << coded[i];
+        std::cout << static_cast<char>(coded[i]);
+    }
+    std::cout << std::endl;
+    output.close();
+    return bytes(outputFileName) / bytes(outputFileName);
 }
 
 bool HuffmanTree::decode(const std::string& inputFileName, std::string& outpuFileName) {
@@ -160,18 +192,18 @@ void HuffmanTree::printHorizontalUnicode(Node* root, const std::string& prefix, 
     printHorizontalUnicode(root->right(), prefix + (isLeft ? "│   " : "    "), false);
 }
 
-void HuffmanTree::doCoding(Node* current, std::string& encoded) const {
+void HuffmanTree::doCoding(Node* current, BoolVector& encoded) const {
     if(!current) {
         return;
     }
     
     if(current->left()) {
-        encoded += '0';
+        encoded += false;
         doCoding(current->left(), encoded);
     }
     if(current->right()) {
-        encoded += '1';
-        doCoding(current->right(), encoded += '1');
+        encoded += true;
+        doCoding(current->right(), encoded += true);
     }
     //result += ' ';
 }
@@ -187,15 +219,6 @@ void HuffmanTree::doDeCoding(Node* current, const std::string& encoded, int& pos
     if(encoded[pos] == '1' && current->right()) {
         doDeCoding(current->right(), encoded, ++pos, decoded);
     }
-    decoded = current->data();
+    //decoded = current->data(); //TODO: fixme
 }
 
-bool HuffmanTree::Node::contains(const char symbol) const {
-    for(int i = 0; i != m_data.size(); ++i) {
-        if(symbol == m_data[i]) {
-            return true;
-        }
-    }
-    
-    return false;
-}

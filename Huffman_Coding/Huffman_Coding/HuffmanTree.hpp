@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-#include "BoolVector.hpp"
+#include "Set.hpp"
 
 class HuffmanTree {
 public:
@@ -25,7 +25,7 @@ public:
     void printHorizontalUnicode(Node* root, const std::string& prefix = "", bool isLeft = false) const;
     
 private:
-    void doCoding(Node* current, std::string& encoded) const;
+    void doCoding(Node* current, BoolVector& encoded) const;
     void doDeCoding(Node* current, const std::string& encoded, int& pos, std::string& decoded) const;
     
 private:
@@ -34,15 +34,18 @@ private:
 
 class HuffmanTree::Node {
 public:
-    explicit Node(std::string symbols = "", int frequency = 1)
+    explicit Node(std::string symbols = {}, int frequency = 1)
+    : m_data(symbols), m_frequency(frequency)
+    {}
+    explicit Node(Set symbols, int frequency)
     : m_data(symbols), m_frequency(frequency)
     {}
     ~Node() = default;
     
-    bool contains(const char symbol) const;
-    void add(const std::string& data) {m_data += data;}
+    bool contains(const char symbol) const {return m_data.contains(symbol);}
+    void add(const Set& data) {m_data |= Set(data);}
     
-    std::string data() const {return m_data;}
+    Set data() const {return m_data;}
     int frequency() const {return m_frequency;}
     Node* left() const {return m_left;}
     Node* right() const {return m_right;}
@@ -55,7 +58,7 @@ public:
     void incrementFrequency() {++m_frequency;}
     
 private:
-    std::string m_data = {};//TODO: to BoolVector
+    Set m_data = {};//TODO: to BoolVector
     int m_frequency = 1;
     Node* m_left = nullptr;
     Node* m_right = nullptr;
