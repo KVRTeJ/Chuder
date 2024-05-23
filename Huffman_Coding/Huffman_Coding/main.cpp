@@ -22,6 +22,15 @@ int main(int argc, const char * argv[]) {
     
     HuffmanTree foo;
     foo.build(exampleFileName);
+    foo.exportTree();
+    
+    HuffmanTree boo;
+    boo.importTree();
+    
+    foo.printHorizontalUnicode(foo.root());
+    std::cout << "boooooooooooooo" << std::endl;
+    boo.printHorizontalUnicode(boo.root());
+    return -1;
     auto temppp = foo.getLeafs(foo.root());
     
     foo.printHorizontalUnicode(foo.root());

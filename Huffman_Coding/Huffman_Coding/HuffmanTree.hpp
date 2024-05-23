@@ -22,8 +22,8 @@ public:
     int encode(const std::string& inputFileName, std::string& outputFileName);
     bool decode(const std::string& encodedFileName, std::string& decodedFileName);
     
-    void exportTree(const std::string& fileName) const;
-    void importTree(const std::string& fileName) const;
+    void exportTree(const std::string& fileName = "exportedTree.txt") const;
+    void importTree(const std::string& fileName = "exportedTree.txt");
     
     void printHorizontal(Node *root, int marginLeft = 3, int levelSpacing = 5) const;
     void printHorizontalUnicode(Node* root, const std::string& prefix = "", bool isLeft = false) const;

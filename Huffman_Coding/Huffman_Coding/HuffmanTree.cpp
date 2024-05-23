@@ -237,11 +237,56 @@ bool HuffmanTree::decode(const std::string& inputFileName, std::string& outpuFil
 }
 
 void HuffmanTree::exportTree(const std::string& fileName) const {
+    auto leafs = getLeafs(m_root);
     
+    std::ofstream output(fileName);
+    if(!output.is_open()) {
+        return;
+    }
+    
+    Node* current = m_root;
+    for(int i = 0; i < Set::MAX_CARDINALIS; ++i) {
+        if(m_root->data().contains(static_cast<char>(i))) {
+            while(current->data() != static_cast<char>(i)) {
+                current = (current->left()->data().contains(static_cast<char>(i))
+                           ? current->left()
+                           : current->right());
+            }
+            output << current->frequency();
+            current = m_root;
+        } else {
+            output << 0;
+        }
+    }
+    
+    output.close();
 }
 
-void HuffmanTree::importTree(const std::string& fileName) const {
+void HuffmanTree::importTree(const std::string& fileName) {
     
+    std::ifstream input(fileName);
+    std::string supportFileName = "support_file.txt";
+    std::ofstream support(supportFileName);
+    if(!input.is_open() || !support.is_open()) {
+        return;
+    }
+    
+    char current = {};
+    int corrected = {};
+    int i = 0;
+    while(input >> current) {
+        corrected = (int) current - 48;
+        while(corrected) {
+            support << static_cast<char>(i);
+            --corrected;
+        }
+        ++i;
+    }
+    support.close();
+    this->build(supportFileName);
+    
+    input.close();
+    remove(supportFileName.c_str());
 }
 
 void HuffmanTree::printHorizontal(Node *root, int marginLeft, int levelSpacing) const {
