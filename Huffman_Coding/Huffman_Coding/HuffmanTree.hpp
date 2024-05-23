@@ -12,10 +12,10 @@ public:
     
     Node* root() const {return m_root;}
     
-    void build(const std::string& text);
+    void build(const std::string& inputFileName);
     ///returns compression ratio in percent
-    int encode(const std::string& text, std::string& encoded); //TODO: to filename
-    bool decode(const std::string& encoded, std::string& decoded); //TODO: to filename
+    int encode(const std::string& inputFileName, std::string& outputFileName); //TODO: to filename
+    bool decode(const std::string& encodedFileName, std::string& decodedFileName); //TODO: to filename
     
     void printHorizontal(Node *root, int marginLeft = 3, int levelSpacing = 5) const;
     void printHorizontalUnicode(Node* root, const std::string& prefix = "", bool isLeft = false) const;

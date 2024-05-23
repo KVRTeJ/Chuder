@@ -57,11 +57,11 @@ namespace {
     }
 };
 
-void HuffmanTree::build(const std::string& text) {
+void HuffmanTree::build(const std::string& inputFileName) {
     std::list<Node*> nodes;
     
-    for(int i = 0; i != text.size(); ++i) {
-        pushBack(nodes, text[i]);
+    for(int i = 0; i != inputFileName.size(); ++i) {
+        pushBack(nodes, inputFileName[i]);
     }
     print(nodes);
     sort(nodes);
@@ -90,24 +90,26 @@ void HuffmanTree::build(const std::string& text) {
     m_root = first;
 }
 
-int HuffmanTree::encode(const std::string& text, std::string& encoded) {
+int HuffmanTree::encode(const std::string& inputFileName, std::string& outputFileName) {
     if(!m_root) {
-        build(text);
+        build(inputFileName);
     }
     
+    //TODO: create the type point to file and to arguments in methdot
     int compressionRatio = -1; //TODO: IMPLEMENT ME
-    doCoding(m_root, encoded);
+    doCoding(m_root, outputFileName);
     
     return compressionRatio;
 }
 
-bool HuffmanTree::decode(const std::string& encoded, std::string& decoded) {
-    if(encoded.empty()) {
+bool HuffmanTree::decode(const std::string& inputFileName, std::string& outpuFileName) {
+    if(inputFileName.empty()) {
         return false;
     }
     
+    //TODO: also as in encode
     int pos = 0;
-    doDeCoding(m_root, encoded, pos, decoded);
+    doDeCoding(m_root, inputFileName, pos, outpuFileName);
     
     return false;
 }
