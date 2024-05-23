@@ -57,14 +57,12 @@ namespace {
     }
     
     void addToFile(std::ofstream* file, const Set& set) {
-        //std::ofstream file(fileName, std::ios_base::app);
         for(int i = 0; i < Set::MAX_CARDINALIS; ++i) {
             if(set.contains(i)) {
                 (*file) << static_cast<char>(i);
             }
         }
         
-        //file.close();
     }
     
     int bytes(const std::string& fileName) {
@@ -91,6 +89,19 @@ void HuffmanTree::clear(Node* current) {
     clear(current->right());
     delete current;
 }
+
+std::vector<HuffmanTree::Node* > HuffmanTree::getLeafs(Node* root) const {
+    if(!root) {
+        return {};
+    }
+    
+    std::vector<Node* > leafs;
+    
+    m_getLeafs(root, leafs);
+    
+    return leafs;
+}
+
 
 void HuffmanTree::build(const std::string& inputFileName) {
     std::list<Node*> nodes;
@@ -139,6 +150,9 @@ void HuffmanTree::build(const std::string& inputFileName) {
 int HuffmanTree::encode(const std::string& inputFileName, std::string& outputFileName) {
     if(!m_root) {
         build(inputFileName);
+        if(!m_root) {
+            return -1;
+        }
     }
     
     std::ofstream output(outputFileName);
@@ -151,31 +165,31 @@ int HuffmanTree::encode(const std::string& inputFileName, std::string& outputFil
     while(input >> std::noskipws >> current) {
         doCoding(m_root, BoolVector(0,0), encoded, current);
     }
-    if(encoded.lenth() == 0) {
-        for(int i = 0; i < m_root->frequency(); ++i) {
-        encoded += true;
-            
-    }
-    std::cout << "encoded - ";
-    encoded.print();
     uint8_t* coded = encoded.cells();
     output << encoded.unsignificantRankCount();
+    int bytes = 0;
     for(int i = 0; i < encoded.cellCount(); ++i) {
         output << coded[i];
+        ++bytes;
     }
     
     output.close();
-    //TODO: считать когда записываются биты, а исходник сложить все повторения у списка
-    //TODO: optimize me vvvvvv
-    return static_cast<float>(bytes(outputFileName) - 1 - ((1 - encoded.unsignificantRankCount()) / 8)) / static_cast<float>(bytes(inputFileName)) * 100;;
+    return static_cast<float>(static_cast<float>(bytes) - 1.0 - ((1.0 - static_cast<float>(encoded.unsignificantRankCount())) / 8)) / static_cast<float>(m_root->frequency()) * 100;
 }
 
 bool HuffmanTree::decode(const std::string& inputFileName, std::string& outpuFileName) {
+    if(!m_root) {
+        return false;
+    }
+    
     if(inputFileName.empty()) {
         return false;
     }
     
     std::ifstream input(inputFileName);
+    if(!input.is_open()) {
+        return false;
+    }
     
     BoolVector code(0, 0);
     int unsignificantRankCount = 0;
@@ -190,8 +204,17 @@ bool HuffmanTree::decode(const std::string& inputFileName, std::string& outpuFil
     code.setUnsignificantRankCount(unsignificantRankCount);
     
     std::ofstream* output = new std::ofstream(outpuFileName);
+    if(!output->is_open()) {
+        return false;
+    }
+    
     int pos = 0;
     Node* current = m_root;
+    if(!current->left() && !current->right()) {
+        for(int i = 0; i < m_root->frequency(); ++i) {
+            addToFile(output, current->data());
+        }
+    }
     while(pos <= code.lenth()) {
         if(!current->left() && !current->right()) {
             addToFile(output, current->data());
@@ -210,7 +233,15 @@ bool HuffmanTree::decode(const std::string& inputFileName, std::string& outpuFil
     output->close();
     delete output;
     input.close();
-    return false;
+    return true;
+}
+
+void HuffmanTree::exportTree(const std::string& fileName) const {
+    
+}
+
+void HuffmanTree::importTree(const std::string& fileName) const {
+    
 }
 
 void HuffmanTree::printHorizontal(Node *root, int marginLeft, int levelSpacing) const {
@@ -252,5 +283,16 @@ void HuffmanTree::doCoding(Node* current, BoolVector currentCode, BoolVector& en
     }
     else if(current->right() && current->right()->contains(symbol)) {
         doCoding(current->right(), currentCode + true, encoded, symbol);
+    }
+}
+
+void HuffmanTree::m_getLeafs(Node* root, std::vector<Node* >& leafs) const {
+    if(!root) {
+        return;
+    } else if(!root->left() && !root->right()) {
+        leafs.push_back(root);
+    } else {
+        m_getLeafs(root->left(), leafs);
+        m_getLeafs(root->right(), leafs);
     }
 }

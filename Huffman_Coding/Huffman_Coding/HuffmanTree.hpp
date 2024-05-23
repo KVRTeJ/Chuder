@@ -14,18 +14,23 @@ public:
     
     void clear(Node* current);
     
+    std::vector<Node* > getLeafs(Node* root) const;
     Node* root() const {return m_root;}
     
     void build(const std::string& inputFileName);
     ///returns compression ratio in percent
-    int encode(const std::string& inputFileName, std::string& outputFileName); //TODO: to filename
-    bool decode(const std::string& encodedFileName, std::string& decodedFileName); //TODO: to filename
+    int encode(const std::string& inputFileName, std::string& outputFileName);
+    bool decode(const std::string& encodedFileName, std::string& decodedFileName);
+    
+    void exportTree(const std::string& fileName) const;
+    void importTree(const std::string& fileName) const;
     
     void printHorizontal(Node *root, int marginLeft = 3, int levelSpacing = 5) const;
     void printHorizontalUnicode(Node* root, const std::string& prefix = "", bool isLeft = false) const;
     
 private:
     void doCoding(Node* current, BoolVector currentCode, BoolVector& encoded, char symbol) const;
+    void m_getLeafs(Node* root, std::vector<Node* >& leafs) const;
     
 private:
     Node* m_root = nullptr;
@@ -57,7 +62,7 @@ public:
     void incrementFrequency() {++m_frequency;}
     
 private:
-    Set m_data = {};//TODO: to BoolVector
+    Set m_data = {};
     int m_frequency = 1;
     Node* m_left = nullptr;
     Node* m_right = nullptr;
