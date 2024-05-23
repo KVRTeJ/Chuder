@@ -49,10 +49,22 @@
  encoded  - 000011110111111000111111011011
  */
 
-int main(int argc, const char * argv[]) {
-    std::string exampleFileName = "example.txt";
-    std::string example = "ehal greka cerez reky";
+namespace {
+    void generateTestFile(const std::string& fileName, int range) {
+        std::ofstream file(fileName);
+        
+        for(int i = 0; i < range; ++i) {
+            file << static_cast<char>(rand() % 127); //127 - LIMIT OF SET
+        }
+        
+        file.close();
+    }
     
+}
+
+int main(int argc, const char * argv[]) {
+    std::string exampleFileName = "example1.txt"; //TODO: FIX EXAMPLE 1111111111111111
+    //generateTestFile(exampleFileName, 10000);
     
     HuffmanTree foo;
     foo.build(exampleFileName);
@@ -61,11 +73,11 @@ int main(int argc, const char * argv[]) {
     
     std::cout << "original - " << foo.root()->data() << std::endl;
     
-    std::string encodeFile = "example_encode.txt";
-    foo.encode(exampleFileName, encodeFile);
+    std::string encodeFileName = "example_encode.txt";
+    std::cout << "coef - " << foo.encode(exampleFileName, encodeFileName) << std::endl;
     
     
-    std::ifstream encodeResult(encodeFile);
+    std::ifstream encodeResult(encodeFileName);
     BoolVector bv(0, 0);
     int unsignif = 0;
     encodeResult >> unsignif;
@@ -74,10 +86,9 @@ int main(int argc, const char * argv[]) {
         bv.add(temp);
     }
     bv.print();
-    return -1;
-    std::string decodeStr;
-    //foo.decode(encodeStr, decodeStr);
-    std::cout << "decoded  - " << decodeStr << std::endl;
-    assert(foo.root()->data() == decodeStr);
+    
+    std::string decodeFileName = "example_decoded.txt";
+    foo.decode(encodeFileName, decodeFileName);
+    
     return 0;
 }

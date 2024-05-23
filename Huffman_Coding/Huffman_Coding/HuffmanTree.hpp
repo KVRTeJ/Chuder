@@ -25,8 +25,7 @@ public:
     void printHorizontalUnicode(Node* root, const std::string& prefix = "", bool isLeft = false) const;
     
 private:
-    void doCoding(Node* current, BoolVector& encoded) const;
-    void doDeCoding(Node* current, const std::string& encoded, int& pos, std::string& decoded) const;
+    void doCoding(Node* current, BoolVector currentCode, BoolVector& encoded, char symbol) const;
     
 private:
     Node* m_root = nullptr;
