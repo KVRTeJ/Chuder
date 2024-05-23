@@ -1,6 +1,8 @@
 #ifndef HuffmanTree_hpp
 #define HuffmanTree_hpp
 
+#include <fstream>
+
 #include "BoolVector.hpp"
 
 class HuffmanTree {
@@ -8,7 +10,9 @@ public:
     class Node;
 public:
     HuffmanTree() = default;
-    ~HuffmanTree() = default;
+    ~HuffmanTree() {clear(m_root);}
+    
+    void clear(Node* current);
     
     Node* root() const {return m_root;}
     

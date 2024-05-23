@@ -57,12 +57,32 @@ namespace {
     }
 };
 
+void HuffmanTree::clear(Node* current) {
+    if(!current) {
+        return;
+    }
+    
+    clear(current->left());
+    clear(current->right());
+    delete current;
+}
+
 void HuffmanTree::build(const std::string& inputFileName) {
     std::list<Node*> nodes;
     
-    for(int i = 0; i != inputFileName.size(); ++i) {
-        pushBack(nodes, inputFileName[i]);
+    
+    std::ifstream input(inputFileName, std::ios_base::binary);
+    if(!input.is_open()) {
+        std::cerr << "HuffmanTree::build(const std::string& inputFileName):error opening file. . ." << std::endl;
+        return;
     }
+    
+    char buffer = {};
+    while(input >> std::noskipws >> buffer) {
+        std::cout << "current - " << buffer << std::endl;
+        pushBack(nodes, buffer);
+    }
+    
     print(nodes);
     sort(nodes);
     print(nodes);

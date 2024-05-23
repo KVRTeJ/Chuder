@@ -3,11 +3,23 @@
 
 #include "HuffmanTree.hpp"
 
+/*
+ qwertyqwqqwee
+ ehal greka cerez reky
+ [e, h, a, l,  , g, r, k, c, z, y]
+ [h, l, g, c, z, y, k, a,  , r, e]
+ original - hlgcezy rka
+ encoded  - 000011110111111000111111011011
+ decoded  - hlgcezy rka
+ */
+
 int main(int argc, const char * argv[]) {
-    HuffmanTree foo;
-    std::string fooStr = "qwertyqwqqwee";
+    std::string exampleFileName = "example.txt";
     std::string example = "ehal greka cerez reky";
-    foo.build(example);
+    
+    
+    HuffmanTree foo;
+    foo.build(exampleFileName);
     
     foo.printHorizontalUnicode(foo.root());
     
