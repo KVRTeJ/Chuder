@@ -118,9 +118,8 @@ void HuffmanTree::build(const std::string& inputFileName) {
         pushBack(nodes, buffer);
     }
     
-    print(nodes);
     sort(nodes);
-    print(nodes);
+    
     int currentSize = static_cast<int>(nodes.size());
     auto first = *(nodes.begin());
     auto second = *(++nodes.begin());

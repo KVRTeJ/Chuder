@@ -21,6 +21,7 @@ int main(int argc, const char * argv[]) {
     //generateTestFile(exampleFileName, 10000);
     
     HuffmanTree foo;
+    
     foo.build(exampleFileName);
     foo.exportTree();
     
