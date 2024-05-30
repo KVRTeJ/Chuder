@@ -4,10 +4,28 @@
 #include <iostream>
 #include <string>
 
-struct Pair {
-    int key = {};
-    std::string value = {};
-    Pair* next = nullptr;
+class Pair {
+public:
+    Pair(const int key = {}, const std::string& value = {}, Pair* next = nullptr)
+        : m_key(key), m_value(value), m_next(next)
+    {}
+
+    ~Pair() = default;
+
+    int key() const {return m_key;}
+    std::string value() const {return m_value;}
+
+    void setKey(const int key) {m_key = key;}
+    void setValue(const std::string& value) {m_value = value;}
+
+    Pair* next() {return m_next;}
+    void setNext(Pair* next) {m_next = next;}
+
+private:
+    int m_key = {};
+    std::string m_value = {};
+
+    Pair* m_next = nullptr;
 };
 
 class HashTable {
