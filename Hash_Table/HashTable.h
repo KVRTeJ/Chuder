@@ -20,7 +20,7 @@ public:
     ~HashFunction() = default;
 
     int size() const {return m_size;}
-    void setSize(const int size) {m_size = (size >= 0
+    void resize(const int size) {m_size = (size >= 0
                                             ? size
                                                 : 0 );}
 
@@ -36,9 +36,13 @@ class HashTable {
 public:
     class Pair;
 public:
-    HashTable(const int size, IHashFunction* hashFunction = &foo)
-        : m_data(std::vector<Pair>(size)), m_hashFunction(hashFunction)
-    {}
+    explicit HashTable(const int size, IHashFunction* hashFunction = nullptr)
+        : m_data(std::vector<Pair>(size)) {
+        if(!hashFunction) {
+            HashFunction = new HashFunction(size);
+            m_hashFunction = &hashFunction;
+        }
+    }
     HashTable(const HashTable& other) = default;
 
     ~HashTable() = default;
@@ -57,10 +61,9 @@ public:
     HashTable& operator = (const HashTable& other) = default;
     std::string& operator [] (const int key); //TODO: implement me
 
-    static HashFunction foo;
 private:
     std::vector<Pair> m_data = {};
-    IHashFunction* m_hashFunction = &foo;
+    IHashFunction* m_hashFunction = nullptr;
 };
 
 class HashTable::Pair {
