@@ -5,6 +5,7 @@
 #include "HashTable.h"
 
 int main() {
-    HashTable foo;
+    HashTable foo(10);
+
     return -1;
 }
