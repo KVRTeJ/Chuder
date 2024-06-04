@@ -1,16 +1,13 @@
 #include "HashTable.h"
 
 bool HashTable::add(Pair& pair) {
-    std::cout << "add: key - " << pair.key() << " value - " << pair.value() << std::endl;
-    std::cout <<  m_hashFunction->hash(static_cast<int>(m_data.size()), pair.key()) << std::endl;
-    /*
     int expected = m_hashFunction->hash(m_data.size(), pair.key());
 
     std::cout << "expected - " << expected <<std::endl;
     if(m_data[expected].value() == "") {
         m_data[expected] = pair;
     } else {
-        Pair* current = m_data[expected].next();
+        Pair* current = &m_data[expected];
         while(current->next()) {
             current = current->next();
         }
@@ -29,7 +26,7 @@ bool HashTable::add(Pair& pair) {
             return false;
         }
     }
-*/
+
     return true;
 }
 

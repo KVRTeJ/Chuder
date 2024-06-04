@@ -5,9 +5,12 @@
 #include "HashTable.h"
 
 int main() {
-    HashTable foo(10);
-    std::cout << foo.m_hashFunction->hash(static_cast<int>(' '), 2) << std::endl;
+    HashFunctionQuadraticTest func;
+    HashTable foo(10, &func);
     foo.add(1, "first");
+    foo.add(1, "second");
+    foo.add(8, "third");
+
     //foo.add(2, "second");
     //foo.add(3, "third");
 
