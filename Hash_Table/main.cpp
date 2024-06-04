@@ -5,12 +5,11 @@
 #include "HashTable.h"
 
 int main() {
-    HashFunctionMultiplicationMethod hashFoo(10);
-
-    HashTable foo(10, &hashFoo);
-    foo.add(HashTable::Pair(1, "first"));
-    foo.add(HashTable::Pair(2, "second"));
-    foo.add(HashTable::Pair(3, "third"));
+    HashTable foo(10);
+    std::cout << foo.m_hashFunction->hash(static_cast<int>(' '), 2) << std::endl;
+    foo.add(1, "first");
+    //foo.add(2, "second");
+    //foo.add(3, "third");
 
     foo.print();
     return -1;

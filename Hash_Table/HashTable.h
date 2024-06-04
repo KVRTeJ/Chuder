@@ -9,68 +9,52 @@
 class IHashFunction {
 public:
     virtual ~IHashFunction() = default;
-    virtual int hash(const int key) = 0;
+    virtual int hash(const int size, const int key) = 0;
 };
 
 class HashFunctionQuadraticTest : public IHashFunction {
 public:
-    explicit HashFunctionQuadraticTest(const int size)
-        : m_size((size >= 0
-                  ? size
-                      : 0 ))
-    {}
-
+    HashFunctionQuadraticTest() = default;
     ~HashFunctionQuadraticTest() override = default;
 
-    int size() const {return m_size;}
-    void resize(const int size) {m_size = (size >= 0
-                                            ? size
-                                                : 0 );}
-
-    int hash(const int key) override { //TODO: implement me
-        return ((key % m_size) + 5 + 7) % m_size;
+    int hash(const int size, const int key) override { //TODO: implement me
+        return ((key % size) + 25 % 5 + 25 % 7) % size;
     }
 
-private:
-    int m_size = 0;
+    static HashFunctionQuadraticTest func();
 };
 
 class HashFunctionMultiplicationMethod : public IHashFunction {
 public:
-    explicit HashFunctionMultiplicationMethod(const int size)
-        : m_size((size >= 0
-                      ? size
-                      : 0 ))
-    {}
+    HashFunctionMultiplicationMethod() = default;
 
     ~HashFunctionMultiplicationMethod() override = default;
 
-    int size() const {return m_size;}
-    void resize(const int size) {m_size = (size >= 0
-                                                ? size
-                                                : 0 );}
-
-    int hash(const int key) override { //TODO: implement me
-        return (key * -(1 - static_cast<int>(sqrt(5))) * m_size) % m_size;
+    int hash(const int size, const int key) override { //TODO: implement me
+        return (key * -(1 - static_cast<int>(sqrt(5))) * size) % size;
     }
-
-private:
-    int m_size = 0;
 };
 
 class HashTable {
 public:
     class Pair;
 public:
-    explicit HashTable(const int size, IHashFunction* hashFunction)
+    explicit HashTable(const int size, IHashFunction* hashFunction = nullptr)
         : m_data(std::vector<Pair>(size)) {
-        m_hashFunction = hashFunction;
+        if(hashFunction)
+            m_hashFunction = hashFunction;
+        else {
+            HashFunctionQuadraticTest func;
+            IHashFunction* temp = dynamic_cast<IHashFunction*>(&func);
+            std::swap(temp, m_hashFunction);
+        }
     }
     HashTable(const HashTable& other) = default;
 
     ~HashTable() = default;
 
-    void add(const Pair& pair); //TODO: implement me
+    bool add(Pair& pair); //FIXME: collisions
+    bool add(const int key, const std::string& value); //TODO: implement me
     bool remove(const Pair& pair); //TODO: implement me
 
     bool contains(const Pair& pair) const; //TODO: implement me
@@ -84,7 +68,7 @@ public:
     HashTable& operator = (const HashTable& other) = default;
     std::string& operator [] (const int key); //TODO: implement me
 
-private:
+//private:
     std::vector<Pair> m_data = {};
     IHashFunction* m_hashFunction = nullptr;
 };
