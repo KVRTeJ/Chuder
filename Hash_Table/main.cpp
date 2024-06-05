@@ -10,10 +10,13 @@ int main() {
     foo.add(1, "first");
     foo.add(1, "second");
     foo.add(8, "third");
+    foo.add(1, "first1");
+    foo.add(1, "first2");foo.add(1, "first3");foo.add(1, "first4");foo.add(1, "first5");foo.add(1, "first6");foo.add(1, "first7");foo.add(1, "first8");
 
-    //foo.add(2, "second");
-    //foo.add(3, "third");
+    foo.print();
 
+    std::cout << "resizing. . ." << std::endl;
+    foo.resize(6);
     foo.print();
     return -1;
 }

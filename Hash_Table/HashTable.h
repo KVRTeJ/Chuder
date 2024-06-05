@@ -46,15 +46,15 @@ public:
         else {
             HashFunctionQuadraticTest func;
             IHashFunction* temp = dynamic_cast<IHashFunction*>(&func);
-            std::swap(temp, m_hashFunction);
+            std::swap(temp, m_hashFunction); //Удалит func, а соответственно удалит и m_hashFunction
         }
     }
     HashTable(const HashTable& other) = default;
 
     ~HashTable() = default;
 
-    bool add(Pair& pair); //FIXME: collisions
-    bool add(const int key, const std::string& value); //TODO: implement me
+    bool add(Pair& pair);
+    bool add(const int key, const std::string& value);
     bool remove(const Pair& pair); //TODO: implement me
 
     bool contains(const Pair& pair) const; //TODO: implement me
@@ -63,7 +63,7 @@ public:
 
     void changeHashFunction(IHashFunction* hashFunction); //TODO: make hash-functions
 
-    void resize(const int size); //TODO: implement me
+    void resize(const int size);
 
     HashTable& operator = (const HashTable& other) = default;
     std::string& operator [] (const int key); //TODO: implement me

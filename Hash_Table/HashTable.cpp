@@ -3,7 +3,6 @@
 bool HashTable::add(Pair& pair) {
     int expected = m_hashFunction->hash(m_data.size(), pair.key());
 
-    std::cout << "expected - " << expected <<std::endl;
     if(m_data[expected].value() == "") {
         m_data[expected] = pair;
     } else {
@@ -33,6 +32,18 @@ bool HashTable::add(Pair& pair) {
 bool HashTable::add(const int key, const std::string& value) {
     Pair pair(key, value, nullptr);
     return add(pair);
+}
+
+void HashTable::resize(const int size) {
+    std::vector<Pair> oldData(size);
+    std::swap(oldData, m_data);
+
+    for(int i = 0; i < oldData.size(); ++i) {
+        if(oldData[i].value() != "") {
+            add(oldData[i].key(), oldData[i].value());
+            std::cout << "added - " << oldData[i].key() << " - " << oldData[i].value() << std::endl;
+        }
+    }
 }
 
 void HashTable::print() const {
