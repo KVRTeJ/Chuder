@@ -18,5 +18,10 @@ int main() {
     std::cout << "resizing. . ." << std::endl;
     foo.resize(6);
     foo.print();
+    std::cout << std::endl;std::cout << std::endl;std::cout << std::endl;
+
+    std::cout << "hash - " << foo.m_hashFunction->hash(foo.m_data.size(), 8) << std::endl;
+    foo[8] = "fixed";
+    foo.print();
     return -1;
 }

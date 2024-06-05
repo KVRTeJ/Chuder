@@ -59,14 +59,14 @@ public:
 
     bool contains(const Pair& pair) const; //TODO: implement me
 
-    void print() const; //TODO: implement me
+    void print() const;
 
     void changeHashFunction(IHashFunction* hashFunction); //TODO: make hash-functions
 
     void resize(const int size);
 
     HashTable& operator = (const HashTable& other) = default;
-    std::string& operator [] (const int key); //TODO: implement me
+    std::string& operator [] (const int key);
 
 //private:
     std::vector<Pair> m_data = {};
@@ -74,6 +74,7 @@ public:
 };
 
 class HashTable::Pair {
+    friend class HashTable;
 public:
     Pair(const int key = {}, const std::string& value = {}, Pair* next = nullptr)
         : m_key(key), m_value(value), m_next(next)
