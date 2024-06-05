@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <assert.h>
 
 #include "MainWindow.h"
 
@@ -23,5 +24,10 @@ int main() {
     std::cout << "hash - " << foo.m_hashFunction->hash(foo.m_data.size(), 8) << std::endl;
     foo[8] = "fixed";
     foo.print();
+    std::cout << std::endl;std::cout << std::endl;std::cout << std::endl;
+
+    foo.resize(15);
+    foo.print();
+    std::cout << (foo.contains(1, "first10") ? "contains" : "no");
     return -1;
 }

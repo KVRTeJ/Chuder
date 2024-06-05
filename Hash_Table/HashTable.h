@@ -91,6 +91,7 @@ public:
     void setValue(const std::string& value) {m_value = value;}
 
     Pair* next() {return m_next;}
+    const Pair* next() const {return m_next;}
     void setNext(Pair* next) {m_next = next;}
 
 private:

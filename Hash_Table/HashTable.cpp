@@ -35,7 +35,19 @@ bool HashTable::add(const int key, const std::string& value) {
 }
 
 bool HashTable::contains(const Pair& pair) const {
+    int index = m_hashFunction->hash(m_data.size(), pair.key());
 
+    for(const Pair* current = &m_data[index]; current->next(); current = current->next()) {
+        if(current->value() == pair.value()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool HashTable::contains(const int key, const std::string& value) const {
+    return contains(Pair(key, value));
 }
 
 void HashTable::print() const {
