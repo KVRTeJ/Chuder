@@ -34,6 +34,10 @@ bool HashTable::add(const int key, const std::string& value) {
     return add(pair);
 }
 
+bool HashTable::contains(const Pair& pair) const {
+
+}
+
 void HashTable::print() const {
     for(int i = 0; i < m_data.size(); ++i) {
         if(m_data[i].value() != "") {
@@ -58,5 +62,10 @@ void HashTable::resize(const int size) {
 
 
 std::string& HashTable::operator [] (const int key) {
-    return m_data[m_hashFunction->hash(m_data.size(), key)].m_value;
+    int index = m_hashFunction->hash(m_data.size(), key);
+    if(m_data[index].value() == "") {
+        m_data[index] = Pair(key);
+    }
+
+    return m_data[index].m_value;
 }

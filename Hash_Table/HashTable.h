@@ -56,8 +56,10 @@ public:
     bool add(Pair& pair);
     bool add(const int key, const std::string& value);
     bool remove(const Pair& pair); //TODO: implement me
+    bool remove(const int key, const std::string& value); //TODO: implement ^
 
     bool contains(const Pair& pair) const; //TODO: implement me
+    bool contains(const int key, const std::string& value) const; //TODO: implement ^
 
     void print() const;
 
