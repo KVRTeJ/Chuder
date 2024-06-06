@@ -11,16 +11,22 @@ CONFIG += c++17
 SOURCES += \
     HashTable.cpp \
     main.cpp \
+    HashTableCellWidget.cpp \
+    HashTableWidget.cpp \
+    MainWindow.cpp \
     MainWindow.cpp
 
 HEADERS += \
     HashFunctionMultiplicationMethod.h \
     HashFunctionQuadraticTest.h \
     HashTable.h \
+    HashTableCellWidget.h \
+    HashTableWidget.h \
     IHashFunction.h \
     MainWindow.h
 
 FORMS += \
+    HashTableCellWidget.ui \
     MainWindow.ui
 
 # Default rules for deployment.
