@@ -19,12 +19,17 @@ int main() {
 
     std::cout << "resizing. . ." << std::endl;
     foo.resize(6);
+    foo.resize(15);
     foo.print();
 
     std::cout << std::endl;
 
     HashFunctionMultiplicationMethod funcMult;
     foo.changeHashFunction(&funcMult);
+    foo.print();
+
+    foo.remove(21);
+    std::cout << "removed - " << funcMult.hash(6, 21) << std::endl;
     foo.print();
 
     return -1;

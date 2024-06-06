@@ -1,7 +1,7 @@
 #include "HashTable.h"
 
 bool HashTable::add(Pair& pair) {
-    int expected = m_hashFunction->hash(m_data.size(), pair.key());
+    const int expected = m_hashFunction->hash(m_data.size(), pair.key());
 
     if(m_data[expected].value() == "") {
         m_data[expected] = pair;
@@ -34,6 +34,26 @@ bool HashTable::add(Pair& pair) {
 bool HashTable::add(const int key, const std::string& value) {
     Pair pair(key, value, nullptr);
     return add(pair);
+}
+
+bool HashTable::remove(const Pair& pair) {
+    const int index =  m_hashFunction->hash(m_data.size(), pair.key());
+
+    if(m_data[index].value() == "") {
+        return false;
+    }
+
+    auto replacement = m_data[index].next();
+    m_data.erase(m_data.begin() + index);
+    if(replacement) {
+        m_data[index] = *replacement;
+    }
+
+    return true;
+}
+
+bool HashTable::remove(const int key) {
+    return remove(Pair(key));
 }
 
 bool HashTable::contains(const Pair& pair) const {

@@ -24,8 +24,8 @@ public:
 
     bool add(Pair& pair);
     bool add(const int key, const std::string& value);
-    bool remove(const Pair& pair); //TODO: implement me
-    bool remove(const int key, const std::string& value); //TODO: implement ^
+    bool remove(const Pair& pair);
+    bool remove(const int key); //TODO: implement ^
 
     bool contains(const Pair& pair) const;
     bool contains(const int key, const std::string& value) const;
@@ -39,7 +39,7 @@ public:
     HashTable& operator = (const HashTable& other) = default;
     std::string& operator [] (const int key);
 
-//private:
+private:
     std::vector<Pair> m_data = {};
     IHashFunction* m_hashFunction = nullptr;
 };
