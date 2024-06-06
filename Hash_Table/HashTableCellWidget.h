@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "HashTable.h"
+
 namespace Ui {
 class HashTableCellWidget;
 }

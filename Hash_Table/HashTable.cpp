@@ -1,12 +1,12 @@
 #include "HashTable.h"
 
-bool HashTable::add(Pair& pair) {
+int HashTable::add(Cell& pair) {
     const int expected = m_hashFunction->hash(m_data.size(), pair.key());
 
     if(m_data[expected].value() == "") {
         m_data[expected] = pair;
     } else {
-        Pair* current = &m_data[expected];
+        Cell* current = &m_data[expected];
         while(current->next()) {
             current = current->next();
         }
@@ -22,44 +22,63 @@ bool HashTable::add(Pair& pair) {
         }
 
         if(!hasFound) {
-            return false;
+            return -1;
         }
 
         current->setNext(&m_data[i]);
+        m_data[i].setPrev(current);
+        return i;
     }
 
-    return true;
+    return expected;
 }
 
-bool HashTable::add(const int key, const std::string& value) {
-    Pair pair(key, value, nullptr);
+int HashTable::add(const int key, const std::string& value) {
+    Cell pair(key, value, nullptr);
     return add(pair);
 }
 
-bool HashTable::remove(const Pair& pair) {
+bool HashTable::remove(const Cell& pair) {
     const int index =  m_hashFunction->hash(m_data.size(), pair.key());
 
     if(m_data[index].value() == "") {
         return false;
     }
 
-    auto replacement = m_data[index].next();
-    m_data.erase(m_data.begin() + index);
-    if(replacement) {
-        m_data[index] = *replacement;
+    if(!m_data[index].next()) {
+        m_data.erase(m_data.begin() + index);
+        return true;
+    }
+
+    Cell* it = &m_data[index];
+    Cell* jt = it->next();
+    for(; jt; it = jt, jt = jt->next());
+    std::cout << "boo" << std::endl;
+    Cell* data = jt;
+    while(jt != &m_data[index]) {
+        data = it->prev();
+        if(jt) {
+            *it = *jt;
+        } else {
+            *it = {};
+        }
+        it = data;
+        it->setNext(jt);
+        jt = it->next();
+        std::cout << "it - " << it->key() << std::endl;
     }
 
     return true;
 }
 
 bool HashTable::remove(const int key) {
-    return remove(Pair(key));
+    return remove(Cell(key));
 }
 
-bool HashTable::contains(const Pair& pair) const {
+bool HashTable::contains(const Cell& pair) const {
     int index = m_hashFunction->hash(m_data.size(), pair.key());
 
-    for(const Pair* current = &m_data[index]; current->next(); current = current->next()) {
+    for(const Cell* current = &m_data[index]; current->next(); current = current->next()) {
         if(current->value() == pair.value()) {
             return true;
         }
@@ -69,7 +88,7 @@ bool HashTable::contains(const Pair& pair) const {
 }
 
 bool HashTable::contains(const int key, const std::string& value) const {
-    return contains(Pair(key, value));
+    return contains(Cell(key, value));
 }
 
 void HashTable::print() const {
@@ -94,7 +113,7 @@ void HashTable::changeHashFunction(IHashFunction* hashFunction) {
 }
 
 void HashTable::resize(const int size) {
-    std::vector<Pair> oldData(size);
+    std::vector<Cell> oldData(size);
     std::swap(oldData, m_data);
 
     for(int i = 0; i < oldData.size(); ++i) {
@@ -108,7 +127,7 @@ void HashTable::resize(const int size) {
 std::string& HashTable::operator [] (const int key) {
     int index = m_hashFunction->hash(m_data.size(), key);
     if(m_data[index].value() == "") {
-        m_data[index] = Pair(key);
+        m_data[index] = Cell(key);
     }
 
     return m_data[index].m_value;

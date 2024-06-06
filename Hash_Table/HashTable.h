@@ -8,10 +8,10 @@
 
 class HashTable {
 public:
-    class Pair;
+    class Cell;
 public:
-    explicit HashTable(const int size, IHashFunction* hashFunction = nullptr)
-        : m_data(std::vector<Pair>(size)) {
+    HashTable(const int size = 10, IHashFunction* hashFunction = nullptr)
+        : m_data(std::vector<Cell>(size)) {
         if(hashFunction)
             m_hashFunction = hashFunction;
         else {
@@ -22,12 +22,12 @@ public:
 
     ~HashTable() = default;
 
-    bool add(Pair& pair);
-    bool add(const int key, const std::string& value);
-    bool remove(const Pair& pair);
-    bool remove(const int key); //TODO: implement ^
+    int add(Cell& pair);
+    int add(const int key, const std::string& value);
+    bool remove(const Cell& pair);
+    bool remove(const int key);
 
-    bool contains(const Pair& pair) const;
+    bool contains(const Cell& pair) const;
     bool contains(const int key, const std::string& value) const;
 
     void print() const;
@@ -40,18 +40,18 @@ public:
     std::string& operator [] (const int key);
 
 private:
-    std::vector<Pair> m_data = {};
+    std::vector<Cell> m_data = {};
     IHashFunction* m_hashFunction = nullptr;
 };
 
-class HashTable::Pair {
+class HashTable::Cell {
     friend class HashTable;
 public:
-    Pair(const int key = {}, const std::string& value = {}, Pair* next = nullptr)
-        : m_key(key), m_value(value), m_next(next)
+    Cell(const int key = {}, const std::string& value = {}, Cell* prev = nullptr, Cell* next = nullptr)
+        : m_key(key), m_value(value), m_prev(prev), m_next(next)
     {}
 
-    ~Pair() = default;
+    ~Cell() = default;
 
     int key() const {return m_key;}
     std::string value() const {return m_value;}
@@ -59,15 +59,19 @@ public:
     void setKey(const int key) {m_key = key;}
     void setValue(const std::string& value) {m_value = value;}
 
-    Pair* next() {return m_next;}
-    const Pair* next() const {return m_next;}
-    void setNext(Pair* next) {m_next = next;}
+    Cell* next() {return m_next;}
+    const Cell* next() const {return m_next;}
+    Cell* prev() {return m_prev;}
+    const Cell* prev() const {return m_prev;}
+    void setPrev(Cell* prev) {m_prev = prev;}
+    void setNext(Cell* next) {m_next = next;}
 
 private:
     int m_key = {};
     std::string m_value = {};
 
-    Pair* m_next = nullptr;
+    Cell* m_prev = nullptr;
+    Cell* m_next = nullptr;
 };
 
 #endif // HASHTABLE_H

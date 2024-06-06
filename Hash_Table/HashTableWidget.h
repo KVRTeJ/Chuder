@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QVector>
 
+#include "HashTable.h"
+
 class QGridLayout;
 class HashTableCellWidget;
 
@@ -46,7 +48,7 @@ private:
     QGridLayout *m_layout = nullptr;
     int m_baseConnectionOffset = 10;
     int m_connectionOffset = 5;
-    //TODO: HashTable m_table;
+    HashTable m_table = {};
 };
 
 #endif //HASHTABLEWIDGET_H

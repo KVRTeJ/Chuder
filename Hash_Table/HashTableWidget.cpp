@@ -20,13 +20,6 @@ HashTableWidget::HashTableWidget(QWidget *parent)
     //TODO: margin recalculating to fit all connections
     margins.setRight(margins.right() + 15);
     m_layout->setContentsMargins(margins);
-    //FIXME: remove block below
-    {
-        resize(10);
-        addConnection(0, 3);
-        addConnection(1, 4);
-        addConnection(2, 5);
-    }
 }
 
 HashTableWidget::~HashTableWidget()
@@ -36,21 +29,25 @@ HashTableWidget::~HashTableWidget()
 
 int HashTableWidget::findRow(int key) const
 {
-    //TODO: implement
-    return -1; //return m_hashTable.findRow(key);
+
 }
 void HashTableWidget::addRow(int key, const QString &value)
 {
     if (!m_items.size()) {
         return;
     }
-
-    //TODO: implement
-    //int row = m_hashTable.insert(key, value.toStdString());
-    static int row = -1;               //FIXME: remove
-    row = (row + 1) % m_items.size();  //FIXME: remove
-    m_items[row].ptr->setKey(key);
-    m_items[row].ptr->setValue(value);
+/*
+    int row = m_table.add(key, QString::toStdString(value));
+    if(row != -1)
+    {
+        m_items[row].ptr->setKey(key);
+        m_items[row].ptr->setValue(value);
+        if(m_table[row].)
+        {
+            addConnection();
+        }
+    }
+*/
 }
 
 bool HashTableWidget::removeRow(int key)
