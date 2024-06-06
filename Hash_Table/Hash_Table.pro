@@ -13,7 +13,6 @@ SOURCES += \
     main.cpp \
     HashTableCellWidget.cpp \
     HashTableWidget.cpp \
-    MainWindow.cpp \
     MainWindow.cpp
 
 HEADERS += \
