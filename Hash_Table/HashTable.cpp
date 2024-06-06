@@ -10,7 +10,6 @@ bool HashTable::add(Pair& pair) {
         while(current->next()) {
             current = current->next();
         }
-        //current->setNext(&pair);
 
         bool hasFound = false;
         int i = 0;
@@ -40,9 +39,7 @@ bool HashTable::add(const int key, const std::string& value) {
 bool HashTable::contains(const Pair& pair) const {
     int index = m_hashFunction->hash(m_data.size(), pair.key());
 
-    std::cout << "start contains. . ." << std::endl;
     for(const Pair* current = &m_data[index]; current->next(); current = current->next()) {
-        std::cout << current->key() << std::endl;
         if(current->value() == pair.value()) {
             return true;
         }
@@ -64,6 +61,16 @@ void HashTable::print() const {
             std::cout << std::endl;
         }
     }
+}
+
+void HashTable::changeHashFunction(IHashFunction* hashFunction) {
+    if(!hashFunction || m_hashFunction == hashFunction) {
+        std::cout << "exit" << std::endl;
+        return;
+    }
+
+    m_hashFunction = hashFunction;
+    resize(m_data.size());
 }
 
 void HashTable::resize(const int size) {

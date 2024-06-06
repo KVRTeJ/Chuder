@@ -14,7 +14,10 @@ SOURCES += \
     MainWindow.cpp
 
 HEADERS += \
+    HashFunctionMultiplicationMethod.h \
+    HashFunctionQuadraticTest.h \
     HashTable.h \
+    IHashFunction.h \
     MainWindow.h
 
 FORMS += \

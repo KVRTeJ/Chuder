@@ -1,39 +1,10 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 
-#include <iostream>
 #include <string>
-#include <algorithm>
-#include <math.h>
 
-class IHashFunction {
-public:
-    virtual ~IHashFunction() = default;
-    virtual int hash(const int size, const int key) = 0;
-};
-
-class HashFunctionQuadraticTest : public IHashFunction {
-public:
-    HashFunctionQuadraticTest() = default;
-    ~HashFunctionQuadraticTest() override = default;
-
-    int hash(const int size, const int key) override { //TODO: implement me
-        return ((key % size) + 25 % 5 + 25 % 7) % size;
-    }
-
-    static HashFunctionQuadraticTest func();
-};
-
-class HashFunctionMultiplicationMethod : public IHashFunction {
-public:
-    HashFunctionMultiplicationMethod() = default;
-
-    ~HashFunctionMultiplicationMethod() override = default;
-
-    int hash(const int size, const int key) override { //TODO: implement me
-        return (key * -(1 - static_cast<int>(sqrt(5))) * size) % size;
-    }
-};
+#include "IHashFunction.h"
+#include "HashFunctionQuadraticTest.h"
 
 class HashTable {
 public:
@@ -44,9 +15,7 @@ public:
         if(hashFunction)
             m_hashFunction = hashFunction;
         else {
-            HashFunctionQuadraticTest func;
-            IHashFunction* temp = dynamic_cast<IHashFunction*>(&func);
-            std::swap(temp, m_hashFunction); //Удалит func, а соответственно удалит и m_hashFunction
+            m_hashFunction = &HashFunctionQuadraticTest::function;
         }
     }
     HashTable(const HashTable& other) = default;
@@ -58,12 +27,12 @@ public:
     bool remove(const Pair& pair); //TODO: implement me
     bool remove(const int key, const std::string& value); //TODO: implement ^
 
-    bool contains(const Pair& pair) const; //FIXME: bad alloc
-    bool contains(const int key, const std::string& value) const; //TODO: implement ^
+    bool contains(const Pair& pair) const;
+    bool contains(const int key, const std::string& value) const;
 
     void print() const;
 
-    void changeHashFunction(IHashFunction* hashFunction); //TODO: make hash-functions
+    void changeHashFunction(IHashFunction* hashFunction);
 
     void resize(const int size);
 
