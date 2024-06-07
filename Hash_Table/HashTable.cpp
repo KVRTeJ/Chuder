@@ -2,7 +2,7 @@
 
 int HashTable::add(Cell& pair) {
     const int expected = m_hashFunction->hash(m_data.size(), pair.key());
-
+    std::cout << "key - " << pair.key() << " hash - " << expected << std::endl;
     if(m_data[expected].value() == "") {
         m_data[expected] = pair;
     } else {
@@ -45,19 +45,46 @@ bool HashTable::remove(const Cell& pair) {
         return false;
     }
 
-    if(!m_data[index].next()) {
-        m_data.erase(m_data.begin() + index);
+    std::cout << "processing current" << std::endl;
+
+    Cell* current = &m_data[index];
+    while(current) {
+        if(current->key() == pair.key()) {
+            std::cout << "break\n";
+            break;
+        }
+        std::cout << "keys - " << current->key() << " = " << pair.key() << std::endl;
+        current = current->next();
+    }
+
+    std::cout << "current processed" << std::endl;
+
+    if(!current) {
+        std::cout << "!current - > false\n";
+        return false;
+    }
+
+    std::cout << "current1" << std::endl;
+
+    if(!current->next()) {
+        if(current->prev()) {
+            current->setPrev(nullptr);
+        }
+        *current = Cell();
+        std::cout << "removed - > true \n";
         return true;
     }
 
-    Cell* last = &m_data[index];
-    while(last->next()) {
-        last = last->next();
+    Cell* it = current->next();
+    do {
+        it->m_swap(current);
+        current = current->next();
+        it = current->next();
+    } while(it);
+    if(current->prev()) {
+        current->setPrev(nullptr);
     }
-
-    Cell* target = &m_data[index];
-    std::swap(*target, *last);
-
+    *current = Cell();
 
     return true;
 }
@@ -122,4 +149,9 @@ std::string& HashTable::operator [] (const int key) {
     }
 
     return m_data[index].m_value;
+}
+
+void HashTable::Cell::m_swap(Cell* other) {
+    std::swap(this->m_key, other->m_key);
+    std::swap(this->m_value, other->m_value);
 }

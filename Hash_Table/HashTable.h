@@ -65,7 +65,8 @@ public:
     const Cell* prev() const {return m_prev;}
     void setPrev(Cell* prev) {m_prev = prev;}
     void setNext(Cell* next) {m_next = next;}
-
+private:
+    void m_swap(Cell* other);
 private:
     int m_key = {};
     std::string m_value = {};
