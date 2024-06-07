@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
     tabl.print();
 
-
+    std::cout << std::endl;
 
     tabl.remove(5);
     tabl.print();

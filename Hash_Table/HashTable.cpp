@@ -50,23 +50,14 @@ bool HashTable::remove(const Cell& pair) {
         return true;
     }
 
-    Cell* it = &m_data[index];
-    Cell* jt = it->next();
-    for(; jt; it = jt, jt = jt->next());
-    std::cout << "boo" << std::endl;
-    Cell* data = jt;
-    while(jt != &m_data[index]) {
-        data = it->prev();
-        if(jt) {
-            *it = *jt;
-        } else {
-            *it = {};
-        }
-        it = data;
-        it->setNext(jt);
-        jt = it->next();
-        std::cout << "it - " << it->key() << std::endl;
+    Cell* last = &m_data[index];
+    while(last->next()) {
+        last = last->next();
     }
+
+    Cell* target = &m_data[index];
+    std::swap(*target, *last);
+
 
     return true;
 }
