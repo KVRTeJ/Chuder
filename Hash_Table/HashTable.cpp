@@ -1,5 +1,9 @@
 #include "HashTable.h"
 
+HashTable::Cell HashTable::getCell(const int index) const {
+    return m_data[index];
+}
+
 int HashTable::add(Cell& pair) {
     const int expected = m_hashFunction->hash(m_data.size(), pair.key());
 
@@ -132,11 +136,30 @@ void HashTable::resize(const int size) {
 
 std::string& HashTable::operator [] (const int key) {
     int index = m_hashFunction->hash(m_data.size(), key);
-    if(m_data[index].value() == "") {
-        m_data[index] = Cell(key);
+
+    if(m_data[index].key() != key) {
+        for(Cell* it = &m_data[index]; it->next(); it = it->next()) {
+            if(it->key() == key) {
+                return it->m_value;
+            }
+        }
     }
 
     return m_data[index].m_value;
+}
+
+int HashTable::m_find(const int key) const {
+    int index = m_hashFunction->hash(m_data.size(), key);
+
+    if(m_data[index].key() != key) {
+        for(int i = 0; i < m_data.size(); ++i) {
+            if(m_data[i].key() == key) {
+                return i;
+            }
+        }
+    }
+
+    return index;
 }
 
 void HashTable::Cell::m_swap(Cell* other) {

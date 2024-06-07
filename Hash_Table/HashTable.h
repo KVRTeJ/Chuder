@@ -22,6 +22,8 @@ public:
 
     ~HashTable() = default;
 
+    Cell getCell(const int index) const;
+
     int add(Cell& pair);
     int add(const int key, const std::string& value);
     bool remove(const Cell& pair);
@@ -38,7 +40,8 @@ public:
 
     HashTable& operator = (const HashTable& other) = default;
     std::string& operator [] (const int key);
-
+private:
+    int m_find(const int key) const;
 private:
     std::vector<Cell> m_data = {};
     IHashFunction* m_hashFunction = nullptr;

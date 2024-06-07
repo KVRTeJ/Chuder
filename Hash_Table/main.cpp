@@ -23,11 +23,13 @@ int main(int argc, char *argv[])
     tabl.print();
     std::cout << std::endl;
 
-    tabl.remove(10);
+    assert(tabl.contains(10, "4"));
+    tabl[10] = "10 - fixed";
     tabl.print();
     std::cout << std::endl;
+    assert(!tabl.contains(10, "4"));
 
-    tabl.remove(53);
+    tabl[53] = "52";
     tabl.print();
     std::cout << std::endl;
 
