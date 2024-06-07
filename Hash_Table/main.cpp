@@ -27,6 +27,10 @@ int main(int argc, char *argv[])
     tabl.print();
     std::cout << std::endl;
 
+    tabl.remove(53);
+    tabl.print();
+    std::cout << std::endl;
+
     /*
     QApplication app(argc, argv);
     MainWindow mw;

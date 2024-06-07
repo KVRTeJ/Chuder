@@ -2,7 +2,7 @@
 
 int HashTable::add(Cell& pair) {
     const int expected = m_hashFunction->hash(m_data.size(), pair.key());
-    std::cout << "key - " << pair.key() << " hash - " << expected << std::endl;
+
     if(m_data[expected].value() == "") {
         m_data[expected] = pair;
     } else {
@@ -45,33 +45,23 @@ bool HashTable::remove(const Cell& pair) {
         return false;
     }
 
-    std::cout << "processing current" << std::endl;
-
     Cell* current = &m_data[index];
     while(current) {
         if(current->key() == pair.key()) {
-            std::cout << "break\n";
             break;
         }
-        std::cout << "keys - " << current->key() << " = " << pair.key() << std::endl;
         current = current->next();
     }
 
-    std::cout << "current processed" << std::endl;
-
     if(!current) {
-        std::cout << "!current - > false\n";
         return false;
     }
-
-    std::cout << "current1" << std::endl;
 
     if(!current->next()) {
         if(current->prev()) {
             current->setPrev(nullptr);
         }
         *current = Cell();
-        std::cout << "removed - > true \n";
         return true;
     }
 
@@ -81,9 +71,7 @@ bool HashTable::remove(const Cell& pair) {
         current = current->next();
         it = current->next();
     } while(it);
-    if(current->prev()) {
-        current->setPrev(nullptr);
-    }
+    current->prev()->setNext(nullptr);
     *current = Cell();
 
     return true;
