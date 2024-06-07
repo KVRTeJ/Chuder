@@ -3,10 +3,13 @@
 
 #include <string>
 
+//#include "HashTableWidget.h"
+
 #include "IHashFunction.h"
 #include "HashFunctionQuadraticTest.h"
 
 class HashTable {
+    friend class HashTableWidget;
 public:
     class Cell;
 public:

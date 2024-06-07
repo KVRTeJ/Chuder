@@ -22,37 +22,33 @@ HashTableWidget::HashTableWidget(QWidget *parent)
     m_layout->setContentsMargins(margins);
 }
 
-HashTableWidget::~HashTableWidget()
-{
+HashTableWidget::~HashTableWidget() {}
+
+
+int HashTableWidget::findRow(int key) const {
+    return m_table.m_find(key);
 }
 
-
-int HashTableWidget::findRow(int key) const
-{
-
-}
-void HashTableWidget::addRow(int key, const QString &value)
-{
+void HashTableWidget::addRow(int key, const QString &value) {
     if (!m_items.size()) {
         return;
     }
 
-    /*
+
     int row = m_table.add(key, value.toStdString());
-    if(row != -1)
-    {
+    if(row != -1) {
         m_items[row].ptr->setKey(key);
         m_items[row].ptr->setValue(value);
-        if(m_table.getPair(row)) //FIXME: getPair
-        {
-            addConnection(m_table[row], m_table[row].next());
+        if(m_table.m_data[row].next()) {
+            addConnection(row, m_table.m_find(m_table.m_data[row].next()->key()));
         }
     }
-*/
+
+    paintEvent(this);
+
 }
 
-bool HashTableWidget::removeRow(int key)
-{
+bool HashTableWidget::removeRow(int key) {
     //TODO: implement
     return false; //return m_hashTable.remove(key);
 }
@@ -74,8 +70,7 @@ void HashTableWidget::resize(int size)
     }
 }
 
-void HashTableWidget::paintEvent(QPaintEvent *event)
-{
+void HashTableWidget::paintEvent(QPaintEvent *event) {
     QWidget::paintEvent(event);
 
     QPainter painter(this);
