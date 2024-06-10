@@ -12,6 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButton_add, &QPushButton::clicked, this, [this]() {
         ui->hashTable->addRow(ui->spinBox_key->value(), ui->lineEdit_value->text());
     });
+
+    connect(ui->pushButton_remove, &QPushButton::clicked, this, [this]() {
+        ui->hashTable->removeRow(ui->spinBox_key->value(), ui->lineEdit_value->text());
+    });
 }
 
 MainWindow::~MainWindow()

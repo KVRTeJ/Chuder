@@ -21,7 +21,7 @@ public:
 
 public slots:
     void addRow(int key, const QString &value);
-    bool removeRow(int key);
+    bool removeRow(int key, const QString &value);
     void resize(int size);
 
 protected:
@@ -33,12 +33,15 @@ private slots:
     void onValueChanged(HashTableCellWidget *item);
 
 private:
-    struct ItemData
+    struct ItemData //TODO: to class
     {
         HashTableCellWidget *ptr = nullptr;
         HashTableCellWidget *prev = nullptr;
         HashTableCellWidget *next = nullptr;
 
+        ///pass prev elements
+        void recalculateLinks(ItemData* prev, ItemData* next, HashTable::Cell const* current); //TODO: to private //TODO: unused
+        void reset();
         QRect connectionRect;
         QRect baseConnectionRect(int connectionOffset) const;
         static QRect baseConnectionRect(HashTableCellWidget *from, HashTableCellWidget *to, int connectionOffset);

@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QVBoxLayout>
+#include <QMessageBox>
 
 #include "HashTableCellWidget.h"
 
@@ -31,14 +32,25 @@ int HashTableWidget::findRow(int key) const {
 }
 
 void HashTableWidget::addRow(int key, const QString &value) {
+    QMessageBox msgBox;
+
     if (!m_items.size()) {
+        msgBox.setText("Table size is equal 0. LMAO");
+        msgBox.exec();
         return;
     }
 
+    if(value == "") {
+        msgBox.setText("Nice try!");
+        msgBox.exec();
+        return;
+    }
 
     HashTable::Cell newCell(key, value.toStdString());
     int row = m_table.add(newCell);
     if(row == -1) {
+        msgBox.setText("This element is already added. 😮");
+        msgBox.exec();
         return;
     }
 
@@ -46,19 +58,44 @@ void HashTableWidget::addRow(int key, const QString &value) {
     m_items[row].ptr->setValue(value);
     if(m_table.m_data[row].prev()) {
         addConnection(m_table.m_getIndex(*m_table.m_data[row].prev()), row);
-        if(row == 1) {
-
-        }
     }
 
     update();
 
 }
 
-bool HashTableWidget::removeRow(int key) {
-    //TODO: implement
-    assert(false && "implementme");
-    return false; //return m_hashTable.remove(key);
+bool HashTableWidget::removeRow(int key, const QString &value) { //TODO: messageBox
+
+    HashTable::Cell target = m_table.m_data[m_table.m_getIndex(HashTable::Cell(key, value.toStdString()))];
+    int row = m_table.m_getIndex(target);
+    if(row == -1) {
+        return false;
+    }
+
+    if(!m_table.remove(target)) {
+        return false;
+    }
+
+    ItemData* current = &m_items[row];
+    if(!current->next) {
+        if(current->prev) {
+            current->prev(nullptr);
+        }
+        *current = Cell();
+        return true;
+    }
+
+    Cell* it = current->next();
+    do {
+        it->m_swap(current);
+        current = current->next();
+        it = current->next();
+    } while(it);
+    current->prev()->setNext(nullptr);
+    *current = Cell();
+
+
+    return true;
 }
 
 void HashTableWidget::resize(int size)
@@ -158,5 +195,12 @@ QRect HashTableWidget::ItemData::baseConnectionRect(HashTableCellWidget *from, H
     rect.setBottom(endPos.y());
     rect.setRight(qMax(startPos.x(), endPos.x()) + connectionOffset);
     return rect;
+}
+
+void HashTableWidget::ItemData::reset() {
+    ptr->setKey();
+    ptr->setValue("");
+    next = nullptr;
+    prev = nullptr;
 }
 

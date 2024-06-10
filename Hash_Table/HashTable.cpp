@@ -5,6 +5,10 @@ HashTable::Cell HashTable::getCell(const int index) const {
 }
 
 int HashTable::add(Cell& pair) {
+    if(contains(pair)) {
+        return -1;
+    }
+
     const int expected = m_hashFunction->hash(m_data.size(), pair.key());
 
     if(m_data[expected].value() == "") {
@@ -88,8 +92,8 @@ bool HashTable::remove(const int key) {
 bool HashTable::contains(const Cell& pair) const {
     int index = m_hashFunction->hash(m_data.size(), pair.key());
 
-    for(const Cell* current = &m_data[index]; current->next(); current = current->next()) {
-        if(current->value() == pair.value()) {
+    for(const Cell* current = &m_data[index]; current; current = current->next()) {
+        if(current->operator == (pair)) {
             return true;
         }
     }
@@ -151,7 +155,9 @@ std::string& HashTable::operator [] (const int key) {
 int HashTable::m_getIndex(Cell target) const {
     int index = m_hashFunction->hash(m_data.size(), target.key());
 
-    if(m_data[index] != target) {
+    if(m_data[index] == target) {
+        return index;
+    } else if(m_data[index] != target) {
         for(int i = 0; i < m_data.size(); ++i) {
             if(m_data[i] == target) {
                 return i;
@@ -159,7 +165,7 @@ int HashTable::m_getIndex(Cell target) const {
         }
     }
 
-    return index;
+    return -1;
 }
 
 void HashTable::Cell::m_swap(Cell* other) {
