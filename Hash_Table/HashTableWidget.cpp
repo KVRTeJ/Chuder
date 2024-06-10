@@ -57,7 +57,10 @@ void HashTableWidget::addRow(int key, const QString &value) {
     m_items[row].ptr->setKey(key);
     m_items[row].ptr->setValue(value);
     if(m_table.m_data[row].prev()) {
-        addConnection(m_table.m_getIndex(*m_table.m_data[row].prev()), row);
+        int from = m_table.m_getIndex(*m_table.m_data[row].prev());
+        addConnection(from, row);
+        m_items[from].idNext = &m_items[row];
+        m_items[row].idPrev = &m_items[from];
     }
 
     update();
@@ -77,23 +80,28 @@ bool HashTableWidget::removeRow(int key, const QString &value) { //TODO: message
     }
 
     ItemData* current = &m_items[row];
-    if(!current->next) {
-        if(current->prev) {
-            current->prev(nullptr);
+    if(!current->idNext) {
+        if(current->idPrev) {
+            current->idPrev->next = nullptr;
+            current->idPrev->idNext = nullptr;
         }
-        *current = Cell();
+        current->reset();
+
+        update();
         return true;
     }
 
-    Cell* it = current->next();
+    ItemData* it = current->idNext;
     do {
-        it->m_swap(current);
-        current = current->next();
-        it = current->next();
+        it->swap(current);
+        current = current->idNext;
+        it = current->idNext;
     } while(it);
-    current->prev()->setNext(nullptr);
-    *current = Cell();
+    current->idPrev->next = nullptr;
+    current->idPrev->idNext = nullptr;
+    current->reset();
 
+    update();
 
     return true;
 }
@@ -198,9 +206,29 @@ QRect HashTableWidget::ItemData::baseConnectionRect(HashTableCellWidget *from, H
 }
 
 void HashTableWidget::ItemData::reset() {
-    ptr->setKey();
+    ptr->setKey(-1);
     ptr->setValue("");
+
     next = nullptr;
+    //ptr = nullptr;
     prev = nullptr;
+
+    idPrev = nullptr;
+    idNext = nullptr;
+}
+
+void HashTableWidget::ItemData::swap(ItemData* other) {
+    if(!other) {
+        return;
+    }
+
+    auto currentKey = this->ptr->key();
+    auto currentValue = this->ptr->value();
+
+    this->ptr->setKey(other->ptr->key());
+    this->ptr->setValue(other->ptr->value());
+
+    other->ptr->setKey(currentKey);
+    other->ptr->setValue(currentValue);
 }
 

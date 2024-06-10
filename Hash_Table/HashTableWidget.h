@@ -39,9 +39,13 @@ private:
         HashTableCellWidget *prev = nullptr;
         HashTableCellWidget *next = nullptr;
 
+        ItemData* idPrev = nullptr;
+        ItemData* idNext = nullptr;
+
         ///pass prev elements
         void recalculateLinks(ItemData* prev, ItemData* next, HashTable::Cell const* current); //TODO: to private //TODO: unused
         void reset();
+        void swap(ItemData* other);
         QRect connectionRect;
         QRect baseConnectionRect(int connectionOffset) const;
         static QRect baseConnectionRect(HashTableCellWidget *from, HashTableCellWidget *to, int connectionOffset);

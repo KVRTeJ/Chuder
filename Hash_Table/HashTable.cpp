@@ -55,7 +55,7 @@ bool HashTable::remove(const Cell& pair) {
 
     Cell* current = &m_data[index];
     while(current) {
-        if(current->key() == pair.key()) {
+        if(*current == pair) {
             break;
         }
         current = current->next();
@@ -67,7 +67,7 @@ bool HashTable::remove(const Cell& pair) {
 
     if(!current->next()) {
         if(current->prev()) {
-            current->setPrev(nullptr);
+            current->prev()->setNext(nullptr);
         }
         *current = Cell();
         return true;

@@ -26,8 +26,12 @@ QString HashTableCellWidget::value() const
     return ui->lineEdit_value->text();
 }
 
-void HashTableCellWidget::setKey(int key)
-{
+void HashTableCellWidget::setKey(int key) {
+    if(key < 0) {
+        ui->label_keyValue->clear();
+        return;
+    }
+
     ui->label_keyValue->setText(QString::number(key));
 }
 
