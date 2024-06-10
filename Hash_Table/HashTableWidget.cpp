@@ -36,15 +36,17 @@ void HashTableWidget::addRow(int key, const QString &value) {
 
 
     int row = m_table.add(key, value.toStdString());
-    if(row != -1) {
-        m_items[row].ptr->setKey(key);
-        m_items[row].ptr->setValue(value);
-        if(m_table.m_data[row].next()) {
-            addConnection(row, m_table.m_find(m_table.m_data[row].next()->key()));
-        }
+    if(row == -1) {
+        return;
     }
 
-    paintEvent(this);
+    m_items[row].ptr->setKey(key);
+    m_items[row].ptr->setValue(value);
+    if(m_table.m_data[row].prev()) {
+        addConnection(m_table.m_find(m_table.m_data[row].prev()->key()), row);
+    }
+
+    update();
 
 }
 
