@@ -26,7 +26,8 @@ HashTableWidget::~HashTableWidget() {}
 
 
 int HashTableWidget::findRow(int key) const {
-    return m_table.m_find(key);
+    assert(false && "implementme");
+    return -1;
 }
 
 void HashTableWidget::addRow(int key, const QString &value) {
@@ -35,7 +36,8 @@ void HashTableWidget::addRow(int key, const QString &value) {
     }
 
 
-    int row = m_table.add(key, value.toStdString());
+    HashTable::Cell newCell(key, value.toStdString());
+    int row = m_table.add(newCell);
     if(row == -1) {
         return;
     }
@@ -43,7 +45,10 @@ void HashTableWidget::addRow(int key, const QString &value) {
     m_items[row].ptr->setKey(key);
     m_items[row].ptr->setValue(value);
     if(m_table.m_data[row].prev()) {
-        addConnection(m_table.m_find(m_table.m_data[row].prev()->key()), row);
+        addConnection(m_table.m_getIndex(*m_table.m_data[row].prev()), row);
+        if(row == 1) {
+
+        }
     }
 
     update();
@@ -52,6 +57,7 @@ void HashTableWidget::addRow(int key, const QString &value) {
 
 bool HashTableWidget::removeRow(int key) {
     //TODO: implement
+    assert(false && "implementme");
     return false; //return m_hashTable.remove(key);
 }
 

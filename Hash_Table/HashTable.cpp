@@ -148,12 +148,12 @@ std::string& HashTable::operator [] (const int key) {
     return m_data[index].m_value;
 }
 
-int HashTable::m_find(const int key) const {
-    int index = m_hashFunction->hash(m_data.size(), key);
+int HashTable::m_getIndex(Cell target) const {
+    int index = m_hashFunction->hash(m_data.size(), target.key());
 
-    if(m_data[index].key() != key) {
+    if(m_data[index] != target) {
         for(int i = 0; i < m_data.size(); ++i) {
-            if(m_data[i].key() == key) {
+            if(m_data[i] == target) {
                 return i;
             }
         }

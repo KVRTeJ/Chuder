@@ -44,7 +44,7 @@ public:
     HashTable& operator = (const HashTable& other) = default;
     std::string& operator [] (const int key);
 //private:
-    int m_find(const int key) const;
+    int m_getIndex(Cell target) const;
 private:
     std::vector<Cell> m_data = {};
     IHashFunction* m_hashFunction = nullptr;
@@ -71,6 +71,10 @@ public:
     const Cell* prev() const {return m_prev;}
     void setPrev(Cell* prev) {m_prev = prev;}
     void setNext(Cell* next) {m_next = next;}
+
+    bool operator == (const Cell other) const {return (m_key == other.m_key) && (m_value == other.m_value);}
+    bool operator != (const Cell other) const {return !this->operator == (other);}
+
 private:
     void m_swap(Cell* other);
 private:
