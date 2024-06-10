@@ -30,8 +30,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>780</width>
-         <height>490</height>
+         <width>774</width>
+         <height>480</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -54,7 +54,10 @@
       <item>
        <widget class="QSpinBox" name="spinBox_key">
         <property name="suffix">
-         <string>    </string>
+         <string/>
+        </property>
+        <property name="minimum">
+         <number>1</number>
         </property>
        </widget>
       </item>
@@ -99,7 +102,7 @@
       <item>
        <widget class="QSpinBox" name="spinBox_tableSize">
         <property name="suffix">
-         <string>    </string>
+         <string/>
         </property>
         <property name="minimum">
          <number>1</number>
@@ -126,7 +129,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

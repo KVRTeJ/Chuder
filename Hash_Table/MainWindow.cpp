@@ -16,6 +16,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButton_remove, &QPushButton::clicked, this, [this]() {
         ui->hashTable->removeRow(ui->spinBox_key->value(), ui->lineEdit_value->text());
     });
+
+    connect(ui->pushButton_find, &QPushButton::clicked, this, [this]() {
+        ui->hashTable->findRow(ui->spinBox_key->value());
+    });
+
+    connect(ui->pushButton_setTableSize, &QPushButton::clicked, this, [this]() {
+        ui->hashTable->resize(ui->spinBox_tableSize->value());
+    });
 }
 
 MainWindow::~MainWindow()

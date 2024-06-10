@@ -17,7 +17,7 @@ public:
     explicit HashTableWidget(QWidget *parent = nullptr);
     ~HashTableWidget();
 
-    int findRow(int key) const;
+    int findRow(int key);
 
 public slots:
     void addRow(int key, const QString &value);
@@ -42,8 +42,6 @@ private:
         ItemData* idPrev = nullptr;
         ItemData* idNext = nullptr;
 
-        ///pass prev elements
-        void recalculateLinks(ItemData* prev, ItemData* next, HashTable::Cell const* current); //TODO: to private //TODO: unused
         void reset();
         void swap(ItemData* other);
         QRect connectionRect;
@@ -51,6 +49,7 @@ private:
         static QRect baseConnectionRect(HashTableCellWidget *from, HashTableCellWidget *to, int connectionOffset);
     };
 
+    QList<int> m_highlighted = {};
     QVector<ItemData> m_items;
     QGridLayout *m_layout = nullptr;
     int m_baseConnectionOffset = 10;

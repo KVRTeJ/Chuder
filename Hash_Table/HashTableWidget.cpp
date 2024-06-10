@@ -4,6 +4,8 @@
 #include <QPaintEvent>
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include <QPalette>
+#include <QColor>
 
 #include "HashTableCellWidget.h"
 
@@ -26,8 +28,21 @@ HashTableWidget::HashTableWidget(QWidget *parent)
 HashTableWidget::~HashTableWidget() {}
 
 
-int HashTableWidget::findRow(int key) const {
-    assert(false && "implementme");
+int HashTableWidget::findRow(int key) { //TODO: QPushButton "OK" to reset color
+    for(auto it = m_highlighted.begin(); it != m_highlighted.end(); ++it) {
+        m_items[*it].ptr->setAutoFillBackground(false);
+    }
+
+    QList<int> newIndexes = m_table.m_getIndexes(key);
+    m_highlighted = newIndexes;
+
+    QColor color(0, 0, 0);
+    QPalette palet(color);
+    for(auto it =  m_highlighted.begin(); it != m_highlighted.end(); ++it) {
+        m_items[*it].ptr->setAutoFillBackground(true);
+        m_items[*it].ptr->setPalette(palet);
+    }
+
     return -1;
 }
 
@@ -40,7 +55,7 @@ void HashTableWidget::addRow(int key, const QString &value) {
         return;
     }
 
-    if(value == "") {
+    if(value == "" || key < 1) {
         msgBox.setText("Nice try!");
         msgBox.exec();
         return;
@@ -210,7 +225,6 @@ void HashTableWidget::ItemData::reset() {
     ptr->setValue("");
 
     next = nullptr;
-    //ptr = nullptr;
     prev = nullptr;
 
     idPrev = nullptr;

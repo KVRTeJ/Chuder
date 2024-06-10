@@ -168,6 +168,18 @@ int HashTable::m_getIndex(Cell target) const {
     return -1;
 }
 
+QList<int> HashTable::m_getIndexes(const int key) const {
+    QList<int> result;
+
+    for(int i = 0; i < m_data.size(); ++i) {
+        if(m_data[i].key() == key) {
+            result.push_back(i);
+        }
+    }
+
+    return result;
+}
+
 void HashTable::Cell::m_swap(Cell* other) {
     std::swap(this->m_key, other->m_key);
     std::swap(this->m_value, other->m_value);

@@ -2,6 +2,7 @@
 #define HASHTABLE_H
 
 #include <string>
+#include <QList>
 
 //#include "HashTableWidget.h"
 
@@ -43,8 +44,9 @@ public:
 
     HashTable& operator = (const HashTable& other) = default;
     std::string& operator [] (const int key);
-//private:
+private:
     int m_getIndex(Cell target) const;
+    QList<int> m_getIndexes(const int key) const;
 private:
     std::vector<Cell> m_data = {};
     IHashFunction* m_hashFunction = nullptr;
