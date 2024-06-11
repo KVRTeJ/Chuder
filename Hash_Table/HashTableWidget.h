@@ -33,6 +33,8 @@ private slots:
     void onValueChanged(HashTableCellWidget* item);
 
 private:
+    void clearBackground();
+private:
     struct ItemData //TODO: to class
     {
         HashTableCellWidget* ptr = nullptr;

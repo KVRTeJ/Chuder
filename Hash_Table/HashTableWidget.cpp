@@ -28,10 +28,7 @@ HashTableWidget::~HashTableWidget() {}
 
 
 int HashTableWidget::findRow(int key, bool isMessage) {
-    if(m_highlighted != -1) {
-        m_items[m_highlighted].ptr->setPalette(QPalette());
-        m_items[m_highlighted].ptr->setAutoFillBackground(false);
-    }
+    clearBackground();
 
     m_highlighted = m_table.m_getIndex(key);
 
@@ -167,22 +164,22 @@ void HashTableWidget::resize(int size) {
         m_layout->addWidget(m_items[i].ptr, i, 0);
     }
 
+    int unreset = (oldSize > size
+                       ? size
+                       : oldSize);
+
+    for(int i = 0; i < unreset; ++i) {
+        m_items[i].reset();
+    }
+
+    clearBackground();
+
     std::vector<HashTable::Cell> oldData(size);
     std::swap(oldData, m_table.m_data);
 
     for(int i = 0, j = 0; i < oldData.size(); ++i, ++j) {
         if(oldData[i].value() != "") {
             addRow(oldData[i].key(), QString::fromStdString(oldData[i].value()), false);
-        }
-    }
-
-    oldSize = (oldSize > size
-               ? size
-               : oldSize);
-
-    for(int i = 0; i < oldSize; ++i) {
-        if(m_table.m_data[i].value() == "") {
-            m_items[i].reset();
         }
     }
 
@@ -267,9 +264,23 @@ QRect HashTableWidget::ItemData::baseConnectionRect(HashTableCellWidget* from, H
     return rect;
 }
 
+void HashTableWidget::clearBackground() {
+    if(m_highlighted == -1) {
+        return;
+    }
+
+    if(m_highlighted < m_items.size()) {
+        m_items[m_highlighted].ptr->setPalette(QPalette());
+        m_items[m_highlighted].ptr->setAutoFillBackground(false);
+    }
+
+    m_highlighted = -1;
+}
+
 void HashTableWidget::ItemData::reset() {
     ptr->setKey(-1);
     ptr->setValue("");
+    ptr->setEnabled(false);
 
     next = nullptr;
     prev = nullptr;
