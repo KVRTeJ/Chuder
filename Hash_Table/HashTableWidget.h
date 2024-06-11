@@ -17,11 +17,11 @@ public:
     explicit HashTableWidget(QWidget *parent = nullptr);
     ~HashTableWidget();
 
-    int findRow(int key);
+    int findRow(int key, bool isMessage = true);
 
 public slots:
-    void addRow(int key, const QString &value);
-    bool removeRow(int key, const QString &value);
+    void addRow(int key, const QString &value, bool isMessage = true);
+    bool removeRow(int key, const QString &value, bool isMessage = true);
     void resize(int size);
 
 protected:

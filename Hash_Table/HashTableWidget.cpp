@@ -28,7 +28,7 @@ HashTableWidget::HashTableWidget(QWidget *parent)
 HashTableWidget::~HashTableWidget() {}
 
 
-int HashTableWidget::findRow(int key) { //TODO: QPushButton "OK" to reset color
+int HashTableWidget::findRow(int key, bool isMessage) { //TODO: QPushButton "OK" to reset color
     if(m_highlighted != -1) {
         m_items[m_highlighted].ptr->setPalette(QPalette());
         m_items[m_highlighted].ptr->setAutoFillBackground(false);
@@ -37,9 +37,11 @@ int HashTableWidget::findRow(int key) { //TODO: QPushButton "OK" to reset color
     m_highlighted = m_table.m_getIndex(key);
 
     if(m_highlighted == -1) {
-        QMessageBox msgBox;
-        msgBox.setText("Not found. . .");
-        msgBox.exec();
+        if(isMessage) {
+            QMessageBox msgBox;
+            msgBox.setText("Not found. . .");
+            msgBox.exec();
+        }
         return -1;
     }
 
@@ -52,26 +54,34 @@ int HashTableWidget::findRow(int key) { //TODO: QPushButton "OK" to reset color
     return m_highlighted;
 }
 
-void HashTableWidget::addRow(int key, const QString &value) {
-    QMessageBox msgBox;
+void HashTableWidget::addRow(int key, const QString &value, bool isMessage) {
 
     if (!m_items.size()) {
-        msgBox.setText("Table size is equal 0.");
-        msgBox.exec();
+        if(isMessage) {
+            QMessageBox msgBox;
+            msgBox.setText("Table size is equal 0.");
+            msgBox.exec();
+        }
         return;
     }
 
     if(value == "" || key < 1) {
-        msgBox.setText("Can't add the empty row");
-        msgBox.exec();
+        if(isMessage) {
+            QMessageBox msgBox;
+            msgBox.setText("Can't add the empty row");
+            msgBox.exec();
+        }
         return;
     }
 
     HashTable::Cell newCell(key, value.toStdString());
     int row = m_table.add(newCell);
     if(row == -1) {
-        msgBox.setText("This element is already added || Table is full");
-        msgBox.exec();
+        if(isMessage) {
+            QMessageBox msgBox;
+            msgBox.setText("This element is already added || Table is full");
+            msgBox.exec();
+        }
         return;
     }
 
@@ -88,13 +98,9 @@ void HashTableWidget::addRow(int key, const QString &value) {
 
 }
 
-bool HashTableWidget::removeRow(int key, const QString &value) { //TODO: messageBox
+bool HashTableWidget::removeRow(int key, const QString &value, bool isMessage) { //TODO: messageBox
     int row = m_table.m_getIndex(key);
     if(row == -1) {
-        return false;
-    }
-
-    if(!m_table.remove(key)) {
         return false;
     }
 
@@ -102,6 +108,12 @@ bool HashTableWidget::removeRow(int key, const QString &value) { //TODO: message
     if(m_highlighted != -1) {
         highlightedKey = m_table.m_data[m_highlighted].key();
     }
+
+    if(!m_table.remove(key)) {
+        return false;
+    }
+
+    findRow(highlightedKey, false);
 
     ItemData* current = &m_items[row];
     if(!current->idNext) {
@@ -124,8 +136,6 @@ bool HashTableWidget::removeRow(int key, const QString &value) { //TODO: message
     current->idPrev->next = nullptr;
     current->idPrev->idNext = nullptr;
     current->reset();
-
-    findRow(highlightedKey);
 
     update();
 
@@ -153,7 +163,7 @@ void HashTableWidget::resize(int size) {
 
     for(int i = 0, j = 0; i < oldData.size(); ++i, ++j) {
         if(oldData[i].value() != "") {
-            addRow(oldData[i].key(), QString::fromStdString(oldData[i].value()));
+            addRow(oldData[i].key(), QString::fromStdString(oldData[i].value()), false);
         }
     }
 
