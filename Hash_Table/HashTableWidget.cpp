@@ -27,7 +27,7 @@ HashTableWidget::HashTableWidget(QWidget* parent)
 HashTableWidget::~HashTableWidget() {}
 
 
-int HashTableWidget::findRow(int key, bool isMessage) { //TODO: QPushButton "OK" to reset color
+int HashTableWidget::findRow(int key, bool isMessage) {
     if(m_highlighted != -1) {
         m_items[m_highlighted].ptr->setPalette(QPalette());
         m_items[m_highlighted].ptr->setAutoFillBackground(false);
@@ -98,7 +98,7 @@ void HashTableWidget::addRow(int key, const QString& value, bool isMessage) {
 
 }
 
-bool HashTableWidget::removeRow(int key, const QString& value, bool isMessage) {
+bool HashTableWidget::removeRow(int key, bool isMessage) {
     int row = m_table.m_getIndex(key);
     if(row == -1) {
         if(isMessage) {
@@ -244,13 +244,11 @@ void HashTableWidget::onValueChanged(HashTableCellWidget* item) {
     m_table[item->key()] = item->value().toStdString();
 }
 
-QRect HashTableWidget::ItemData::baseConnectionRect(int connectionOffset) const
-{
+QRect HashTableWidget::ItemData::baseConnectionRect(int connectionOffset) const {
     return baseConnectionRect(ptr, next, connectionOffset);
 }
 
-QRect HashTableWidget::ItemData::baseConnectionRect(HashTableCellWidget* from, HashTableCellWidget* to, int connectionOffset)
-{
+QRect HashTableWidget::ItemData::baseConnectionRect(HashTableCellWidget* from, HashTableCellWidget* to, int connectionOffset) {
     if (!from || !to) {
         return QRect();
     }

@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->pushButton_remove, &QPushButton::clicked, this, [this]() {
-        ui->hashTable->removeRow(ui->spinBox_key->value(), ui->lineEdit_value->text());
+        ui->hashTable->removeRow(ui->spinBox_key->value());
     });
 
     connect(ui->pushButton_find, &QPushButton::clicked, this, [this]() {
@@ -25,8 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->hashTable->resize(ui->spinBox_tableSize->value());
     });
 
-
-    const int SIZE = 10;
+    const int SIZE = 50;
     ui->hashTable->resize(SIZE);
     for(int i = 0; i < SIZE; ++i)  {
         ui->hashTable->addRow(rand() % SIZE * 2, QString::number(i), false);

@@ -23,7 +23,6 @@ public:
 public slots:
     void setKey(int key);
     void setValue(const QString &value);
-    //void setVisible(bool value);
 
 signals:
     void valueChanged(HashTableCellWidget *item);

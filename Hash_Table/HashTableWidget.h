@@ -21,7 +21,7 @@ public:
 
 public slots:
     void addRow(int key, const QString& value, bool isMessage = true);
-    bool removeRow(int key, const QString& value, bool isMessage = true);
+    bool removeRow(int key, bool isMessage = true);
     void resize(int size);
 
 protected:
