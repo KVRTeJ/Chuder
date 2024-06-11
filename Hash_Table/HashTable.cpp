@@ -123,14 +123,16 @@ void HashTable::print() const {
     }
 }
 
-void HashTable::changeHashFunction(IHashFunction* hashFunction) {
+bool HashTable::changeHashFunction(IHashFunction* hashFunction) {
     if(!hashFunction || m_hashFunction == hashFunction) {
         std::cout << "exit" << std::endl;
-        return;
+        return false;
     }
 
     m_hashFunction = hashFunction;
     resize(m_data.size());
+
+    return true;
 }
 
 void HashTable::resize(const int size) {

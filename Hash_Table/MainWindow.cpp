@@ -24,9 +24,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButton_setTableSize, &QPushButton::clicked, this, [this]() {
         ui->hashTable->resize(ui->spinBox_tableSize->value());
     });
+
+
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete ui;
 }
+
+void MainWindow::on_comboBox_activated(int index) {
+    if(index == 0) {
+        ui->hashTable->changeHashFunction(0);
+    } else if(index == 1) {
+        ui->hashTable->changeHashFunction(1);
+    }
+}
+

@@ -185,6 +185,20 @@ void HashTableWidget::resize(int size) {
 
 }
 
+void HashTableWidget::changeHashFunction(const int key) {
+    QMessageBox msgBox;
+    if(key == 0) {
+        m_table.m_hashFunction = &HashFunctionQuadraticTest::function;
+        msgBox.setText("Changed to Quadratic Test. . .");
+    } else if(key == 1) {
+         m_table.m_hashFunction  = &HashFunctionMultiplicationMethod::function;
+        msgBox.setText("Changed to Multiplication Method. . .");
+    }
+    msgBox.exec();
+
+    resize(m_table.m_data.size());
+}
+
 void HashTableWidget::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);
 
@@ -222,7 +236,6 @@ void HashTableWidget::paintEvent(QPaintEvent* event) {
             }
         }
     }
-    //TODO: resize widget / layout
 }
 
 void HashTableWidget::addConnection(int from, int to) {

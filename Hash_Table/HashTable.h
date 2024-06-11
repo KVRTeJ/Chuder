@@ -38,7 +38,7 @@ public:
 
     void print() const;
 
-    void changeHashFunction(IHashFunction* hashFunction);
+    bool changeHashFunction(IHashFunction* hashFunction);
 
     void resize(const int size);
 
