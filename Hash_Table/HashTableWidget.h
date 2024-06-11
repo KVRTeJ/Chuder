@@ -14,30 +14,30 @@ class HashTableWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit HashTableWidget(QWidget *parent = nullptr);
+    explicit HashTableWidget(QWidget* parent = nullptr);
     ~HashTableWidget();
 
     int findRow(int key, bool isMessage = true);
 
 public slots:
-    void addRow(int key, const QString &value, bool isMessage = true);
-    bool removeRow(int key, const QString &value, bool isMessage = true);
+    void addRow(int key, const QString& value, bool isMessage = true);
+    bool removeRow(int key, const QString& value, bool isMessage = true);
     void resize(int size);
 
 protected:
-    void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent* event) override;
 
 private slots:
     void addConnection(int from, int to);
     void removeConnections(int itemIndex);
-    void onValueChanged(HashTableCellWidget *item);
+    void onValueChanged(HashTableCellWidget* item);
 
 private:
     struct ItemData //TODO: to class
     {
-        HashTableCellWidget *ptr = nullptr;
-        HashTableCellWidget *prev = nullptr;
-        HashTableCellWidget *next = nullptr;
+        HashTableCellWidget* ptr = nullptr;
+        HashTableCellWidget* prev = nullptr;
+        HashTableCellWidget* next = nullptr;
 
         ItemData* idPrev = nullptr;
         ItemData* idNext = nullptr;
@@ -46,7 +46,7 @@ private:
         void swap(ItemData* other);
         QRect connectionRect;
         QRect baseConnectionRect(int connectionOffset) const;
-        static QRect baseConnectionRect(HashTableCellWidget *from, HashTableCellWidget *to, int connectionOffset);
+        static QRect baseConnectionRect(HashTableCellWidget* from, HashTableCellWidget* to, int connectionOffset);
     };
 
     int m_highlighted = -1;

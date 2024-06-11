@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     const int SIZE = 10;
     ui->hashTable->resize(SIZE);
     for(int i = 0; i < SIZE; ++i)  {
-        ui->hashTable->addRow(rand() % SIZE * 2, QString::number(i));
+        ui->hashTable->addRow(rand() % SIZE * 2, QString::number(i), false);
     }
 
 }

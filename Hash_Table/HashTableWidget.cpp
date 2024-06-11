@@ -11,7 +11,7 @@
 
 #include "HashTableWidget.h"
 
-HashTableWidget::HashTableWidget(QWidget *parent)
+HashTableWidget::HashTableWidget(QWidget* parent)
     : QWidget(parent)
     , m_layout(new QGridLayout(this))
 {
@@ -20,7 +20,6 @@ HashTableWidget::HashTableWidget(QWidget *parent)
     setLayout(mainLayout);
 
     QMargins margins = m_layout->contentsMargins();
-    //TODO: margin recalculating to fit all connections
     margins.setRight(margins.right() + 15);
     m_layout->setContentsMargins(margins);
 }
@@ -45,7 +44,7 @@ int HashTableWidget::findRow(int key, bool isMessage) { //TODO: QPushButton "OK"
         return -1;
     }
 
-    QColor color(119, 136, 153);
+    QColor color(244, 164, 96);
     QPalette palet(color);
 
     m_items[m_highlighted].ptr->setAutoFillBackground(true);
@@ -54,7 +53,7 @@ int HashTableWidget::findRow(int key, bool isMessage) { //TODO: QPushButton "OK"
     return m_highlighted;
 }
 
-void HashTableWidget::addRow(int key, const QString &value, bool isMessage) {
+void HashTableWidget::addRow(int key, const QString& value, bool isMessage) {
 
     if (!m_items.size()) {
         if(isMessage) {
@@ -87,6 +86,7 @@ void HashTableWidget::addRow(int key, const QString &value, bool isMessage) {
 
     m_items[row].ptr->setKey(key);
     m_items[row].ptr->setValue(value);
+    m_items[row].ptr->setEnabled(true);
     if(m_table.m_data[row].prev()) {
         int from = m_table.m_getIndex(m_table.m_data[row].prev()->key());
         addConnection(from, row);
@@ -98,9 +98,14 @@ void HashTableWidget::addRow(int key, const QString &value, bool isMessage) {
 
 }
 
-bool HashTableWidget::removeRow(int key, const QString &value, bool isMessage) { //TODO: messageBox
+bool HashTableWidget::removeRow(int key, const QString& value, bool isMessage) {
     int row = m_table.m_getIndex(key);
     if(row == -1) {
+        if(isMessage) {
+            QMessageBox msgBox;
+            msgBox.setText("Not found. . .");
+            msgBox.exec();
+        }
         return false;
     }
 
@@ -110,6 +115,11 @@ bool HashTableWidget::removeRow(int key, const QString &value, bool isMessage) {
     }
 
     if(!m_table.remove(key)) {
+        if(isMessage) {
+            QMessageBox msgBox;
+            msgBox.setText("Сouldn't delete. . .");
+            msgBox.exec();
+        }
         return false;
     }
 
@@ -143,7 +153,6 @@ bool HashTableWidget::removeRow(int key, const QString &value, bool isMessage) {
 }
 
 void HashTableWidget::resize(int size) {
-    //TODO: implement
     int oldSize = m_items.size();
     for (int i = oldSize - 1; i >= size; --i) {
         m_items[i].reset();
@@ -153,7 +162,7 @@ void HashTableWidget::resize(int size) {
     m_items.resize(size);
     for (int i = oldSize; i < size; ++i) {
         m_items[i].ptr = new HashTableCellWidget(this);
-        //TODO: make empty rows uneditable by default
+        m_items[i].ptr->setEnabled(false);
         connect(m_items[i].ptr, &HashTableCellWidget::valueChanged, this, &HashTableWidget::onValueChanged);
         m_layout->addWidget(m_items[i].ptr, i, 0);
     }
@@ -179,7 +188,7 @@ void HashTableWidget::resize(int size) {
 
 }
 
-void HashTableWidget::paintEvent(QPaintEvent *event) {
+void HashTableWidget::paintEvent(QPaintEvent* event) {
     QWidget::paintEvent(event);
 
     QPainter painter(this);
@@ -208,7 +217,7 @@ void HashTableWidget::paintEvent(QPaintEvent *event) {
                 painter.drawLine(item.connectionRect.topLeft(), item.connectionRect.topRight());
                 painter.drawLine(item.connectionRect.topRight(), item.connectionRect.bottomRight());
                 painter.drawLine(item.connectionRect.bottomRight(), item.connectionRect.bottomLeft());
-                //TODO: draw arrow
+
                 painter.drawLine(item.connectionRect.bottomLeft().rx(), item.connectionRect.bottomLeft().ry(),
                                  item.connectionRect.bottomLeft().rx() + 5, item.connectionRect.bottomLeft().ry() - 5);
                 painter.drawLine(item.connectionRect.bottomLeft().rx(), item.connectionRect.bottomLeft().ry(),
@@ -219,13 +228,11 @@ void HashTableWidget::paintEvent(QPaintEvent *event) {
     //TODO: resize widget / layout
 }
 
-void HashTableWidget::addConnection(int from, int to)
-{
+void HashTableWidget::addConnection(int from, int to) {
     m_items[from].next = m_items[to].ptr;
 }
 
-void HashTableWidget::removeConnections(int itemIndex)
-{
+void HashTableWidget::removeConnections(int itemIndex) {
     if (m_items[itemIndex].prev) {
         m_items[itemIndex].prev = m_items[itemIndex].next;
     }
@@ -233,11 +240,8 @@ void HashTableWidget::removeConnections(int itemIndex)
     m_items[itemIndex].next = nullptr;
 }
 
-void HashTableWidget::onValueChanged(HashTableCellWidget *item)
-{
-    //TODO: implement
-    //m_hashTable[item->key()] = item->value().toStdString();
-    qDebug() << item->value(); //FIXME: remove
+void HashTableWidget::onValueChanged(HashTableCellWidget* item) {
+    m_table[item->key()] = item->value().toStdString();
 }
 
 QRect HashTableWidget::ItemData::baseConnectionRect(int connectionOffset) const
@@ -245,7 +249,7 @@ QRect HashTableWidget::ItemData::baseConnectionRect(int connectionOffset) const
     return baseConnectionRect(ptr, next, connectionOffset);
 }
 
-QRect HashTableWidget::ItemData::baseConnectionRect(HashTableCellWidget *from, HashTableCellWidget *to, int connectionOffset)
+QRect HashTableWidget::ItemData::baseConnectionRect(HashTableCellWidget* from, HashTableCellWidget* to, int connectionOffset)
 {
     if (!from || !to) {
         return QRect();

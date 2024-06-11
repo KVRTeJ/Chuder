@@ -9,6 +9,8 @@ HashTableCellWidget::HashTableCellWidget(QWidget *parent) :
     connect(ui->lineEdit_value, &QLineEdit::editingFinished, this, [this]() {
         emit valueChanged(this);
     });
+
+    //ui->pushButton_button_ok->QPushButton::setVisible(true);
 }
 
 HashTableCellWidget::~HashTableCellWidget()
@@ -39,3 +41,7 @@ void HashTableCellWidget::setValue(const QString &value)
 {
     ui->lineEdit_value->setText(value);
 }
+
+// void HashTableCellWidget::setVisible(bool value) {
+//     ui->pushButton_button_ok->setVisible(value);
+// }
