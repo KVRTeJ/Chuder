@@ -121,10 +121,9 @@ bool HashTableWidget::removeRow(int key, const QString &value) { //TODO: message
     return true;
 }
 
-void HashTableWidget::resize(int size)
-{
+void HashTableWidget::resize(int size) {
     //TODO: implement
-    int oldSize = m_items.size(); //= m_hashTable.capacity();
+    int oldSize = m_items.size();
     for (int i = oldSize - 1; i >= size; --i) {
         delete m_items[i].ptr;
     }
@@ -136,6 +135,17 @@ void HashTableWidget::resize(int size)
         connect(m_items[i].ptr, &HashTableCellWidget::valueChanged, this, &HashTableWidget::onValueChanged);
         m_layout->addWidget(m_items[i].ptr, i, 0);
     }
+
+    std::vector<HashTable::Cell> oldData(size);
+    std::swap(oldData, m_table.m_data);
+
+    for(int i = 0, j = 0; i < oldData.size() || j < size; ++i, ++j) {
+        if(oldData[i].value() != "") {
+            addRow(oldData[i].key(), QString::fromStdString(oldData[i].value()));
+        }
+    }
+
+    update();
 }
 
 void HashTableWidget::paintEvent(QPaintEvent *event) {
