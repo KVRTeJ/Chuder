@@ -49,7 +49,7 @@ private:
         static QRect baseConnectionRect(HashTableCellWidget *from, HashTableCellWidget *to, int connectionOffset);
     };
 
-    QList<int> m_highlighted = {};
+    int m_highlighted = -1;
     QVector<ItemData> m_items;
     QGridLayout *m_layout = nullptr;
     int m_baseConnectionOffset = 10;

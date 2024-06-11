@@ -55,7 +55,7 @@ bool HashTable::remove(const Cell& pair) {
 
     Cell* current = &m_data[index];
     while(current) {
-        if(*current == pair) {
+        if(current->key() == pair.key()) {
             break;
         }
         current = current->next();
@@ -152,32 +152,20 @@ std::string& HashTable::operator [] (const int key) {
     return m_data[index].m_value;
 }
 
-int HashTable::m_getIndex(Cell target) const {
-    int index = m_hashFunction->hash(m_data.size(), target.key());
+int HashTable::m_getIndex(const int key) const {
+    int index = m_hashFunction->hash(m_data.size(), key);
 
-    if(m_data[index] == target) {
+    if(m_data[index].key() == key) {
         return index;
-    } else if(m_data[index] != target) {
+    } else {
         for(int i = 0; i < m_data.size(); ++i) {
-            if(m_data[i] == target) {
+            if(m_data[i].key() == key) {
                 return i;
             }
         }
     }
 
     return -1;
-}
-
-QList<int> HashTable::m_getIndexes(const int key) const {
-    QList<int> result;
-
-    for(int i = 0; i < m_data.size(); ++i) {
-        if(m_data[i].key() == key) {
-            result.push_back(i);
-        }
-    }
-
-    return result;
 }
 
 void HashTable::Cell::m_swap(Cell* other) {

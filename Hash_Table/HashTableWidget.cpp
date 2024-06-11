@@ -29,34 +29,40 @@ HashTableWidget::~HashTableWidget() {}
 
 
 int HashTableWidget::findRow(int key) { //TODO: QPushButton "OK" to reset color
-    for(auto it = m_highlighted.begin(); it != m_highlighted.end(); ++it) {
-        m_items[*it].ptr->setAutoFillBackground(false);
+    if(m_highlighted != -1) {
+        m_items[m_highlighted].ptr->setPalette(QPalette());
+        m_items[m_highlighted].ptr->setAutoFillBackground(false);
     }
 
-    QList<int> newIndexes = m_table.m_getIndexes(key);
-    m_highlighted = newIndexes;
+    m_highlighted = m_table.m_getIndex(key);
 
-    QColor color(0, 0, 0);
+    if(m_highlighted == -1) {
+        QMessageBox msgBox;
+        msgBox.setText("Not found. . .");
+        msgBox.exec();
+        return -1;
+    }
+
+    QColor color(119, 136, 153);
     QPalette palet(color);
-    for(auto it =  m_highlighted.begin(); it != m_highlighted.end(); ++it) {
-        m_items[*it].ptr->setAutoFillBackground(true);
-        m_items[*it].ptr->setPalette(palet);
-    }
 
-    return -1;
+    m_items[m_highlighted].ptr->setAutoFillBackground(true);
+    m_items[m_highlighted].ptr->setPalette(palet);
+
+    return m_highlighted;
 }
 
 void HashTableWidget::addRow(int key, const QString &value) {
     QMessageBox msgBox;
 
     if (!m_items.size()) {
-        msgBox.setText("Table size is equal 0. LMAO");
+        msgBox.setText("Table size is equal 0.");
         msgBox.exec();
         return;
     }
 
     if(value == "" || key < 1) {
-        msgBox.setText("Nice try!");
+        msgBox.setText("Can't add the empty row");
         msgBox.exec();
         return;
     }
@@ -64,7 +70,7 @@ void HashTableWidget::addRow(int key, const QString &value) {
     HashTable::Cell newCell(key, value.toStdString());
     int row = m_table.add(newCell);
     if(row == -1) {
-        msgBox.setText("This element is already added. 😮");
+        msgBox.setText("This element is already added || Table is full");
         msgBox.exec();
         return;
     }
@@ -72,7 +78,7 @@ void HashTableWidget::addRow(int key, const QString &value) {
     m_items[row].ptr->setKey(key);
     m_items[row].ptr->setValue(value);
     if(m_table.m_data[row].prev()) {
-        int from = m_table.m_getIndex(*m_table.m_data[row].prev());
+        int from = m_table.m_getIndex(m_table.m_data[row].prev()->key());
         addConnection(from, row);
         m_items[from].idNext = &m_items[row];
         m_items[row].idPrev = &m_items[from];
@@ -83,15 +89,18 @@ void HashTableWidget::addRow(int key, const QString &value) {
 }
 
 bool HashTableWidget::removeRow(int key, const QString &value) { //TODO: messageBox
-
-    HashTable::Cell target = m_table.m_data[m_table.m_getIndex(HashTable::Cell(key, value.toStdString()))];
-    int row = m_table.m_getIndex(target);
+    int row = m_table.m_getIndex(key);
     if(row == -1) {
         return false;
     }
 
-    if(!m_table.remove(target)) {
+    if(!m_table.remove(key)) {
         return false;
+    }
+
+    int highlightedKey = -1;
+    if(m_highlighted != -1) {
+        highlightedKey = m_table.m_data[m_highlighted].key();
     }
 
     ItemData* current = &m_items[row];
@@ -116,6 +125,8 @@ bool HashTableWidget::removeRow(int key, const QString &value) { //TODO: message
     current->idPrev->idNext = nullptr;
     current->reset();
 
+    findRow(highlightedKey);
+
     update();
 
     return true;
@@ -125,6 +136,7 @@ void HashTableWidget::resize(int size) {
     //TODO: implement
     int oldSize = m_items.size();
     for (int i = oldSize - 1; i >= size; --i) {
+        m_items[i].reset();
         delete m_items[i].ptr;
     }
 
@@ -139,13 +151,22 @@ void HashTableWidget::resize(int size) {
     std::vector<HashTable::Cell> oldData(size);
     std::swap(oldData, m_table.m_data);
 
-    for(int i = 0, j = 0; i < oldData.size() || j < size; ++i, ++j) {
+    for(int i = 0, j = 0; i < oldData.size(); ++i, ++j) {
         if(oldData[i].value() != "") {
             addRow(oldData[i].key(), QString::fromStdString(oldData[i].value()));
         }
     }
 
-    update();
+    oldSize = (oldSize > size
+               ? size
+               : oldSize);
+
+    for(int i = 0; i < oldSize; ++i) {
+        if(m_table.m_data[i].value() == "") {
+            m_items[i].reset();
+        }
+    }
+
 }
 
 void HashTableWidget::paintEvent(QPaintEvent *event) {
@@ -178,6 +199,10 @@ void HashTableWidget::paintEvent(QPaintEvent *event) {
                 painter.drawLine(item.connectionRect.topRight(), item.connectionRect.bottomRight());
                 painter.drawLine(item.connectionRect.bottomRight(), item.connectionRect.bottomLeft());
                 //TODO: draw arrow
+                painter.drawLine(item.connectionRect.bottomLeft().rx(), item.connectionRect.bottomLeft().ry(),
+                                 item.connectionRect.bottomLeft().rx() + 5, item.connectionRect.bottomLeft().ry() - 5);
+                painter.drawLine(item.connectionRect.bottomLeft().rx(), item.connectionRect.bottomLeft().ry(),
+                                 item.connectionRect.bottomLeft().rx() + 5, item.connectionRect.bottomLeft().ry() + 5);
             }
         }
     }
