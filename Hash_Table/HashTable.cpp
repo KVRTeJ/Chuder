@@ -11,11 +11,16 @@ int HashTable::add(Cell& pair) {
 
     const int expected = m_hashFunction->hash(m_data.size(), pair.key());
 
-    if(m_data[expected].value() == "") {
+    if(m_data[expected].key() == pair.key()) {
+        return -1;
+    } else if(m_data[expected].value() == "") {
         m_data[expected] = pair;
     } else {
         Cell* current = &m_data[expected];
         while(current->next()) {
+            if(current->key() == pair.key()) {
+                return -1;
+            }
             current = current->next();
         }
 
@@ -26,6 +31,8 @@ int HashTable::add(Cell& pair) {
                 m_data[i] = pair;
                 hasFound = true;
                 break;
+            } else if(m_data[i].key() == pair.key()) {
+                return -1;
             }
         }
 
@@ -49,7 +56,7 @@ int HashTable::add(const int key, const std::string& value) {
 bool HashTable::remove(const Cell& pair) {
     const int index =  m_hashFunction->hash(m_data.size(), pair.key());
 
-    if(m_data[index].value() == "") {
+    if(m_data[index].value() == "" ) {
         return false;
     }
 

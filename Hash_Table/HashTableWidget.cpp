@@ -272,6 +272,10 @@ void HashTableWidget::ItemData::reset() {
     next = nullptr;
     prev = nullptr;
 
+    if(idPrev) {
+        idPrev->next = nullptr;
+    }
+
     idPrev = nullptr;
     idNext = nullptr;
 }

@@ -25,13 +25,13 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->hashTable->resize(ui->spinBox_tableSize->value());
     });
 
-    /*
-    const int SIZE = 50;
+
+    const int SIZE = 10;
     ui->hashTable->resize(SIZE);
     for(int i = 0; i < SIZE; ++i)  {
         ui->hashTable->addRow(rand() % SIZE * 2, QString::number(i));
     }
-*/
+
 }
 
 MainWindow::~MainWindow()
