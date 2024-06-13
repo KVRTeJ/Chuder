@@ -7,6 +7,8 @@
 #include <QPalette>
 #include <QColor>
 
+#include <algorithm>
+
 #include "HashTableCellWidget.h"
 
 #include "HashTableWidget.h"
@@ -18,10 +20,6 @@ HashTableWidget::HashTableWidget(QWidget* parent)
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->addLayout(m_layout);
     setLayout(mainLayout);
-
-    QMargins margins = m_layout->contentsMargins();
-    margins.setRight(margins.right() + 15);
-    m_layout->setContentsMargins(margins);
 }
 
 HashTableWidget::~HashTableWidget() {}
@@ -204,6 +202,7 @@ void HashTableWidget::paintEvent(QPaintEvent* event) {
 
     QPainter painter(this);
 
+    int maxRight = 0;
     for (ItemData &item : m_items) {
         if (item.next) {
             item.connectionRect = item.baseConnectionRect(m_baseConnectionOffset);
@@ -211,7 +210,7 @@ void HashTableWidget::paintEvent(QPaintEvent* event) {
             int rightBorderOffset = 0;
             QVector<int> rightBorders;
             for (const ItemData &other : qAsConst(m_items)) {
-                if (&other == &item || !other.connectionRect.isValid()) {
+                if (&other == &item) {
                     continue;
                 }
 
@@ -223,6 +222,9 @@ void HashTableWidget::paintEvent(QPaintEvent* event) {
                 }
             }
             item.connectionRect.setRight(item.connectionRect.right() + rightBorderOffset);
+            maxRight = (item.connectionRect.right() > maxRight
+                            ? item.connectionRect.right()
+                            : maxRight);
 
             if (event->rect().intersects(item.connectionRect)) {
                 painter.drawLine(item.connectionRect.topLeft(), item.connectionRect.topRight());
@@ -235,7 +237,21 @@ void HashTableWidget::paintEvent(QPaintEvent* event) {
                                  item.connectionRect.bottomLeft().rx() + 5, item.connectionRect.bottomLeft().ry() + 5);
             }
         }
+
     }
+
+    QMargins margins = m_layout->contentsMargins();
+    int old = margins.right();
+
+    // int difference = (maxRight - this->width()) - margins.right();
+    // if(difference > 0) {
+    //     margins.setRight(m_layout->contentsMargins().right() + (maxRight - this->width()));
+    // } else {
+    //      margins.setRight(m_layout->contentsMargins().right() - (maxRight - this->width()));
+    // }
+    margins.setRight(m_layout->contentsMargins().right() + (maxRight - this->width()));
+    qDebug() << maxRight << old << "->" << margins.right();
+    m_layout->setContentsMargins(margins);
 }
 
 void HashTableWidget::addConnection(int from, int to) {

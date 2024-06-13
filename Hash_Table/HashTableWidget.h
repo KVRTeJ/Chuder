@@ -44,6 +44,7 @@ private:
     QGridLayout *m_layout = nullptr;
     int m_baseConnectionOffset = 10;
     int m_connectionOffset = 5;
+
     HashTable m_table = {};
 };
 
