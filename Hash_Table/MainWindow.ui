@@ -21,6 +21,23 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
+     <widget class="QLabel" name="labelFullnessBar">
+      <property name="styleSheet">
+       <string notr="true">font: 700 20pt &quot;Bradley Hand&quot;;</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QProgressBar" name="fullnessBar">
+      <property name="value">
+       <number>24</number>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QScrollArea" name="scrollArea">
       <property name="widgetResizable">
        <bool>true</bool>
@@ -31,7 +48,7 @@
          <x>0</x>
          <y>0</y>
          <width>774</width>
-         <height>475</height>
+         <height>416</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">

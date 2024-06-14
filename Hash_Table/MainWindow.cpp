@@ -1,3 +1,5 @@
+#include <Qt>
+
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
@@ -7,14 +9,19 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->fullnessBar->setValue(0);
+    QString labelFullnessBarText = "Fullness bar";
+    ui->labelFullnessBar->setText(labelFullnessBarText);
+    ui->labelFullnessBar->setAlignment(Qt::AlignCenter);
+
     ui->hashTable->resize(ui->spinBox_tableSize->value());
 
     connect(ui->pushButton_add, &QPushButton::clicked, this, [this]() {
-        ui->hashTable->addRow(ui->spinBox_key->value(), ui->lineEdit_value->text());
+        ui->fullnessBar->setValue(ui->fullnessBar->value() + ui->hashTable->addRow(ui->spinBox_key->value(), ui->lineEdit_value->text()));
     });
 
     connect(ui->pushButton_remove, &QPushButton::clicked, this, [this]() {
-        ui->hashTable->removeRow(ui->spinBox_key->value());
+        ui->fullnessBar->setValue(ui->fullnessBar->value() - ui->hashTable->removeRow(ui->spinBox_key->value()));
     });
 
     connect(ui->pushButton_find, &QPushButton::clicked, this, [this]() {
@@ -22,13 +29,15 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     connect(ui->pushButton_setTableSize, &QPushButton::clicked, this, [this]() {
-        ui->hashTable->resize(ui->spinBox_tableSize->value());
+        ui->fullnessBar->setValue(ui->hashTable->resize(ui->spinBox_tableSize->value()));
     });
+
 
     ui->hashTable->resize(99);
     for(int i = 0; i < 89; ++i) {
         ui->hashTable->addRow(rand() % 89 * 3, QString::number(i), false);
     }
+
 }
 
 MainWindow::~MainWindow() {

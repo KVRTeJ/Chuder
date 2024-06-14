@@ -21,9 +21,12 @@ public:
     int findRow(int key, bool isMessage = true);
 
 public slots:
-    void addRow(int key, const QString& value, bool isMessage = true);
-    bool removeRow(int key, bool isMessage = true);
-    void resize(int size);
+    ///returns coefficient of addition 1 element
+    int addRow(int key, const QString& value, bool isMessage = true);
+    ///returns coefficient of remove 1 element
+    int removeRow(int key, bool isMessage = true);
+    ///returns coefficient of addition added elements
+    int resize(int size);
     void changeHashFunction(const int key);
 
 protected:

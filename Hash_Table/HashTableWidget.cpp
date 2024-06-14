@@ -48,7 +48,7 @@ int HashTableWidget::findRow(int key, bool isMessage) {
     return m_highlighted;
 }
 
-void HashTableWidget::addRow(int key, const QString& value, bool isMessage) {
+int HashTableWidget::addRow(int key, const QString& value, bool isMessage) {
 
     if (!m_items.size()) {
         if(isMessage) {
@@ -56,7 +56,7 @@ void HashTableWidget::addRow(int key, const QString& value, bool isMessage) {
             msgBox.setText("Table size is equal 0.");
             msgBox.exec();
         }
-        return;
+        return 0;
     }
 
     if(value == "" || key < 1) {
@@ -65,7 +65,7 @@ void HashTableWidget::addRow(int key, const QString& value, bool isMessage) {
             msgBox.setText("Can't add the empty row");
             msgBox.exec();
         }
-        return;
+        return 0;
     }
 
     HashTable::Cell newCell(key, value.toStdString());
@@ -76,7 +76,7 @@ void HashTableWidget::addRow(int key, const QString& value, bool isMessage) {
             msgBox.setText("This element is already added || Table is full");
             msgBox.exec();
         }
-        return;
+        return 0;
     }
 
     m_items[row].ptr->setKey(key);
@@ -91,9 +91,10 @@ void HashTableWidget::addRow(int key, const QString& value, bool isMessage) {
 
     update();
 
+    return (1.00 / static_cast<float>(m_table.m_data.size())) * 100;
 }
 
-bool HashTableWidget::removeRow(int key, bool isMessage) {
+int HashTableWidget::removeRow(int key, bool isMessage) {
     int row = m_table.m_getIndex(key);
     if(row == -1) {
         if(isMessage) {
@@ -101,7 +102,7 @@ bool HashTableWidget::removeRow(int key, bool isMessage) {
             msgBox.setText("Not found. . .");
             msgBox.exec();
         }
-        return false;
+        return 0;
     }
 
     int highlightedKey = -1;
@@ -115,7 +116,7 @@ bool HashTableWidget::removeRow(int key, bool isMessage) {
             msgBox.setText("Сouldn't delete. . .");
             msgBox.exec();
         }
-        return false;
+        return 0;
     }
 
     findRow(highlightedKey, false);
@@ -129,7 +130,7 @@ bool HashTableWidget::removeRow(int key, bool isMessage) {
         current->reset();
 
         update();
-        return true;
+        return (1.00 / static_cast<float>(m_table.m_data.size())) * 100;;
     }
 
     ItemData* it = current->idNext;
@@ -144,10 +145,10 @@ bool HashTableWidget::removeRow(int key, bool isMessage) {
 
     update();
 
-    return true;
+    return (1.00 / static_cast<float>(m_table.m_data.size())) * 100;;
 }
 
-void HashTableWidget::resize(int size) {
+int HashTableWidget::resize(int size) {
     int oldSize = m_items.size();
     for (int i = oldSize - 1; i >= size; --i) {
         m_items[i].reset();
@@ -175,12 +176,14 @@ void HashTableWidget::resize(int size) {
     std::vector<HashTable::Cell> oldData(size);
     std::swap(oldData, m_table.m_data);
 
+    int fullnessTable = 0;
     for(int i = 0, j = 0; i < oldData.size(); ++i, ++j) {
         if(oldData[i].value() != "") {
-            addRow(oldData[i].key(), QString::fromStdString(oldData[i].value()), false);
+            fullnessTable += addRow(oldData[i].key(), QString::fromStdString(oldData[i].value()), false);
         }
     }
 
+    return fullnessTable;
 }
 
 void HashTableWidget::changeHashFunction(const int key) {
@@ -241,16 +244,8 @@ void HashTableWidget::paintEvent(QPaintEvent* event) {
     }
 
     QMargins margins = m_layout->contentsMargins();
-    int old = margins.right();
-
-    // int difference = (maxRight - this->width()) - margins.right();
-    // if(difference > 0) {
-    //     margins.setRight(m_layout->contentsMargins().right() + (maxRight - this->width()));
-    // } else {
-    //      margins.setRight(m_layout->contentsMargins().right() - (maxRight - this->width()));
-    // }
+    maxRight += 5;
     margins.setRight(m_layout->contentsMargins().right() + (maxRight - this->width()));
-    qDebug() << maxRight << old << "->" << margins.right();
     m_layout->setContentsMargins(margins);
 }
 
