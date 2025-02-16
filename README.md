@@ -8,11 +8,6 @@ I use **XCode version 15.2 (15C500b)** and **QT Creator version 12.0.0**
 
 
 This is my code:
-```cpp
-#include <stio.h>
-
-int main()
-{
-
-}
+```py
+print("schb")
 ```
